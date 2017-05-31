@@ -2,6 +2,7 @@
 #define CASINSTANCE_H
 
 #include <memory>
+#include <string>
 
 class asIScriptEngine;
 struct asSMessageInfo;

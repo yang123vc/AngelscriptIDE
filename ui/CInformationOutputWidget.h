@@ -10,7 +10,7 @@
 
 #include "COutputWidget.h"
 
-class asSMessageInfo;
+struct asSMessageInfo;
 
 class CInformationOutputWidget :
 		public COutputWidget,
