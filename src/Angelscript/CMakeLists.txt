@@ -1,4 +1,8 @@
 add_sources(
+	CASEngineInstance.cpp
+	CASEngineInstance.h
+	CASManager.cpp
+	CASManager.h
 	CScript.cpp
 	CScript.h
 	CScriptFile.cpp
@@ -8,10 +12,6 @@ add_sources(
 	ConfigurationException.h
 	IConfigurationManager.h
 	IConfigurationEventListener.h
-	CASInstance.cpp
-	CASInstance.h
-	CASManager.cpp
-	CASManager.h
 	IASEventListener.h
 	IASCompilerListener.h
 )

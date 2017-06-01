@@ -1,5 +1,5 @@
-#ifndef CASINSTANCE_H
-#define CASINSTANCE_H
+#ifndef CASENGINEINSTANCE_H
+#define CASENGINEINSTANCE_H
 
 #include <memory>
 #include <string>
@@ -9,7 +9,7 @@ struct asSMessageInfo;
 
 class CScript;
 
-class CASInstance
+class CASEngineInstance
 {
 public:
 	enum StartupResult_t
@@ -21,8 +21,8 @@ public:
 
 public:
 
-	CASInstance();
-	~CASInstance();
+	CASEngineInstance();
+	~CASEngineInstance();
 
 	asIScriptEngine* GetScriptEngine() const { return m_pScriptEngine; }
 
@@ -43,8 +43,8 @@ private:
 	asIScriptEngine* m_pScriptEngine;
 
 private:
-	CASInstance( const CASInstance& ) = delete;
-	CASInstance& operator=( const CASInstance& ) = delete;
+	CASEngineInstance( const CASEngineInstance& ) = delete;
+	CASEngineInstance& operator=( const CASEngineInstance& ) = delete;
 };
 
-#endif // CASINSTANCE_H
+#endif // CASENGINEINSTANCE_H

@@ -1,6 +1,6 @@
 #include "angelscript.h"
 
-#include "CASInstance.h"
+#include "CASEngineInstance.h"
 #include "IASEventListener.h"
 #include "IASCompilerListener.h"
 #include "CConfiguration.h"
@@ -54,11 +54,11 @@ void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOl
 	if( m_Instance )
 		ClearActiveConfiguration( fSaveOldConfig );
 
-	m_Instance.reset( new CASInstance() );
+	m_Instance.reset( new CASEngineInstance() );
 
-	CASInstance::StartupResult_t result = m_Instance->Startup();
+	CASEngineInstance::StartupResult_t result = m_Instance->Startup();
 
-	if( result == CASInstance::STARTUP_SUCCESS )
+	if( result == CASEngineInstance::STARTUP_SUCCESS )
 	{
 		m_Instance->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
 

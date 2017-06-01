@@ -15,23 +15,23 @@
 #include "CScriptFile.h"
 #include "CConfiguration.h"
 
-#include "CASInstance.h"
+#include "CASEngineInstance.h"
 
-CASInstance::CASInstance()
+CASEngineInstance::CASEngineInstance()
 	: m_pScriptEngine( nullptr )
 {
 }
 
-CASInstance::~CASInstance()
+CASEngineInstance::~CASEngineInstance()
 {
 }
 
-const char* CASInstance::GetVersion() const
+const char* CASEngineInstance::GetVersion() const
 {
 	return ANGELSCRIPT_VERSION_STRING;
 }
 
-void CASInstance::SetMessageCallback( const asSFuncPtr& callback, void* pObj, asDWORD callConv )
+void CASEngineInstance::SetMessageCallback( const asSFuncPtr& callback, void* pObj, asDWORD callConv )
 {
 	if( !IsInitialized() )
 		return;
@@ -39,7 +39,7 @@ void CASInstance::SetMessageCallback( const asSFuncPtr& callback, void* pObj, as
 	m_pScriptEngine->SetMessageCallback( callback, pObj, callConv );
 }
 
-CASInstance::StartupResult_t CASInstance::Startup()
+CASEngineInstance::StartupResult_t CASEngineInstance::Startup()
 {
 	if( IsInitialized() )
 		return STARTUP_ALREADYINITIALIZED;
@@ -52,7 +52,7 @@ CASInstance::StartupResult_t CASInstance::Startup()
 	return STARTUP_SUCCESS;
 }
 
-void CASInstance::Shutdown()
+void CASEngineInstance::Shutdown()
 {
 	if( !IsInitialized() )
 		return;
@@ -62,7 +62,7 @@ void CASInstance::Shutdown()
 	m_pScriptEngine = nullptr;
 }
 
-bool CASInstance::LoadAPIFromFile( const std::string& szFilename )
+bool CASEngineInstance::LoadAPIFromFile( const std::string& szFilename )
 {
 	if( !IsInitialized() )
 		return false;
@@ -75,7 +75,7 @@ bool CASInstance::LoadAPIFromFile( const std::string& szFilename )
 	return ConfigEngineFromStream( GetScriptEngine(), inStream ) >= 0;
 }
 
-bool CASInstance::CompileScript( std::shared_ptr<const CScript> script )
+bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 {
 	if( !IsInitialized() )
 	{

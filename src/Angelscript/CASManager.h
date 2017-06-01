@@ -5,7 +5,7 @@
 
 #include "util/CListenerManager.h"
 
-class CASInstance;
+class CASEngineInstance;
 class IConfigurationManager;
 class CConfiguration;
 class IASEventListener;
@@ -45,7 +45,7 @@ protected:
 	void NotifyEventListeners(ASEvent event, const void* pArg = nullptr );
 
 private:
-	std::unique_ptr<CASInstance>			m_Instance;
+	std::unique_ptr<CASEngineInstance>		m_Instance;
 	std::shared_ptr<IConfigurationManager>	m_ConfigurationManager;
 	std::shared_ptr<CConfiguration>			m_ActiveConfiguration;
 	CListenerManager<IASEventListener>		m_EventListeners;
