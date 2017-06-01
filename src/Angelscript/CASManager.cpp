@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "angelscript.h"
 
 #include "CASEngineInstance.h"
@@ -11,12 +13,10 @@
 CASManager::CASManager( std::shared_ptr<IConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
 {
-
 }
 
 CASManager::~CASManager()
 {
-
 }
 
 void CASManager::AddEventListener( IASEventListener* pListener )
@@ -54,12 +54,10 @@ void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOl
 	if( m_Instance )
 		ClearActiveConfiguration( fSaveOldConfig );
 
-	m_Instance.reset( new CASEngineInstance() );
-
-	CASEngineInstance::StartupResult_t result = m_Instance->Startup();
-
-	if( result == CASEngineInstance::STARTUP_SUCCESS )
+	try
 	{
+		m_Instance = std::make_unique<CASEngineInstance>();
+
 		m_Instance->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
 
 		const std::string szVersion = m_Instance->GetVersion();
@@ -86,6 +84,10 @@ void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOl
 				NotifyEventListeners( ASEvent::ConfigurationNotFound, &szName );
 		}
 	}
+	catch( const CASEngineException& e )
+	{
+		std::cerr << e.what() << std::endl;
+	}
 }
 
 void CASManager::ClearActiveConfiguration( bool fSave )
@@ -93,7 +95,6 @@ void CASManager::ClearActiveConfiguration( bool fSave )
 	if( m_Instance )
 	{
 		NotifyEventListeners( ASEvent::Destroyed );
-		m_Instance->Shutdown();
 		m_Instance.reset();
 
 		if( m_ActiveConfiguration )

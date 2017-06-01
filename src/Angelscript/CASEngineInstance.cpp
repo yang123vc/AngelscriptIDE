@@ -18,12 +18,17 @@
 #include "CASEngineInstance.h"
 
 CASEngineInstance::CASEngineInstance()
-	: m_pScriptEngine( nullptr )
 {
+	m_pScriptEngine = asCreateScriptEngine( ANGELSCRIPT_VERSION );
+
+	if( !m_pScriptEngine )
+		throw CASEngineException( "Couldn't create Angelscript engine" );
 }
 
 CASEngineInstance::~CASEngineInstance()
 {
+	if( m_pScriptEngine )
+		m_pScriptEngine->ShutDownAndRelease();
 }
 
 const char* CASEngineInstance::GetVersion() const
@@ -33,40 +38,11 @@ const char* CASEngineInstance::GetVersion() const
 
 void CASEngineInstance::SetMessageCallback( const asSFuncPtr& callback, void* pObj, asDWORD callConv )
 {
-	if( !IsInitialized() )
-		return;
-
 	m_pScriptEngine->SetMessageCallback( callback, pObj, callConv );
-}
-
-CASEngineInstance::StartupResult_t CASEngineInstance::Startup()
-{
-	if( IsInitialized() )
-		return STARTUP_ALREADYINITIALIZED;
-
-	m_pScriptEngine = asCreateScriptEngine( ANGELSCRIPT_VERSION );
-
-	if( !m_pScriptEngine )
-		return STARTUP_FAILED;
-
-	return STARTUP_SUCCESS;
-}
-
-void CASEngineInstance::Shutdown()
-{
-	if( !IsInitialized() )
-		return;
-
-	m_pScriptEngine->Release();
-
-	m_pScriptEngine = nullptr;
 }
 
 bool CASEngineInstance::LoadAPIFromFile( const std::string& szFilename )
 {
-	if( !IsInitialized() )
-		return false;
-
 	std::ifstream inStream( szFilename );
 
 	if( !inStream.is_open() )
@@ -77,12 +53,6 @@ bool CASEngineInstance::LoadAPIFromFile( const std::string& szFilename )
 
 bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 {
-	if( !IsInitialized() )
-	{
-		std::cerr << "Instance not initialized!" << std::endl;
-		return false;
-	}
-
 	CScriptBuilder builder;
 
 	builder.SetIncludeCallback(

@@ -2,6 +2,7 @@
 #define CASENGINEINSTANCE_H
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 class asIScriptEngine;
@@ -9,38 +10,41 @@ struct asSMessageInfo;
 
 class CScript;
 
+/**
+*	Exception thrown if an Angelscript exception has occured
+*/
+class CASEngineException : public std::runtime_error
+{
+public:
+	using std::runtime_error::runtime_error;
+};
+
+/**
+*	Manages an Angelscript engine
+*/
 class CASEngineInstance
 {
 public:
-	enum StartupResult_t
-	{
-		STARTUP_SUCCESS = 0,
-		STARTUP_ALREADYINITIALIZED,
-		STARTUP_FAILED
-	};
 
-public:
-
+	/**
+	*	Creates an engine. 
+	*	@throws CASEngineException if the engine could not be created
+	*/
 	CASEngineInstance();
 	~CASEngineInstance();
 
 	asIScriptEngine* GetScriptEngine() const { return m_pScriptEngine; }
 
-	bool IsInitialized() const { return m_pScriptEngine != nullptr; }
-
 	const char* GetVersion() const;
 
 	void SetMessageCallback( const asSFuncPtr& callback, void* pObj, asDWORD callConv );
-
-	StartupResult_t Startup();
-	void Shutdown();
 
 	bool LoadAPIFromFile( const std::string& szFilename );
 
 	bool CompileScript( std::shared_ptr<const CScript> script );
 
 private:
-	asIScriptEngine* m_pScriptEngine;
+	asIScriptEngine* m_pScriptEngine = nullptr;
 
 private:
 	CASEngineInstance( const CASEngineInstance& ) = delete;
