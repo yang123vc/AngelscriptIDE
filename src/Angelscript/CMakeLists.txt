@@ -15,7 +15,3 @@ add_sources(
 	IASEventListener.h
 	IASCompilerListener.h
 )
-
-add_subdirectory( add_on )
-add_subdirectory( include )
-add_subdirectory( source )

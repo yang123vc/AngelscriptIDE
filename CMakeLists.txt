@@ -52,6 +52,7 @@ endif()
 
 set( OUTPUT_DIR "${CMAKE_SOURCE_DIR}/test" CACHE PATH "Output directory for binaries" )
 
+set( EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external )
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 set( SHARED_INCLUDE_DIRECTORIES )
