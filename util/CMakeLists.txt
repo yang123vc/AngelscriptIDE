@@ -1,0 +1,13 @@
+add_sources(
+	COutStream.h
+	CBaseApp.cpp
+	CBaseApp.h
+	CProperties.cpp
+	CProperties.h
+	CListenerManager.h
+	StringUtils.cpp
+	StringUtils.h
+	CDispatchingOutStream.h
+	IUI.h
+	IAppListener.h
+)

@@ -1,0 +1,5 @@
+#Build directories
+build_*/*
+
+#Test output directory
+test/*
