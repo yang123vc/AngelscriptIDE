@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2015 Andreas Jonsson
+   Copyright (c) 2003-2016 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -41,10 +41,11 @@
 
 // Compiler messages
 
-#define TXT_s_ALREADY_DECLARED                    "'%s' is already declared"
+#define TXT_s_ALREADY_DECLARED                      "'%s' is already declared"
 #define TXT_ABSTRACT_CLASS_s_CANNOT_BE_INSTANTIATED "Abstract class '%s' cannot be instantiated"
-#define TXT_ARG_NOT_LVALUE                        "Output argument expression is not assignable"
-#define TXT_ATTR_s_INFORMED_MULTIPLE_TIMES        "Attribute '%s' informed multiple times"
+#define TXT_ACCESSING_PRIVATE_PROP_s                "Accessing private property '%s' of parent class"
+#define TXT_ARG_NOT_LVALUE                          "Output argument expression is not assignable"
+#define TXT_ATTR_s_INFORMED_MULTIPLE_TIMES          "Attribute '%s' informed multiple times"
 #define TXT_AUTO_NOT_ALLOWED                        "Auto is not allowed here"
 
 #define TXT_BOTH_MUST_BE_SAME                     "Both expressions must have the same type"
@@ -134,6 +135,8 @@
 #define TXT_INIT_LIST_CANNOT_BE_USED_WITH_s        "Initialization lists cannot be used with '%s'"
 #define TXT_INSTANCING_INVLD_TMPL_TYPE_s_s         "Attempting to instantiate invalid template type '%s<%s>'"
 #define TXT_INSTEAD_FOUND_s                        "Instead found '%s'"
+#define TXT_INSTEAD_FOUND_IDENTIFIER_s             "Instead found identifier '%s'"
+#define TXT_INSTEAD_FOUND_KEYWORD_s                "Instead found reserved keyword '%s'"
 #define TXT_INTERFACE_s_CANNOT_BE_INSTANTIATED     "Interface '%s' cannot be instantiated"
 #define TXT_INTERFACE_CAN_ONLY_IMPLEMENT_INTERFACE "Interfaces can only implement other interfaces"
 #define TXT_INVALID_BREAK                          "Invalid 'break'"
@@ -141,6 +144,7 @@
 #define TXT_INVALID_CONTINUE                       "Invalid 'continue'"
 #define TXT_INVALID_ESCAPE_SEQUENCE                "Invalid escape sequence"
 #define TXT_INVALID_EXPRESSION_AMBIGUOUS_NAME      "Invalid expression: ambiguous name"
+#define TXT_INVALID_EXPRESSION_LAMBDA              "Invalid expression: stand-alone anonymous function"
 #define TXT_INVALID_OP_ON_METHOD                   "Invalid operation on method"
 #define TXT_INVALID_REF_PROP_ACCESS                "Invalid reference. Property accessors cannot be used in combined read/write operations"
 #define TXT_INVALID_SCOPE                          "Invalid scope resolution"
@@ -157,6 +161,7 @@
 #define TXT_MIXIN_CANNOT_BE_DECLARED_AS_s           "Mixin class cannot be declared as '%s'"
 #define TXT_MIXIN_CANNOT_HAVE_CONSTRUCTOR           "Mixin classes cannot have constructors or destructors"
 #define TXT_MIXIN_CLASS_CANNOT_INHERIT              "Mixin class cannot inherit from classes"
+#define TXT_MIXIN_CANNOT_HAVE_CHILD_TYPES           "Mixin classes cannot have child types"
 #define TXT_MORE_THAN_ONE_MATCHING_OP               "Found more than one matching operator"
 #define TXT_MULTIPLE_MATCHING_SIGNATURES_TO_s       "Multiple matching signatures to '%s'"
 #define TXT_MULTIPLE_PROP_GET_ACCESSOR_FOR_s        "Found multiple get accessors for property '%s'"
@@ -250,7 +255,9 @@
 #define TXT_TMPL_SUBTYPE_MUST_NOT_BE_READ_ONLY "Template subtype must not be read-only"
 #define TXT_TOO_MANY_JUMP_LABELS               "The function has too many jump labels to handle. Split the function into smaller ones."
 #define TXT_TOO_MANY_VALUES_FOR_LIST           "Too many values to match pattern"
+#define TXT_TYPE_s_CANNOT_BE_REFERENCE         "Type '%s' cannot be a reference"
 #define TXT_TYPE_s_NOT_AVAILABLE_FOR_MODULE    "Type '%s' is not available for this module"
+#define TXT_TYPE_s_NOT_TEMPLATE                "Type '%s' is not a template type"
 
 #define TXT_UNEXPECTED_END_OF_FILE             "Unexpected end of file"
 #define TXT_UNEXPECTED_TOKEN_s                 "Unexpected token '%s'"
@@ -288,7 +295,7 @@
 #define TXT_GC_REQUIRE_ADD_REL_GC_BEHAVIOUR              "A garbage collected type must have the addref, release, and all gc behaviours"
 #define TXT_SCOPE_REQUIRE_REL_BEHAVIOUR                  "A scoped reference type must have the release behaviour"
 #define TXT_REF_REQUIRE_ADD_REL_BEHAVIOUR                "A reference type must have the addref and release behaviours"
-#define TXT_NON_POD_REQUIRE_CONSTR_DESTR_BEHAVIOUR       "A non-pod value type must have the default constructor and destructor behaviours"
+#define TXT_NON_POD_REQUIRE_CONSTR_DESTR_BEHAVIOUR       "A non-pod value type must have at least one constructor and the destructor behaviours"
 #define TXT_CANNOT_PASS_TYPE_s_BY_VAL                    "Can't pass type '%s' by value unless the application type is informed in the registration"
 #define TXT_CANNOT_RET_TYPE_s_BY_VAL                     "Can't return type '%s' by value unless the application type is informed in the registration"
 // TODO: Should be something like "This platform requires that AngelScript knows the exact content of the type '%s' in order to pass by value to application in native calling convention"
