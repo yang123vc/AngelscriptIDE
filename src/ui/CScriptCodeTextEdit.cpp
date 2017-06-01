@@ -57,18 +57,18 @@ void CScriptCodeTextEdit::SetUnsavedChangesMade( bool fState )
 	}
 }
 
-CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( int iSaveMode, int iPromptMode, int iFileSelect )
+CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( SaveMode saveMode, PromptMode promptMode, FileSelectMode fileSelect )
 {
-	SaveResult result = SaveResult::Canceled;
+	SaveResult result = SaveResult::CANCELED;
 
 	if(
-			( iSaveMode == Save_Always ) ||
+			( saveMode == SaveMode::ALWAYS ) ||
 			UnsavedChangedMade() ||
 			( !m_pScriptFile && !this->document()->isEmpty() ) )
 	{
 		int iRet = QMessageBox::Save;
 
-		if( ( iPromptMode != Prompt_Never ) && ( UnsavedChangedMade() || ( iPromptMode == Prompt_Always ) ) )
+		if( ( promptMode != PromptMode::NEVER ) && ( UnsavedChangedMade() || ( promptMode == PromptMode::ALWAYS ) ) )
 		{
 			QMessageBox messageBox;
 			messageBox.setText( "This document has unsaved changes." );
@@ -83,7 +83,7 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( int iSaveMode, int iP
 		{
 		case QMessageBox::Save:
 			{
-				if( ( iFileSelect != FileSelect_Never ) && ( !m_pScriptFile || ( iFileSelect == FileSelect_Always ) ) )
+				if( ( fileSelect != FileSelectMode::NEVER ) && ( !m_pScriptFile || ( fileSelect == FileSelectMode::ALWAYS ) ) )
 				{
 					OpenSaveDialog();
 				}
@@ -95,7 +95,7 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( int iSaveMode, int iP
 					if( fResult )
 					{
 						SetUnsavedChangesMade( false );
-						result = SaveResult::Saved;
+						result = SaveResult::SAVED;
 					}
 					else
 					{
@@ -105,20 +105,20 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( int iSaveMode, int iP
 						errorBox.setInformativeText( "An error occured while trying to save the file." );
 						errorBox.exec();
 
-						result = SaveResult::Canceled;
+						result = SaveResult::CANCELED;
 					}
 				}
 
 				break;
 			}
 
-		case QMessageBox::Discard: result = SaveResult::Discarded; break;
-		case QMessageBox::Cancel: result = SaveResult::Canceled; break;
+		case QMessageBox::Discard: result = SaveResult::DISCARED; break;
+		case QMessageBox::Cancel: result = SaveResult::CANCELED; break;
 		default: break;
 		}
 	}
 	else
-		result = SaveResult::Saved;
+		result = SaveResult::SAVED;
 
 	return result;
 }

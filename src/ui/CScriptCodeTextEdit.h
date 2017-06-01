@@ -15,31 +15,31 @@ class CScriptCodeTextEdit : public CCodeTextEdit
 	Q_OBJECT
 
 public:
-	enum SaveMode
+	enum class SaveMode
 	{
-		Save_IfNeeded	= 0,
-		Save_Always,
+		IF_NEEDED = 0,
+		ALWAYS,
 	};
 
-	enum PromptMode
+	enum class PromptMode
 	{
-		Prompt_IfNeeded		= 0,
-		Prompt_Always,
-		Prompt_Never,
+		IF_NEEDED = 0,
+		ALWAYS,
+		NEVER,
 	};
 
-	enum FileSelectMode
+	enum class FileSelectMode
 	{
-		FileSelect_IfNeeded	= 0,
-		FileSelect_Always,
-		FileSelect_Never,
+		IF_NEEDED = 0,
+		ALWAYS,
+		NEVER,
 	};
 
 	enum class SaveResult
 	{
-		Saved,
-		Discarded,
-		Canceled
+		SAVED,
+		DISCARED,
+		CANCELED
 	};
 
 public:
@@ -58,7 +58,7 @@ public:
 
 	void SetUnsavedChangesMade( bool fState );
 
-	SaveResult Save( int iSaveMode = Save_IfNeeded, int iPromptMode = Prompt_IfNeeded, int iFileSelect = FileSelect_IfNeeded );
+	SaveResult Save( SaveMode saveMode = SaveMode::IF_NEEDED, PromptMode promptMode = PromptMode::IF_NEEDED, FileSelectMode fileSelect = FileSelectMode::IF_NEEDED );
 
 protected:
 

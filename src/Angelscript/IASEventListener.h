@@ -17,14 +17,39 @@ struct ASAPIRegistrationResult
 
 enum class ASEvent
 {
-	Created,				//Parameter: const ASCreationResult*; Angelscript version as a string, and whether a configuration exists
-	Destroyed,
-	APIRegistered,			//Parameter: const ASAPIRegistrationResult*; an instance of an ASAPIRegistrationResult struct containing API registration results
-	CompilationStarted,		//Parameter: std::shared_ptr<const CScript>; the script currently being compiled
-	CompilationEnded,		//Parameter: const bool*; whether compliation succeeded or failed
-	ConfigurationSet,		//Parameter: const std::string*; name of the configuration
-	ConfigurationNotFound,	//Parameter: const std::string*; name of the configuration
-	ConfigurationCleared,
+	/**
+	*	Parameter: const ASCreationResult*; Angelscript version as a string, and whether a configuration exists
+	*/
+	CREATED,		
+
+	DESTROYED,
+
+	/**
+	*	Parameter: const ASAPIRegistrationResult*; an instance of an ASAPIRegistrationResult struct containing API registration results
+	*/
+	API_REGISTERED,
+
+	/**
+	*	Parameter: std::shared_ptr<const CScript>; the script currently being compiled
+	*/
+	COMPILATION_STARTED,
+
+	/**
+	*	Parameter: const bool*; whether compliation succeeded or failed
+	*/
+	COMPILATION_ENDED,
+
+	/**
+	*	Parameter: const std::string*; name of the configuration
+	*/
+	CONFIG_SET,
+
+	/**
+	*	Parameter: const std::string*; name of the configuration
+	*/
+	CONFIG_NOT_FOUND,
+
+	CONFIG_CLEARED,
 };
 
 /*

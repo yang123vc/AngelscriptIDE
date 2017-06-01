@@ -44,7 +44,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 {
 	switch( event )
 	{
-	case ASEvent::Created:
+	case ASEvent::CREATED:
 		{
 			m_App->AddCompilerListener( this );
 
@@ -58,7 +58,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::Destroyed:
+	case ASEvent::DESTROYED:
 		{
 			m_App->RemoveCompilerListener( this );
 
@@ -67,7 +67,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::APIRegistered:
+	case ASEvent::API_REGISTERED:
 		{
 			const ASAPIRegistrationResult& result = *reinterpret_cast<const ASAPIRegistrationResult*>( pArg );
 
@@ -78,7 +78,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::CompilationStarted:
+	case ASEvent::COMPILATION_STARTED:
 		{
 			auto script = *reinterpret_cast<const std::shared_ptr<const CScript>*>( pArg );
 
@@ -92,7 +92,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::CompilationEnded:
+	case ASEvent::COMPILATION_ENDED:
 		{
 			const bool fSuccess = *static_cast<const bool*>( pArg );
 
@@ -130,7 +130,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::ConfigurationSet:
+	case ASEvent::CONFIG_SET:
 		{
 			const std::string& szName = *reinterpret_cast<const std::string*>( pArg );
 
@@ -139,7 +139,7 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::ConfigurationNotFound:
+	case ASEvent::CONFIG_NOT_FOUND:
 		{
 			const std::string& szName = *reinterpret_cast<const std::string*>( pArg );
 

@@ -35,9 +35,9 @@ void CCompileOutputWidget::AngelscriptEventOccured( ASEvent event, const void* )
 {
 	switch( event )
 	{
-	case ASEvent::Created: Clear(); m_App->AddCompilerListener( this ); break;
-	case ASEvent::Destroyed: m_App->RemoveCompilerListener( this ); break;
-	case ASEvent::CompilationStarted: Clear(); break;
+	case ASEvent::CREATED: Clear(); m_App->AddCompilerListener( this ); break;
+	case ASEvent::DESTROYED: m_App->RemoveCompilerListener( this ); break;
+	case ASEvent::COMPILATION_STARTED: Clear(); break;
 
 	default: break;
 	}

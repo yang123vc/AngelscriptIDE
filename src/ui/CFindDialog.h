@@ -22,8 +22,8 @@ public:
 
 	enum class SearchDirection
 	{
-		Forward,
-		Backward
+		FORWARD,
+		BACKWARD
 	};
 
 public:

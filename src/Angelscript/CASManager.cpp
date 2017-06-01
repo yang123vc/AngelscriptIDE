@@ -64,7 +64,7 @@ void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOl
 
 		const ASCreationResult creationResult = { szVersion, !szName.empty() };
 
-		NotifyEventListeners( ASEvent::Created, &creationResult );
+		NotifyEventListeners( ASEvent::CREATED, &creationResult );
 
 		if( creationResult.fHasConfig )
 		{
@@ -74,14 +74,14 @@ void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOl
 			{
 				m_ActiveConfiguration = config;
 
-				NotifyEventListeners( ASEvent::ConfigurationSet, &szName );
+				NotifyEventListeners( ASEvent::CONFIG_SET, &szName );
 
 				const ASAPIRegistrationResult registrationResult = { config->GetConfigFilename(), m_Instance->LoadAPIFromFile( config->GetConfigFilename() ) };
 
-				NotifyEventListeners( ASEvent::APIRegistered, &registrationResult );
+				NotifyEventListeners( ASEvent::API_REGISTERED, &registrationResult );
 			}
 			else
-				NotifyEventListeners( ASEvent::ConfigurationNotFound, &szName );
+				NotifyEventListeners( ASEvent::CONFIG_NOT_FOUND, &szName );
 		}
 	}
 	catch( const CASEngineException& e )
@@ -94,7 +94,7 @@ void CASManager::ClearActiveConfiguration( bool fSave )
 {
 	if( m_Instance )
 	{
-		NotifyEventListeners( ASEvent::Destroyed );
+		NotifyEventListeners( ASEvent::DESTROYED );
 		m_Instance.reset();
 
 		if( m_ActiveConfiguration )
@@ -105,7 +105,7 @@ void CASManager::ClearActiveConfiguration( bool fSave )
 			m_ActiveConfiguration.reset();
 		}
 
-		NotifyEventListeners( ASEvent::ConfigurationCleared );
+		NotifyEventListeners( ASEvent::CONFIG_CLEARED );
 	}
 }
 
@@ -119,9 +119,9 @@ bool CASManager::CompileScript( const std::string& szSectionName, const std::str
 {
 	auto script = std::make_shared<const CScript>( szSectionName, szScriptContents, m_ActiveConfiguration );
 
-	NotifyEventListeners( ASEvent::CompilationStarted, &script );
+	NotifyEventListeners( ASEvent::COMPILATION_STARTED, &script );
 	const bool fResult = m_Instance->CompileScript( script );
-	NotifyEventListeners( ASEvent::CompilationEnded, &fResult );
+	NotifyEventListeners( ASEvent::COMPILATION_ENDED, &fResult );
 
 	return fResult;
 }

@@ -148,13 +148,13 @@ void CASIDEApp::AngelscriptEventOccured( ASEvent event, const void* pArg )
 {
 	switch( event )
 	{
-	case ASEvent::ConfigurationSet:
+	case ASEvent::CONFIG_SET:
 		{
 			m_Options->SetActiveConfigurationName( *reinterpret_cast<const std::string*>( pArg ) );
 			break;
 		}
 
-	case ASEvent::ConfigurationCleared:
+	case ASEvent::CONFIG_CLEARED:
 		{
 			m_Options->SetActiveConfigurationName( "" );
 			break;

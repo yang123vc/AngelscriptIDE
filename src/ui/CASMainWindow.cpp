@@ -112,8 +112,8 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 		m_WidgetUI->menuRecent_Files->addAction( m_pNoRecentFilesAction );
 
 	//Open output windows
-	AddOutputWindow( OutputWindow::Output );
-	AddOutputWindow( OutputWindow::Information );
+	AddOutputWindow( OutputWindow::OUTPUT );
+	AddOutputWindow( OutputWindow::INFORMATION );
 
 	m_App->LoadActiveConfiguration();
 }
@@ -189,8 +189,8 @@ void CASMainWindow::AddOutputWindow( OutputWindow window )
 	switch( window )
 	{
 	//case OutputWindow::ErrorList: pWidget = new CErrorListWidget( m_App ); break;
-	case OutputWindow::Output: pWidget = new CCompileOutputWidget( m_App, m_UI ); break;
-	case OutputWindow::Information: pWidget = new CInformationOutputWidget( m_App, m_UI ); break;
+	case OutputWindow::OUTPUT: pWidget = new CCompileOutputWidget( m_App, m_UI ); break;
+	case OutputWindow::INFORMATION: pWidget = new CInformationOutputWidget( m_App, m_UI ); break;
 
 	default: std::cout << "Attempted to instance unknown output window '" << static_cast<int>( window ) << "'!" << std::endl;
 	}
@@ -314,7 +314,7 @@ bool CASMainWindow::CloseFile( CScriptCodeTextEdit* pCodeEdit, bool fForceClose 
 	{
 		if( pCodeEdit->UnsavedChangedMade() )
 		{
-			if( pCodeEdit->Save() == CScriptCodeTextEdit::SaveResult::Canceled )
+			if( pCodeEdit->Save() == CScriptCodeTextEdit::SaveResult::CANCELED )
 				fCanceled = true;
 		}
 
@@ -435,7 +435,7 @@ void CASMainWindow::Save()
 	{
 		const bool fHadFile = pCodeEdit->HasFile();
 
-		if( pCodeEdit->Save( CScriptCodeTextEdit::Save_Always, CScriptCodeTextEdit::Prompt_Never ) == CScriptCodeTextEdit::SaveResult::Saved )
+		if( pCodeEdit->Save( CScriptCodeTextEdit::SaveMode::ALWAYS, CScriptCodeTextEdit::PromptMode::NEVER ) == CScriptCodeTextEdit::SaveResult::SAVED )
 		{
 			if( !fHadFile )
 				AddRecentFileToOptions( pCodeEdit->GetScriptFile()->GetFilename() );
@@ -450,9 +450,9 @@ void CASMainWindow::SaveAs()
 	if( pCodeEdit )
 	{
 		if( pCodeEdit->Save(
-					CScriptCodeTextEdit::Save_Always,
-					CScriptCodeTextEdit::Prompt_Never,
-					CScriptCodeTextEdit::FileSelect_Always ) == CScriptCodeTextEdit::SaveResult::Saved )
+					CScriptCodeTextEdit::SaveMode::ALWAYS,
+					CScriptCodeTextEdit::PromptMode::NEVER,
+					CScriptCodeTextEdit::FileSelectMode::ALWAYS ) == CScriptCodeTextEdit::SaveResult::SAVED )
 		{
 			AddRecentFileToOptions( pCodeEdit->GetScriptFile()->GetFilename() );
 		}
@@ -562,7 +562,7 @@ void CASMainWindow::Find( const QString& szString )
 
 		QTextDocument::FindFlags flags;
 
-		if( pFind->GetSearchDirection() == CFindDialog::SearchDirection::Backward )
+		if( pFind->GetSearchDirection() == CFindDialog::SearchDirection::BACKWARD )
 			flags |= QTextDocument::FindBackward;
 
 		if( pFind->MatchCase() )
@@ -586,7 +586,7 @@ void CASMainWindow::CompileScript()
 		if( !script )
 		{
 			//User didn't want to save file or save failed; cancel compilation
-			if( pCodeEdit->Save( CScriptCodeTextEdit::Save_Always ) != CScriptCodeTextEdit::SaveResult::Saved )
+			if( pCodeEdit->Save( CScriptCodeTextEdit::SaveMode::ALWAYS ) != CScriptCodeTextEdit::SaveResult::SAVED )
 				return;
 		}
 		else
@@ -607,12 +607,12 @@ void CASMainWindow::ReloadConfiguration()
 
 void CASMainWindow::AddOutputWindow()
 {
-	AddOutputWindow( OutputWindow::Output );
+	AddOutputWindow( OutputWindow::OUTPUT );
 }
 
 void CASMainWindow::AddInformationWindow()
 {
-	AddOutputWindow( OutputWindow::Information );
+	AddOutputWindow( OutputWindow::INFORMATION );
 }
 
 void CASMainWindow::ClearRecentFiles()
@@ -642,7 +642,7 @@ void CASMainWindow::CloseFile( int iIndex )
 
 	CScriptCodeTextEdit::SaveResult result = pWidget->Save();
 
-	if( result != CScriptCodeTextEdit::SaveResult::Canceled )
+	if( result != CScriptCodeTextEdit::SaveResult::CANCELED )
 	{
 		m_WidgetUI->m_pFiles->removeTab( iIndex );
 

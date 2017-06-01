@@ -28,8 +28,8 @@ class CASMainWindow : public QMainWindow, public IAppListener
 public:
 	enum class OutputWindow
 	{
-		Output,
-		Information
+		OUTPUT,
+		INFORMATION
 	};
 
 private:
