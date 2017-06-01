@@ -42,8 +42,8 @@ private:
 	std::streambuf* m_pOriginalBuf;
 
 private:
-	COutStream( const COutStream& );
-	COutStream& operator=( const COutStream& );
+	COutStream( const COutStream& ) = delete;
+	COutStream& operator=( const COutStream& ) = delete;
 };
 
 #endif // COUTSTREAM_H

@@ -52,8 +52,8 @@ private:
 	CListenerManager<IASCompilerListener>		m_CompilerListeners;
 
 private:
-	CASManager( const CASManager& );
-	CASManager& operator=( const CASManager& );
+	CASManager( const CASManager& ) = delete;
+	CASManager& operator=( const CASManager& ) = delete;
 };
 
 #endif // CASMANAGER_H

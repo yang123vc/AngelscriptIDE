@@ -53,8 +53,8 @@ private:
 	CListenerManager<IUIEventListener> m_UIListeners;
 
 private:
-	CUI( const CUI& );
-	CUI& operator=( const CUI& );
+	CUI( const CUI& ) = delete;
+	CUI& operator=( const CUI& ) = delete;
 };
 
 #endif // CUI_H

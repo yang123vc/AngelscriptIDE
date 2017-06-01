@@ -40,8 +40,8 @@ private:
 	CListenerManager<IConfigurationEventListener> m_ConfigurationListeners;
 
 private:
-	CConfigurationManager( const CConfigurationManager& );
-	CConfigurationManager& operator=( const CConfigurationManager& );
+	CConfigurationManager( const CConfigurationManager& ) = delete;
+	CConfigurationManager& operator=( const CConfigurationManager& ) = delete;
 };
 
 #endif // CCONFIGURATIONMANAGER_H

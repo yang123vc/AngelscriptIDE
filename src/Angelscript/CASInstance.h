@@ -43,8 +43,8 @@ private:
 	asIScriptEngine* m_pScriptEngine;
 
 private:
-	CASInstance( const CASInstance& );
-	CASInstance& operator=( const CASInstance& );
+	CASInstance( const CASInstance& ) = delete;
+	CASInstance& operator=( const CASInstance& ) = delete;
 };
 
 #endif // CASINSTANCE_H

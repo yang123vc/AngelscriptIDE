@@ -57,9 +57,6 @@ public:
 	bool Save();
 
 private:
-	void Copy( const COptions& other );
-
-private:
 	std::string m_szFilename;
 	Configurations_t m_Configurations;
 	std::string m_szActiveConfiguration;
