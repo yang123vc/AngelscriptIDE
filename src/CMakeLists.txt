@@ -25,7 +25,6 @@ add_executable( ${PROJECT_NAME} WIN32 ${PREP_SRCS} ${UI_SRCS} )
 
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${EXTERNAL_DIR}/Angelscript/include
-	${EXTERNAL_DIR}/Angelscript/include/AngelscriptUtils
 	${SHARED_INCLUDE_DIRECTORIES}
 )
 

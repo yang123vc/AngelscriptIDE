@@ -8,8 +8,8 @@
 
 #include "IASCompilerListener.h"
 
-#include "add_on/scriptbuilder.h"
-#include "add_on/scripthelper.h"
+#include "AngelscriptUtils/add_on/scriptbuilder.h"
+#include "AngelscriptUtils/add_on/scripthelper.h"
 
 #include "CScript.h"
 #include "CScriptFile.h"
