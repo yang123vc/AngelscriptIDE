@@ -3,37 +3,64 @@
 
 #include <string>
 
+struct ConfigAddEvent
+{
+	const std::string* pszName;
+};
+
+struct ConfigRemoveEvent
+{
+	const std::string* pszName;
+};
+
+struct ConfigRenameEvent
+{
+	const std::string* pszOldName;
+	const std::string* pszNewName;
+};
+
+struct ConfigSaveEvent
+{
+	const std::string* pszName;
+};
+
+enum class ConfigEventType
+{
+	INVALID = 0,
+
+	ADD,
+	REMOVE,
+	RENAME,
+	SAVE
+};
+
+struct ConfigEvent
+{
+	ConfigEvent( ConfigEventType type )
+		: type( type )
+	{
+	}
+
+	const ConfigEventType type;
+
+	union
+	{
+		ConfigAddEvent add;
+		ConfigRemoveEvent remove;
+		ConfigRenameEvent rename;
+		ConfigSaveEvent save;
+	};
+};
+
 class IConfigurationEventListener
 {
 public:
 	virtual ~IConfigurationEventListener() = 0;
 
-	virtual void ConfigurationAdded( const std::string& szName );
-
-	virtual void ConfigurationRemoved( const std::string& szName );
-
-	virtual void ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName );
-
-	virtual void ConfigurationSaved( const std::string& szName );
+	virtual void ConfigEventOccurred( const ConfigEvent& event ) = 0;
 };
 
 inline IConfigurationEventListener::~IConfigurationEventListener()
-{
-}
-
-inline void IConfigurationEventListener::ConfigurationAdded( const std::string& )
-{
-}
-
-inline void IConfigurationEventListener::ConfigurationRemoved( const std::string& )
-{
-}
-
-inline void IConfigurationEventListener::ConfigurationRenamed( const std::string&, const std::string& )
-{
-}
-
-inline void IConfigurationEventListener::ConfigurationSaved( const std::string& )
 {
 }
 

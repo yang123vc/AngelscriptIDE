@@ -56,11 +56,16 @@ bool CConfigurationManager::AddConfiguration( const std::string& szName )
 
 	const bool fSuccess = config->Save();
 
+	//TODO: not really that useful - Solokiller
 	if( fSuccess )
 	{
 		configs.push_back( szName );
 
-		m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigurationAdded, szName );
+		ConfigEvent addEvent( ConfigEventType::ADD );
+
+		addEvent.add.pszName = &szName;
+
+		NotifyListeners( addEvent );
 	}
 	else
 		throw CConfigurationException( std::string( "Failed to save configuration \"" ) + szName + "\"!" );
@@ -85,7 +90,11 @@ void CConfigurationManager::RemoveConfiguration( const std::string& szName, bool
 	if( fRemoveFile )
 		remove( CConfiguration::MakeConfigurationPath( szName ).c_str() );
 
-	m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigurationRemoved, szName );
+	ConfigEvent removeEvent( ConfigEventType::REMOVE );
+
+	removeEvent.remove.pszName = &szName;
+
+	NotifyListeners( removeEvent );
 }
 
 void CConfigurationManager::ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName )
@@ -106,10 +115,24 @@ void CConfigurationManager::ConfigurationRenamed( const std::string& szOldName, 
 
 	configs.erase( it );
 
-	m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigurationRenamed, szOldName, szNewName );
+	ConfigEvent renameEvent( ConfigEventType::RENAME );
+
+	renameEvent.rename.pszOldName = &szOldName;
+	renameEvent.rename.pszNewName = &szNewName;
+
+	NotifyListeners( renameEvent );
 }
 
 void CConfigurationManager::ConfigurationSaved( const std::string& szName )
 {
-	m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigurationSaved, szName );
+	ConfigEvent saveEvent( ConfigEventType::SAVE );
+
+	saveEvent.save.pszName = &szName;
+
+	NotifyListeners( saveEvent );
+}
+
+void CConfigurationManager::NotifyListeners( const ConfigEvent& event )
+{
+	m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigEventOccurred, event );
 }

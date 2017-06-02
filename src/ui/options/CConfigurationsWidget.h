@@ -26,9 +26,7 @@ public:
 
 	void ApplyChanges() override;
 
-	void ConfigurationAdded( const std::string& szName ) override;
-	void ConfigurationRemoved( const std::string& szName ) override;
-	void ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName ) override;
+	void ConfigEventOccurred( const ConfigEvent& event ) override;
 
 protected:
 

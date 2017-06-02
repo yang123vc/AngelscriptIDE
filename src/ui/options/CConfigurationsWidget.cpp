@@ -124,42 +124,54 @@ void CConfigurationsWidget::ApplyChanges()
 	}
 }
 
-void CConfigurationsWidget::ConfigurationAdded( const std::string& szName )
+void CConfigurationsWidget::ConfigEventOccurred( const ConfigEvent& event )
 {
-	if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() == 0 )
-		SetFieldsEnabled( true );
-
-	const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
-
-	m_WidgetUI->m_pCurrentConfigurationComboBox->addItem( szName.c_str() );
-
-	m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex != -1 ? iIndex : 0 );
-}
-
-void CConfigurationsWidget::ConfigurationRemoved( const std::string& szName )
-{
-	const int iCurrentIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
-
-	const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( szName.c_str() );
-
-	if( iIndex != -1 )
-		m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
-
-	if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() > 0 )
-		m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iCurrentIndex < iIndex ? iCurrentIndex : iCurrentIndex - 1 );
-	else
-		SetFieldsEnabled( false );
-}
-
-void CConfigurationsWidget::ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName )
-{
-	const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( szOldName.c_str() );
-
-	if( iIndex != -1 )
+	switch( event.type )
 	{
-		m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
-		m_WidgetUI->m_pCurrentConfigurationComboBox->insertItem( iIndex, szNewName.c_str() );
-		m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex );
+	case ConfigEventType::ADD:
+		{
+			if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() == 0 )
+				SetFieldsEnabled( true );
+
+			const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
+
+			m_WidgetUI->m_pCurrentConfigurationComboBox->addItem( event.add.pszName->c_str() );
+
+			m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex != -1 ? iIndex : 0 );
+			break;
+		}
+
+	case ConfigEventType::REMOVE:
+		{
+			const int iCurrentIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
+
+			const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( event.remove.pszName->c_str() );
+
+			if( iIndex != -1 )
+				m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
+
+			if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() > 0 )
+				m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iCurrentIndex < iIndex ? iCurrentIndex : iCurrentIndex - 1 );
+			else
+				SetFieldsEnabled( false );
+			break;
+		}
+
+	case ConfigEventType::RENAME:
+		{
+			const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( event.rename.pszOldName->c_str() );
+
+			if( iIndex != -1 )
+			{
+				m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
+				m_WidgetUI->m_pCurrentConfigurationComboBox->insertItem( iIndex, event.rename.pszNewName->c_str() );
+				m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex );
+			}
+
+			break;
+		}
+
+	default: break;
 	}
 }
 

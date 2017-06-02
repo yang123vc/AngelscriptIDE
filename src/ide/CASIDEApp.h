@@ -61,11 +61,7 @@ public:
 	void ClearActiveConfiguration( bool fSave = false );
 
 	//IConfigurationEventListener
-	void ConfigurationRemoved( const std::string& szName ) override;
-
-	void ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName ) override;
-
-	void ConfigurationSaved( const std::string& szName ) override;
+	void ConfigEventOccurred( const ConfigEvent& event ) override;
 
 	//ICompilerListener
 	void AngelscriptEventOccured( const ASEvent& event ) override;

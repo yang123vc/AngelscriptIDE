@@ -7,9 +7,9 @@
 
 #include "Angelscript/IConfigurationManager.h"
 
-class IConfigurationEventListener;
 class CASIDEApp;
 class CConfiguration;
+struct ConfigEvent;
 
 /**
 *	The configuration manager
@@ -37,6 +37,8 @@ protected:
 	void ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName ) override;
 
 	void ConfigurationSaved( const std::string& szName ) override;
+
+	void NotifyListeners( const ConfigEvent& event );
 
 private:
 	std::shared_ptr<CASIDEApp> m_App;

@@ -117,30 +117,40 @@ void CASIDEApp::ClearActiveConfiguration( bool fSave )
 	m_ASManager->ClearActiveConfiguration( fSave );
 }
 
-void CASIDEApp::ConfigurationRemoved( const std::string& szName )
+void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )
 {
-	if( m_Options->GetActiveConfigurationName() == szName )
+	switch( event.type )
 	{
-		WriteString( "Active configuration removed\n" );
-		SetActiveConfiguration( "" );
+	case ConfigEventType::REMOVE:
+		{
+			if( m_Options->GetActiveConfigurationName() == *event.remove.pszName )
+			{
+				WriteString( "Active configuration removed\n" );
+				SetActiveConfiguration( "" );
+			}
+			break;
+		}
+
+	case ConfigEventType::RENAME:
+		{
+			if( *event.rename.pszOldName == m_Options->GetActiveConfigurationName() )
+			{
+				m_Options->SetActiveConfigurationName( *event.rename.pszNewName );
+				SetActiveConfiguration( *event.rename.pszNewName );
+			}
+			break;
+		}
+
+	case ConfigEventType::SAVE:
+		{
+			auto activeConfig = m_ASManager->GetActiveConfiguration();
+
+			if( activeConfig && *event.save.pszName == activeConfig->GetName() )
+				m_ASManager->ReloadActiveConfiguration();
+
+			break;
+		}
 	}
-}
-
-void CASIDEApp::ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName )
-{
-	if( szOldName == m_Options->GetActiveConfigurationName() )
-	{
-		m_Options->SetActiveConfigurationName( szNewName );
-		SetActiveConfiguration( szNewName );
-	}
-}
-
-void CASIDEApp::ConfigurationSaved( const std::string& szName )
-{
-	auto activeConfig = m_ASManager->GetActiveConfiguration();
-
-	if( activeConfig && szName == activeConfig->GetName() )
-		m_ASManager->ReloadActiveConfiguration();
 }
 
 void CASIDEApp::AngelscriptEventOccured( const ASEvent& event )
