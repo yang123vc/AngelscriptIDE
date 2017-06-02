@@ -16,7 +16,7 @@ public:
 
 	void CompilerMessage( const asSMessageInfo* pMsg ) override;
 
-	void AngelscriptEventOccured( ASEvent event, const void* pArg ) override;
+	void AngelscriptEventOccured( const ASEvent& event ) override;
 };
 
 #endif //IDE_UI_CCOMPILEOUTPUTWIDGET_H

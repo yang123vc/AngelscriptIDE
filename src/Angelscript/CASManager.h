@@ -11,7 +11,7 @@ class CConfiguration;
 class IASEventListener;
 class IASCompilerListener;
 struct asSMessageInfo;
-enum class ASEvent;
+struct ASEvent;
 
 /**
 *	Manages the Angelscript engine, configurations and handles compilation
@@ -48,7 +48,7 @@ public:
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
 protected:
-	void NotifyEventListeners(ASEvent event, const void* pArg = nullptr );
+	void NotifyEventListeners( const ASEvent& event );
 
 private:
 	std::unique_ptr<CASEngineInstance>		m_Instance;

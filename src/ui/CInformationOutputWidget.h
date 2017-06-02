@@ -31,7 +31,7 @@ public:
 	void WriteString( const std::string& szString );
 	void WriteString( const QString& szString );
 
-	void AngelscriptEventOccured( ASEvent event, const void* pArg ) override;
+	void AngelscriptEventOccured( const ASEvent& event ) override;
 
 	void CompilerMessage( const asSMessageInfo* pMsg ) override;
 

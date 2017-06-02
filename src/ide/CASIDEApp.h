@@ -68,7 +68,7 @@ public:
 	void ConfigurationSaved( const std::string& szName ) override;
 
 	//ICompilerListener
-	void AngelscriptEventOccured( ASEvent event, const void* pArg ) override;
+	void AngelscriptEventOccured( const ASEvent& event ) override;
 
 private:
 	std::shared_ptr<IUI>					m_UI;

@@ -40,25 +40,23 @@ void CInformationOutputWidget::WriteString( const QString& szString )
 	WriteString( szString.toStdString() );
 }
 
-void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void* pArg )
+void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 {
-	switch( event )
+	switch( event.type )
 	{
-	case ASEvent::CREATED:
+	case ASEventType::CREATED:
 		{
 			m_App->AddCompilerListener( this );
 
-			const ASCreationResult& creationResult = *reinterpret_cast<const ASCreationResult*>( pArg );
+			WriteString( QString( "Angelscript initialized\nVersion: %1\n" ).arg( event.create.pszVersion->c_str() ) );
 
-			WriteString( QString( "Angelscript initialized\nVersion: %1\n" ).arg( creationResult.szVersion.c_str() ) );
-
-			if( !creationResult.fHasConfig )
+			if( !event.create.bHasConfig )
 				WriteString( "No active configuration\n" );
 
 			break;
 		}
 
-	case ASEvent::DESTROYED:
+	case ASEventType::DESTROYED:
 		{
 			m_App->RemoveCompilerListener( this );
 
@@ -67,23 +65,19 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::API_REGISTERED:
+	case ASEventType::API_REGISTERED:
 		{
-			const ASAPIRegistrationResult& result = *reinterpret_cast<const ASAPIRegistrationResult*>( pArg );
-
-			if( result.fSuccess )
-				ReceiveUIMessage( ( std::string( "API Configuration \"" ) + result.szConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
+			if( event.apiRegistration.bSuccess )
+				ReceiveUIMessage( ( std::string( "API Configuration \"" ) + *event.apiRegistration.pszConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
 			else
-				ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + result.szConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
+				ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + *event.apiRegistration.pszConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
 			break;
 		}
 
-	case ASEvent::COMPILATION_STARTED:
+	case ASEventType::COMPILATION_STARTED:
 		{
-			auto script = *reinterpret_cast<const std::shared_ptr<const CScript>*>( pArg );
-
 			WriteCompileSeparator();
-			WriteString( QString( "Starting compilation of script '%1'\n" ).arg( script->GetSectionName().c_str() ) );
+			WriteString( QString( "Starting compilation of script '%1'\n" ).arg( event.compilationStart.pScript->GetSectionName().c_str() ) );
 
 			m_CompileStartTime = std::chrono::high_resolution_clock::now();
 
@@ -92,13 +86,11 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::COMPILATION_ENDED:
+	case ASEventType::COMPILATION_ENDED:
 		{
-			const bool fSuccess = *static_cast<const bool*>( pArg );
+			WriteString( event.compilationEnd.bSuccess ? "Compilation succeeded\n" : "Compilation failed\n" );
 
-			WriteString( fSuccess ? "Compilation succeeded\n" : "Compilation failed\n" );
-
-			if( !fSuccess )
+			if( !event.compilationEnd.bSuccess )
 				WriteString( QString("%1 errors, %2 warnings\n" ).arg( m_uiErrors ).arg( m_uiWarnings ).toStdString().c_str() );
 
 			auto endTime = std::chrono::high_resolution_clock::now();
@@ -130,20 +122,24 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			break;
 		}
 
-	case ASEvent::CONFIG_SET:
+	case ASEventType::CONFIG_CHANGE:
 		{
-			const std::string& szName = *reinterpret_cast<const std::string*>( pArg );
+			switch( event.configChange.changeType )
+			{
+			case ASConfigChangeType::SET:
+				{
+					WriteString( std::string( "Configuration \"" ) + *event.configChange.pszName + "\" loaded\n" );
+					break;
+				}
 
-			WriteString( std::string( "Configuration \"" ) + szName + "\" loaded\n" );
+			case ASConfigChangeType::FAILED_TO_LOAD:
+				{
+					WriteString( std::string( "Could not find configuration \"" ) + *event.configChange.pszName + "\"!\n" );
+					break;
+				}
 
-			break;
-		}
-
-	case ASEvent::CONFIG_NOT_FOUND:
-		{
-			const std::string& szName = *reinterpret_cast<const std::string*>( pArg );
-
-			WriteString( std::string( "Could not find configuration \"" ) + szName + "\"!\n" );
+			default: break;
+			}
 			break;
 		}
 

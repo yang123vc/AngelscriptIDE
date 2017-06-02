@@ -31,13 +31,13 @@ void CCompileOutputWidget::CompilerMessage( const asSMessageInfo* pMsg )
 	m_WidgetUi->m_pOutput->insertPlainText( szMessage );
 }
 
-void CCompileOutputWidget::AngelscriptEventOccured( ASEvent event, const void* )
+void CCompileOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 {
-	switch( event )
+	switch( event.type )
 	{
-	case ASEvent::CREATED: Clear(); m_App->AddCompilerListener( this ); break;
-	case ASEvent::DESTROYED: m_App->RemoveCompilerListener( this ); break;
-	case ASEvent::COMPILATION_STARTED: Clear(); break;
+	case ASEventType::CREATED: Clear(); m_App->AddCompilerListener( this ); break;
+	case ASEventType::DESTROYED: m_App->RemoveCompilerListener( this ); break;
+	case ASEventType::COMPILATION_STARTED: Clear(); break;
 
 	default: break;
 	}

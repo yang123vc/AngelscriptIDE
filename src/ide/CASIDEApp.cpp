@@ -143,19 +143,28 @@ void CASIDEApp::ConfigurationSaved( const std::string& szName )
 		m_ASManager->ReloadActiveConfiguration();
 }
 
-void CASIDEApp::AngelscriptEventOccured( ASEvent event, const void* pArg )
+void CASIDEApp::AngelscriptEventOccured( const ASEvent& event )
 {
-	switch( event )
+	switch( event.type )
 	{
-	case ASEvent::CONFIG_SET:
+	case ASEventType::CONFIG_CHANGE:
 		{
-			m_Options->SetActiveConfigurationName( *reinterpret_cast<const std::string*>( pArg ) );
-			break;
-		}
+			switch( event.configChange.changeType )
+			{
+			case ASConfigChangeType::SET:
+				{
+					m_Options->SetActiveConfigurationName( *event.configChange.pszName );
+					break;
+				}
 
-	case ASEvent::CONFIG_CLEARED:
-		{
-			m_Options->SetActiveConfigurationName( "" );
+			case ASConfigChangeType::CLEARED:
+				{
+					m_Options->SetActiveConfigurationName( "" );
+					break;
+				}
+
+			default: break;
+			}
 			break;
 		}
 

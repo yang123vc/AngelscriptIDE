@@ -55,10 +55,10 @@ public:
 	}
 
 	template<typename Func, typename... Args>
-	void NotifyListeners( Func func, Args... args )
+	void NotifyListeners( Func func, Args&&... args )
 	{
 		for( auto pListener : m_Listeners )
-			( pListener->*func )( args... );
+			( pListener->*func )( std::move( args )... );
 	}
 
 private:

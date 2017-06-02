@@ -1,56 +1,107 @@
 #ifndef ANGELSCRIPT_IASEVENTLISTENER_H
 #define ANGELSCRIPT_IASEVENTLISTENER_H
 
+#include <memory>
 #include <string>
 
-struct ASCreationResult
-{
-	const std::string& szVersion;
-	const bool fHasConfig;
-};
+class CScript;
 
-struct ASAPIRegistrationResult
-{
-	const std::string& szConfigFilename;
-	const bool fSuccess;
-};
-
-//TODO: refactor as union struct of message types - Solokiller
-enum class ASEvent
+struct ASCreationEvent
 {
 	/**
-	*	Parameter: const ASCreationResult*; Angelscript version as a string, and whether a configuration exists
+	*	The Angelscript version as a string
 	*/
-	CREATED,		
+	const std::string* pszVersion;
 
+	/**
+	*	Whether a configuration exists for this instance
+	*/
+	bool bHasConfig;
+};
+
+struct ASAPIRegistrationEvent
+{
+	/**
+	*	Name of the config file that was loaded
+	*/
+	const std::string* pszConfigFilename;
+
+	/**
+	*	Whether registration succeded
+	*/
+	bool bSuccess;
+};
+
+struct ASCompilationStartEvent
+{
+	/**
+	*	The script currently being compiled
+	*/
+	const CScript* pScript;
+};
+
+struct ASCompilationEndEvent
+{
+	/**
+	*	The script currently being compiled
+	*/
+	const CScript* pScript;
+
+	/**
+	*	Whether compilation succeeded or failed
+	*/
+	bool bSuccess;
+};
+
+enum class ASConfigChangeType
+{
+	SET = 0,
+	CLEARED,
+
+	/**
+	*	A configuration was provided, but it failed to load
+	*/
+	FAILED_TO_LOAD
+};
+
+struct ASConfigChangeEvent
+{
+	ASConfigChangeType changeType;
+	const std::string* pszName;
+};
+
+enum class ASEventType
+{
+	INVALID = 0,
+
+	CREATED,		
 	DESTROYED,
 
-	/**
-	*	Parameter: const ASAPIRegistrationResult*; an instance of an ASAPIRegistrationResult struct containing API registration results
-	*/
 	API_REGISTERED,
 
-	/**
-	*	Parameter: std::shared_ptr<const CScript>; the script currently being compiled
-	*/
 	COMPILATION_STARTED,
-
-	/**
-	*	Parameter: const bool*; whether compliation succeeded or failed
-	*/
 	COMPILATION_ENDED,
 
-	/**
-	*	Parameter: const std::string*; name of the configuration
-	*/
-	CONFIG_SET,
+	CONFIG_CHANGE,
+};
 
-	/**
-	*	Parameter: const std::string*; name of the configuration
-	*/
-	CONFIG_NOT_FOUND,
+struct ASEvent
+{
+	ASEvent( ASEventType type )
+		: type( type )
+	{
+	}
 
-	CONFIG_CLEARED,
+	const ASEventType type;
+
+	union
+	{
+		ASCreationEvent create;
+		ASAPIRegistrationEvent apiRegistration;
+		ASCompilationStartEvent compilationStart;
+		ASCompilationEndEvent compilationEnd;
+		ASConfigChangeEvent configChange;
+	};
 };
 
 /*
@@ -61,7 +112,7 @@ class IASEventListener
 public:
 	virtual ~IASEventListener() = 0;
 
-	virtual void AngelscriptEventOccured( ASEvent event, const void* pArg ) = 0;
+	virtual void AngelscriptEventOccured( const ASEvent& event ) = 0;
 };
 
 inline IASEventListener::~IASEventListener()
