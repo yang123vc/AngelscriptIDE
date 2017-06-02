@@ -9,10 +9,11 @@ cmake_minimum_required( VERSION 3.6 )
 
 include( cmake/InputFilesList.cmake )
 include( cmake/QtFormsFilesList.cmake )
+include( cmake/WinXPSupport.cmake )
 
 project( AngelscriptIDE )
 
-include( cmake/WinXPSupport.cmake )
+check_winxp_support()
 
 set(variables
   CMAKE_C_FLAGS_DEBUG
