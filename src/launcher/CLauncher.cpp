@@ -5,7 +5,7 @@
 
 #include "util/CBaseApp.h"
 
-#include "LauncherException.h"
+#include "CLauncherException.h"
 
 #include "CLauncher.h"
 
@@ -16,13 +16,13 @@ CLauncher::CLauncher( UIFactory uiFactory, AppFactory appFactory, MainWindowFact
 	, m_MainWindowFactory( mainWindowFactory )
 {
 	if( !m_UIFactory )
-		throw LauncherException( "UI factory must be valid!" );
+		throw CLauncherException( "UI factory must be valid!" );
 
 	if( !m_AppFactory )
-		throw LauncherException( "App factory must be valid!" );
+		throw CLauncherException( "App factory must be valid!" );
 
 	if( !m_MainWindowFactory )
-		throw LauncherException( "Main window factory must be valid!" );
+		throw CLauncherException( "Main window factory must be valid!" );
 }
 
 CLauncher::~CLauncher()

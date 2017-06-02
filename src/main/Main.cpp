@@ -4,7 +4,7 @@
 #include "ui/CASMainWindow.h"
 #include "ui/CUI.h"
 
-#include "launcher/LauncherException.h"
+#include "launcher/CLauncherException.h"
 #include "launcher/CLauncher.h"
 
 std::shared_ptr<IUI> CreateUI()
@@ -24,5 +24,6 @@ std::unique_ptr<QMainWindow> CreateMainWindow( std::shared_ptr<CBaseApp> app, st
 
 int main( int argc, char* argv[] )
 {
+	//TODO: catch exception, show message box - Solokiller
 	return CLauncher( &CreateUI, &CreateApp, &CreateMainWindow ).Run( argc, argv );
 }
