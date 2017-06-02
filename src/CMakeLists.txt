@@ -12,7 +12,9 @@ add_subdirectory( main )
 add_subdirectory( ui )
 add_subdirectory( util )
 
-add_subdirectory( ${EXTERNAL_DIR}/Angelscript Angelscript_lib )
+add_sources(
+	${EXTERNAL_DIR}/Angelscript/include/AngelscriptUtils/add_on/scripthelper.cpp
+)
 
 preprocess_sources()
 preprocess_forms()
@@ -22,8 +24,8 @@ qt5_wrap_ui( UI_SRCS ${PREP_FORMS} )
 add_executable( ${PROJECT_NAME} WIN32 ${PREP_SRCS} ${UI_SRCS} )
 
 target_include_directories( ${PROJECT_NAME} PRIVATE
-	${EXTERNAL_DIR}/Angelscript
 	${EXTERNAL_DIR}/Angelscript/include
+	${EXTERNAL_DIR}/Angelscript/include/AngelscriptUtils
 	${SHARED_INCLUDE_DIRECTORIES}
 )
 
@@ -36,6 +38,8 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 #Link with dependencies
 target_link_libraries( ${PROJECT_NAME} 
 	Qt5::Widgets
+	AngelscriptUtils
+	Angelscript
 	${SHARED_LIBS}
 )
 

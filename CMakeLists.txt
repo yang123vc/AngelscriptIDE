@@ -92,4 +92,14 @@ foreach( lib_name IN LISTS QT_LIBS )
 	endif()
 endforeach()
 
+#Add Angelscript library
+add_library( Angelscript STATIC IMPORTED )
+set_property( TARGET Angelscript PROPERTY IMPORTED_LOCATION "${EXTERNAL_DIR}/Angelscript/lib/Angelscript.lib" )
+set_property( TARGET Angelscript PROPERTY IMPORTED_LOCATION_DEBUG "${EXTERNAL_DIR}/Angelscript/lib/Angelscriptd.lib" )
+
+#Add AngelscriptUtils library
+add_library( AngelscriptUtils STATIC IMPORTED )
+set_property( TARGET AngelscriptUtils PROPERTY IMPORTED_LOCATION "${EXTERNAL_DIR}/Angelscript/lib/AngelscriptUtils.lib" )
+set_property( TARGET AngelscriptUtils PROPERTY IMPORTED_LOCATION_DEBUG "${EXTERNAL_DIR}/Angelscript/lib/AngelscriptUtilsd.lib" )
+
 add_subdirectory( src )
