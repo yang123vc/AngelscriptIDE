@@ -11,6 +11,9 @@ class IConfigurationEventListener;
 class CASIDEApp;
 class CConfiguration;
 
+/**
+*	The configuration manager
+*/
 class CConfigurationManager : public std::enable_shared_from_this<CConfigurationManager>, public IConfigurationManager
 {
 protected:

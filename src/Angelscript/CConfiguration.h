@@ -7,6 +7,9 @@
 
 class IConfigurationManager;
 
+/**
+*	Represents one configuration
+*/
 class CConfiguration : public std::enable_shared_from_this<CConfiguration>
 {
 public:

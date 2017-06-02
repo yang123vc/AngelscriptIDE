@@ -3,6 +3,9 @@
 
 struct asSMessageInfo;
 
+/**
+*	Enables listening to compiler messages
+*/
 class IASCompilerListener
 {
 public:

@@ -13,6 +13,9 @@ class IASCompilerListener;
 struct asSMessageInfo;
 enum class ASEvent;
 
+/**
+*	Manages the Angelscript engine, configurations and handles compilation
+*/
 class CASManager
 {
 public:
@@ -39,6 +42,9 @@ public:
 
 	void ReloadActiveConfiguration();
 
+	/**
+	*	Compiles a script
+	*/
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
 protected:

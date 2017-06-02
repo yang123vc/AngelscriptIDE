@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <string>
 
+/**
+*	Provides the ability to load and save properties data
+*/
 class CProperties
 {
 public:
@@ -16,8 +19,17 @@ public:
 
 	const Keyvalues_t& GetKeyvalues() const { return m_Keyvalues; }
 
+	/**
+	*	Loads data from the given file
+	*	Clears any data that was previously stored
+	*	@return Whether the file was successfully loaded
+	*/
 	bool Load( const std::string& szFilename );
 
+	/**
+	*	Saves data to the given file
+	*	@return Whether the data was successfully saved
+	*/
 	bool Save( const std::string& szFilename );
 
 private:

@@ -4,6 +4,10 @@
 #include <memory>
 #include <string>
 
+/**
+*	Provides an interface to a script file on disk
+*	TODO: merge with CScript - Solokiller
+*/
 class CScriptFile
 {
 public:

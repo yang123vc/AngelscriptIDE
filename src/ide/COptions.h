@@ -7,6 +7,10 @@
 
 class CConfiguration;
 
+/**
+*	Stores the configurations and global settings
+*	TODO: this is redundant because it stores data that is stored elsewhere as well. Refactor this class out of existence as much as possible - Solokiller
+*/
 class COptions
 {
 public:

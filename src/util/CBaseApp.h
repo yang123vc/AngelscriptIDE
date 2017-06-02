@@ -8,21 +8,35 @@
 
 class IAppListener;
 
+/**
+*	Base class for apps
+*/
 class CBaseApp : public IOutStreamListener
 {
 public:
 	CBaseApp();
 	~CBaseApp();
 
+	/**
+	*	Writes a string to be displayed
+	*/
 	virtual void WriteString( const char* pszString ) = 0;
 
 	void AddAppListener( IAppListener* pListener );
 	void RemoveAppListener( IAppListener* pListener );
 
+	/**
+	*	Starts up the app
+	*/
 	virtual void Startup();
+
+	/**
+	*	Shuts down the app
+	*/
 	virtual void Shutdown();
 
 protected:
+	//Redirect cout & cerr
 	std::unique_ptr<CDispatchingOutStream> m_OutStream;
 	std::unique_ptr<CDispatchingOutStream> m_ErrStream;
 

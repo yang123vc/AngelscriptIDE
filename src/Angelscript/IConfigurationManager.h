@@ -3,6 +3,9 @@
 
 class IConfigurationEventListener;
 
+/**
+*	Interface to the configuration manager
+*/
 class IConfigurationManager
 {
 protected:

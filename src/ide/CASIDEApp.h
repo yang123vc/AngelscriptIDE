@@ -18,6 +18,9 @@ class CConfiguration;
 class COptions;
 class CASManager;
 
+/**
+*	Angelscript IDE app
+*/
 class CASIDEApp final : public CBaseApp, public std::enable_shared_from_this<CASIDEApp>, public IConfigurationEventListener, public IASEventListener
 {
 public:

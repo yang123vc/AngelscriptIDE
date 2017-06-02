@@ -15,6 +15,7 @@ struct ASAPIRegistrationResult
 	const bool fSuccess;
 };
 
+//TODO: refactor as union struct of message types - Solokiller
 enum class ASEvent
 {
 	/**

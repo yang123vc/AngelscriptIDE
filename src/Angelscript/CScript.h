@@ -7,6 +7,9 @@
 
 class CConfiguration;
 
+/**
+*	Represents a single script file
+*/
 class CScript
 {
 public:

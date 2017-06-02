@@ -1,8 +1,6 @@
 #ifndef UTIL_CDEFERREDOUTSTREAM_H
 #define UTIL_CDEFERREDOUTSTREAM_H
 
-#include <QTextEdit>
-
 #include "COutStream.h"
 
 class IOutStreamListener
@@ -18,6 +16,9 @@ inline IOutStreamListener::~IOutStreamListener()
 {
 }
 
+/**
+*	Dispatches output from a given stream to the given listener
+*/
 class CDispatchingOutStream : public COutStream<CDispatchingOutStream>
 {
 public:

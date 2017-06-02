@@ -35,12 +35,24 @@ public:
 
 	asIScriptEngine* GetScriptEngine() const { return m_pScriptEngine; }
 
+	/**
+	*	@return The engine version as a string
+	*/
 	const char* GetVersion() const;
 
+	/**
+	*	Sets the message callback to use for this engine
+	*/
 	void SetMessageCallback( const asSFuncPtr& callback, void* pObj, asDWORD callConv );
 
+	/**
+	*	Loads an API saved with WriteConfigToFile or WriteConfigToStream
+	*/
 	bool LoadAPIFromFile( const std::string& szFilename );
 
+	/**
+	*	Compiles a given script
+	*/
 	bool CompileScript( std::shared_ptr<const CScript> script );
 
 private:
