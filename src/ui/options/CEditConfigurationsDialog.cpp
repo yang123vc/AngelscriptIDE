@@ -3,7 +3,7 @@
 #include <QDir>
 
 #include "Angelscript/CConfiguration.h"
-#include "Angelscript/ConfigurationException.h"
+#include "Angelscript/CConfigurationException.h"
 #include "Angelscript/IConfigurationManager.h"
 
 #include "ide/COptions.h"
@@ -73,7 +73,7 @@ void CEditConfigurationsDialog::AddConfiguraton()
 				if( m_App->GetConfigurationManager()->AddConfiguration( szName.toStdString() ) )
 					m_WidgetUI->m_pList->addItem( szName );
 			}
-			catch( const ConfigurationException& e )
+			catch( const CConfigurationException& e )
 			{
 				m_UI->SendMessage( e.what(), UIMessageType::Error );
 			}
@@ -103,7 +103,7 @@ void CEditConfigurationsDialog::RemoveConfiguration()
 		{
 			m_App->GetConfigurationManager()->RemoveConfiguration( ( pWidget->text() ).toStdString(), iRet == QMessageBox::Yes );
 		}
-		catch( const ConfigurationException& e )
+		catch( const CConfigurationException& e )
 		{
 			m_UI->SendMessage( e.what(), UIMessageType::Error );
 		}

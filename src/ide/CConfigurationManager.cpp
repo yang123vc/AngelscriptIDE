@@ -1,7 +1,7 @@
 #include "Angelscript/CConfiguration.h"
 #include "Angelscript/IConfigurationEventListener.h"
 
-#include "Angelscript/ConfigurationException.h"
+#include "Angelscript/CConfigurationException.h"
 
 #include "COptions.h"
 #include "CASIDEApp.h"
@@ -44,7 +44,7 @@ bool CConfigurationManager::AddConfiguration( const std::string& szName )
 
 	if( it != configs.end() )
 	{
-		throw ConfigurationException( "Attempted to add duplicate configuration!" );
+		throw CConfigurationException( "Attempted to add duplicate configuration!" );
 		return false;
 	}
 
@@ -63,7 +63,7 @@ bool CConfigurationManager::AddConfiguration( const std::string& szName )
 		m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigurationAdded, szName );
 	}
 	else
-		throw ConfigurationException( std::string( "Failed to save configuration \"" ) + szName + "\"!" );
+		throw CConfigurationException( std::string( "Failed to save configuration \"" ) + szName + "\"!" );
 
 	return fSuccess;
 }
@@ -76,7 +76,7 @@ void CConfigurationManager::RemoveConfiguration( const std::string& szName, bool
 
 	if( it == configs.end() )
 	{
-		throw ConfigurationException( "Attempted to remove non-existent configuration!" );
+		throw CConfigurationException( "Attempted to remove non-existent configuration!" );
 		return;
 	}
 
@@ -100,7 +100,7 @@ void CConfigurationManager::ConfigurationRenamed( const std::string& szOldName, 
 
 	if( it == configs.end() )
 	{
-		throw ConfigurationException( "Attempted to rename non-existent configuration!" );
+		throw CConfigurationException( "Attempted to rename non-existent configuration!" );
 		return;
 	}
 

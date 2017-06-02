@@ -4,7 +4,7 @@
 #include <QMessageBox>
 
 #include "Angelscript/CConfiguration.h"
-#include "Angelscript/ConfigurationException.h"
+#include "Angelscript/CConfigurationException.h"
 #include "Angelscript/IConfigurationManager.h"
 
 #include "ide/CASIDEApp.h"
@@ -302,7 +302,7 @@ void CConfigurationsWidget::SaveActiveConfiguration()
 			config->Rename( szNewName.toStdString() );
 			m_UI->SendMessage( QString( "Renaming configuration '%1' to '%2'\n" ).arg( szConfigName).arg( szNewName ) );
 		}
-		catch( const ConfigurationException& e )
+		catch( const CConfigurationException& e )
 		{
 			m_UI->SendMessage( e.what(), UIMessageType::Error );
 		}

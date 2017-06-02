@@ -9,7 +9,7 @@ add_sources(
 	CScriptFile.h
 	CConfiguration.cpp
 	CConfiguration.h
-	ConfigurationException.h
+	CConfigurationException.h
 	IConfigurationManager.h
 	IConfigurationEventListener.h
 	IASEventListener.h

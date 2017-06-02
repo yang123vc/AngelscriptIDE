@@ -3,7 +3,7 @@
 #include "util/CProperties.h"
 #include "util/StringUtils.h"
 
-#include "ConfigurationException.h"
+#include "CConfigurationException.h"
 #include "IConfigurationManager.h"
 
 #include "CConfiguration.h"
@@ -121,7 +121,7 @@ bool CConfiguration::Save()
 void CConfiguration::Rename( const std::string& szNewName )
 {
 	if( m_Manager->ConfigurationExists( szNewName ) )
-		throw ConfigurationException( "Attempted to rename configuration to an existing configuration!" );
+		throw CConfigurationException( "Attempted to rename configuration to an existing configuration!" );
 
 	const std::string szOldName = std::move( m_szName );
 
