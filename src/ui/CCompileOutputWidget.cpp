@@ -23,9 +23,9 @@ void CCompileOutputWidget::CompilerMessage( const asSMessageInfo* pMsg )
 	QString szMessage;
 
 	if( *pMsg->section )
-		szMessage = QString( "Section %1, row %2, column %3:\n%4\n" ).arg( pMsg->section ).arg( pMsg->row ).arg( pMsg->col ).arg( pMsg->message );
+		szMessage = QString( "Section \"%1\", row %2, column %3:\n%4\n" ).arg( pMsg->section ).arg( pMsg->row ).arg( pMsg->col ).arg( pMsg->message );
 	else
-		szMessage = QString( "%1\n" ).arg( pMsg->message);
+		szMessage = QString( "%1\n" ).arg( pMsg->message );
 
 	m_WidgetUi->m_pOutput->moveCursor( QTextCursor::End );
 	m_WidgetUi->m_pOutput->insertPlainText( szMessage );
