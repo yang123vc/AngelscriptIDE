@@ -7,7 +7,6 @@
 
 #include "Angelscript/CASManager.h"
 #include "Angelscript/CScript.h"
-#include "Angelscript/CScriptFile.h"
 #include "Angelscript/IConfigurationEventListener.h"
 #include "Angelscript/CConfiguration.h"
 

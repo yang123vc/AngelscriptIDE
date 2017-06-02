@@ -117,7 +117,7 @@ void CASManager::ReloadActiveConfiguration()
 
 bool CASManager::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
-	auto script = std::make_shared<const CScript>( szSectionName, szScriptContents, m_ActiveConfiguration );
+	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ), m_ActiveConfiguration );
 
 	NotifyEventListeners( ASEvent::COMPILATION_STARTED, &script );
 	const bool fResult = m_Instance->CompileScript( script );

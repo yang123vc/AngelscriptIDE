@@ -1,7 +1,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#include "Angelscript/CScriptFile.h"
+#include "Angelscript/CScript.h"
 #include "Angelscript/CConfiguration.h"
 
 #include "ide/CASIDEApp.h"
@@ -25,12 +25,12 @@ CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, std::shared
 CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, const std::string& szFilename, std::shared_ptr<CASIDEApp> app,  QWidget* pParent )
 	: CScriptCodeTextEdit( szName, app, pParent )
 {
-	m_pScriptFile = std::make_shared<CScriptFile>( szFilename );
+	m_pScriptFile = std::make_shared<CScript>( CScript::FromFile( szFilename ) );
 
-	auto buffer = m_pScriptFile->GetScriptContents();
+	const auto& szBuffer = m_pScriptFile->GetContents();
 
-	if( buffer )
-		this->appendPlainText( buffer->c_str() );
+	if( !szBuffer.empty() )
+		this->appendPlainText( szBuffer.c_str() );
 
 	SetUnsavedChangesMade( false );
 }
@@ -90,9 +90,10 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( SaveMode saveMode, Pr
 
 				if( m_pScriptFile )
 				{
-					const bool fResult = m_pScriptFile->SetScriptContents( this->toPlainText().toStdString() );
+					m_pScriptFile->SetContents( this->toPlainText().toStdString() );
+					const bool bResult = m_pScriptFile->SaveToFile( m_szName );
 
-					if( fResult )
+					if( bResult )
 					{
 						SetUnsavedChangesMade( false );
 						result = SaveResult::SAVED;
@@ -141,7 +142,8 @@ bool CScriptCodeTextEdit::OpenSaveDialog()
 
 	if( fResult )
 	{
-		m_pScriptFile = std::make_shared<CScriptFile>( szFilename );
+		if( !m_pScriptFile )
+			m_pScriptFile = std::make_shared<CScript>( std::string( szFilename ) );
 
 		QFileInfo file( szFilename.c_str() );
 

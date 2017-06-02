@@ -6,7 +6,7 @@
 
 #include "CCodeTextEdit.h"
 
-class CScriptFile;
+class CScript;
 
 class CASIDEApp;
 
@@ -50,7 +50,7 @@ public:
 
 	const std::string& GetName() const { return m_szName; }
 
-	std::shared_ptr<CScriptFile> GetScriptFile() const { return m_pScriptFile; }
+	std::shared_ptr<CScript> GetScriptFile() const { return m_pScriptFile; }
 
 	bool HasFile() const { return m_pScriptFile != nullptr; }
 
@@ -76,7 +76,7 @@ protected slots:
 
 private:
 	std::string m_szName;
-	std::shared_ptr<CScriptFile> m_pScriptFile;
+	std::shared_ptr<CScript> m_pScriptFile;
 	std::shared_ptr<CASIDEApp> m_App;
 };
 

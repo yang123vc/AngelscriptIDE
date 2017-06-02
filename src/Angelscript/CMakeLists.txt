@@ -5,8 +5,6 @@ add_sources(
 	CASManager.h
 	CScript.cpp
 	CScript.h
-	CScriptFile.cpp
-	CScriptFile.h
 	CConfiguration.cpp
 	CConfiguration.h
 	CConfigurationException.h

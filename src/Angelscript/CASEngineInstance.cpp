@@ -12,7 +12,6 @@
 #include "AngelscriptUtils/add_on/scripthelper.h"
 
 #include "CScript.h"
-#include "CScriptFile.h"
 #include "CConfiguration.h"
 
 #include "CASEngineInstance.h"
@@ -115,12 +114,12 @@ bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 
 			if( !szIncludeFilename.empty() )
 			{
-				auto include = std::make_shared<CScriptFile>( szIncludeFilename );
+				bool bSuccess;
 
-				auto includeContents = include->GetScriptContents();
+				auto szContents = CScript::LoadContentsFromFile( szIncludeFilename, bSuccess );
 
-				if( includeContents )
-					fSuccess = builder.AddSectionFromMemory( "Include", includeContents->c_str() ) >= 0;
+				if( bSuccess )
+					fSuccess = builder.AddSectionFromMemory( "Include", szContents.c_str() ) >= 0;
 			}
 		}
 	}

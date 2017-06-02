@@ -10,7 +10,7 @@
 
 #include "util/CDispatchingOutStream.h"
 
-#include "Angelscript/CScriptFile.h"
+#include "Angelscript/CScript.h"
 #include "Angelscript/CConfiguration.h"
 
 #include "ide/CASIDEApp.h"
@@ -260,7 +260,7 @@ CScriptCodeTextEdit* CASMainWindow::FindOpenFile( const QString& szFilename, int
 		if( !pEdit->HasFile() )
 			continue;
 
-		if( QFileInfo( pEdit->GetScriptFile()->GetFilename().c_str() ).absoluteFilePath() == szAbsFilename )
+		if( QFileInfo( pEdit->GetName().c_str() ).absoluteFilePath() == szAbsFilename )
 		{
 			if( pIndex )
 				*pIndex = iIndex;
@@ -438,7 +438,7 @@ void CASMainWindow::Save()
 		if( pCodeEdit->Save( CScriptCodeTextEdit::SaveMode::ALWAYS, CScriptCodeTextEdit::PromptMode::NEVER ) == CScriptCodeTextEdit::SaveResult::SAVED )
 		{
 			if( !fHadFile )
-				AddRecentFileToOptions( pCodeEdit->GetScriptFile()->GetFilename() );
+				AddRecentFileToOptions( pCodeEdit->GetName() );
 		}
 	}
 }
@@ -454,7 +454,7 @@ void CASMainWindow::SaveAs()
 					CScriptCodeTextEdit::PromptMode::NEVER,
 					CScriptCodeTextEdit::FileSelectMode::ALWAYS ) == CScriptCodeTextEdit::SaveResult::SAVED )
 		{
-			AddRecentFileToOptions( pCodeEdit->GetScriptFile()->GetFilename() );
+			AddRecentFileToOptions( pCodeEdit->GetName() );
 		}
 	}
 }
@@ -594,8 +594,9 @@ void CASMainWindow::CompileScript()
 
 		script = pCodeEdit->GetScriptFile();
 
+		//TODO: can pass the script directly? - Solokiller
 		m_App->CompileScript(
-					script->GetFilename(),
+					pCodeEdit->GetName(),
 					pCodeEdit->toPlainText().toStdString() );
 	}
 }
