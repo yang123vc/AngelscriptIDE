@@ -1,5 +1,5 @@
-#ifndef CASMANAGER_H
-#define CASMANAGER_H
+#ifndef ANGELSCRIPT_CASMANAGER_H
+#define ANGELSCRIPT_CASMANAGER_H
 
 #include <memory>
 
@@ -56,4 +56,4 @@ private:
 	CASManager& operator=( const CASManager& ) = delete;
 };
 
-#endif // CASMANAGER_H
+#endif //ANGELSCRIPT_CASMANAGER_H

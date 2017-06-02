@@ -1,5 +1,5 @@
-#ifndef CLISTENERMANAGER_H
-#define CLISTENERMANAGER_H
+#ifndef UTIL_CLISTENERMANAGER_H
+#define UTIL_CLISTENERMANAGER_H
 
 #include <vector>
 #include <algorithm>
@@ -65,4 +65,4 @@ private:
 	Listeners_t m_Listeners;
 };
 
-#endif // CLISTENERMANAGER_H
+#endif //UTIL_CLISTENERMANAGER_H

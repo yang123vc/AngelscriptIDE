@@ -1,5 +1,5 @@
-#ifndef UIUTILS_H
-#define UIUTILS_H
+#ifndef UI_UTIL_UIUTILS_H
+#define UI_UTIL_UIUTILS_H
 
 #include <stdexcept>
 #include <string>
@@ -62,4 +62,4 @@ QString FormatExtensions( const T& extensions )
 }
 }
 
-#endif //UIUTILS_H
+#endif //UI__UTIL_UIUTILS_H

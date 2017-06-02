@@ -1,5 +1,5 @@
-#ifndef CPROPERTIES_H
-#define CPROPERTIES_H
+#ifndef UTIL_CPROPERTIES_H
+#define UTIL_CPROPERTIES_H
 
 #include <unordered_map>
 #include <string>
@@ -24,4 +24,4 @@ private:
 	Keyvalues_t m_Keyvalues;
 };
 
-#endif // CPROPERTIES_H
+#endif //UTIL_CPROPERTIES_H

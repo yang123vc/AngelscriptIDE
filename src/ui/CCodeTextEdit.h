@@ -1,5 +1,5 @@
-#ifndef CCODETEXTEDIT_H
-#define CCODETEXTEDIT_H
+#ifndef IDE_UI_CCODETEXTEDIT_H
+#define IDE_UI_CCODETEXTEDIT_H
 
 #include <QPlainTextEdit>
 
@@ -26,4 +26,4 @@ private:
 	QWidget* m_pLineNumberArea;
 };
 
-#endif // CCODETEXTEDIT_H
+#endif //IDE_UI_CCODETEXTEDIT_H

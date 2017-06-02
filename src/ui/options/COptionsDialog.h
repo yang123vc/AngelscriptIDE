@@ -1,5 +1,5 @@
-#ifndef COPTIONSDIALOG_H
-#define COPTIONSDIALOG_H
+#ifndef IDE_UI_OPTIONS_COPTIONSDIALOG_H
+#define IDE_UI_OPTIONS_COPTIONSDIALOG_H
 
 #include <memory>
 #include <vector>
@@ -49,4 +49,4 @@ private:
 	QPushButton* m_pApplyButton;
 };
 
-#endif // COPTIONSDIALOG_H
+#endif //IDE_UI_OPTIONS_COPTIONSDIALOG_H

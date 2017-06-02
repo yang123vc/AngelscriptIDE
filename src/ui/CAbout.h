@@ -1,5 +1,5 @@
-#ifndef CABOUT_H
-#define CABOUT_H
+#ifndef IDE_UI_CABOUT_H
+#define IDE_UI_CABOUT_H
 
 #include <QDialog>
 
@@ -23,4 +23,4 @@ private:
 	Ui::CAbout *ui;
 };
 
-#endif // CABOUT_H
+#endif //IDE_UI_CABOUT_H

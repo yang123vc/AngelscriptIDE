@@ -1,5 +1,5 @@
-#ifndef CSCRIPTFILE_H
-#define CSCRIPTFILE_H
+#ifndef ANGELSCRIPT_CSCRIPTFILE_H
+#define ANGELSCRIPT_CSCRIPTFILE_H
 
 #include <memory>
 #include <string>
@@ -26,4 +26,4 @@ private:
 	CScriptFile& operator=( const CScriptFile& ) = delete;
 };
 
-#endif // CSCRIPTFILE_H
+#endif //ANGELSCRIPT_CSCRIPTFILE_H

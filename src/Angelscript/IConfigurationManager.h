@@ -1,5 +1,5 @@
-#ifndef ICONFIGURATIONMANAGER_H
-#define ICONFIGURATIONMANAGER_H
+#ifndef ANGELSCRIPT_ICONFIGURATIONMANAGER_H
+#define ANGELSCRIPT_ICONFIGURATIONMANAGER_H
 
 class IConfigurationEventListener;
 
@@ -32,5 +32,4 @@ inline IConfigurationManager::~IConfigurationManager()
 {
 }
 
-#endif // ICONFIGURATIONMANAGER_H
-
+#endif //ANGELSCRIPT_ICONFIGURATIONMANAGER_H

@@ -1,5 +1,5 @@
-#ifndef CDEFERREDOUTSTREAM_H
-#define CDEFERREDOUTSTREAM_H
+#ifndef UTIL_CDEFERREDOUTSTREAM_H
+#define UTIL_CDEFERREDOUTSTREAM_H
 
 #include <QTextEdit>
 
@@ -37,5 +37,4 @@ private:
 	IOutStreamListener* m_pListener;
 };
 
-#endif // CDEFERREDOUTSTREAM_H
-
+#endif //UTIL_CDEFERREDOUTSTREAM_H

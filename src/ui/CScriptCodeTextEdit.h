@@ -1,5 +1,5 @@
-#ifndef CSCRIPTCODETEXTEDIT_H
-#define CSCRIPTCODETEXTEDIT_H
+#ifndef IDE_UI_CSCRIPTCODETEXTEDIT_H
+#define IDE_UI_CSCRIPTCODETEXTEDIT_H
 
 #include <memory>
 #include <string>
@@ -80,4 +80,4 @@ private:
 	std::shared_ptr<CASIDEApp> m_App;
 };
 
-#endif // CSCRIPTCODETEXTEDIT_H
+#endif //IDE_UI_CSCRIPTCODETEXTEDIT_H

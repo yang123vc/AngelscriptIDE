@@ -1,5 +1,5 @@
-#ifndef CCOMPILEOUTPUTWIDGET_H
-#define CCOMPILEOUTPUTWIDGET_H
+#ifndef IDE_UI_CCOMPILEOUTPUTWIDGET_H
+#define IDE_UI_CCOMPILEOUTPUTWIDGET_H
 
 #include "Angelscript/IASCompilerListener.h"
 #include "Angelscript/IASEventListener.h"
@@ -19,4 +19,4 @@ public:
 	void AngelscriptEventOccured( ASEvent event, const void* pArg ) override;
 };
 
-#endif // CCOMPILEOUTPUTWIDGET_H
+#endif //IDE_UI_CCOMPILEOUTPUTWIDGET_H

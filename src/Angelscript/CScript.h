@@ -1,5 +1,5 @@
-#ifndef CSCRIPT_H
-#define CSCRIPT_H
+#ifndef ANGELSCRIPT_CSCRIPT_H
+#define ANGELSCRIPT_CSCRIPT_H
 
 #include <vector>
 #include <string>
@@ -33,4 +33,4 @@ private:
 	std::shared_ptr<const CConfiguration> m_Configuration;
 };
 
-#endif // CSCRIPT_H
+#endif //ANGELSCRIPT_CSCRIPT_H

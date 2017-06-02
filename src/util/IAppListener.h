@@ -1,5 +1,5 @@
-#ifndef IAPPLISTENER_H
-#define IAPPLISTENER_H
+#ifndef UTIL_IAPPLISTENER_H
+#define UTIL_IAPPLISTENER_H
 
 class IAppListener
 {
@@ -15,5 +15,4 @@ inline IAppListener::~IAppListener()
 {
 }
 
-#endif // IAPPLISTENER_H
-
+#endif //UTIL_IAPPLISTENER_H

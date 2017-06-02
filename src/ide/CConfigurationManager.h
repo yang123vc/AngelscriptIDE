@@ -1,5 +1,5 @@
-#ifndef CCONFIGURATIONMANAGER_H
-#define CCONFIGURATIONMANAGER_H
+#ifndef IDE_CCONFIGURATIONMANAGER_H
+#define IDE_CCONFIGURATIONMANAGER_H
 
 #include <memory>
 
@@ -44,4 +44,4 @@ private:
 	CConfigurationManager& operator=( const CConfigurationManager& ) = delete;
 };
 
-#endif // CCONFIGURATIONMANAGER_H
+#endif //IDE_CCONFIGURATIONMANAGER_H

@@ -1,5 +1,5 @@
-#ifndef CCONFIGURATION_H
-#define CCONFIGURATION_H
+#ifndef ANGELSCRIPT_CCONFIGURATION_H
+#define ANGELSCRIPT_CCONFIGURATION_H
 
 #include <memory>
 #include <string>
@@ -72,4 +72,4 @@ private:
 	std::string m_szFallbackExtension;					//Extension to add when searching for #include'd files with no extension given
 };
 
-#endif // CCONFIGURATION_H
+#endif //ANGELSCRIPT_CCONFIGURATION_H

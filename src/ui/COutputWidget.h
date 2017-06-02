@@ -1,5 +1,5 @@
-#ifndef COUTPUTWIDGET_H
-#define COUTPUTWIDGET_H
+#ifndef IDE_UI_COUTPUTWIDGET_H
+#define IDE_UI_COUTPUTWIDGET_H
 
 #include <memory>
 
@@ -29,4 +29,4 @@ protected:
 	std::shared_ptr<CASIDEApp> m_App;
 };
 
-#endif // COUTPUTWIDGET_H
+#endif //IDE_UI_COUTPUTWIDGET_H

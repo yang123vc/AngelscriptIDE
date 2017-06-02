@@ -1,5 +1,5 @@
-#ifndef COPTIONS_H
-#define COPTIONS_H
+#ifndef IDE_COPTIONS_H
+#define IDE_COPTIONS_H
 
 #include <memory>
 #include <vector>
@@ -68,4 +68,4 @@ private:
 	std::string m_szCurrentDir;				//The directory to start in for open and save operations
 };
 
-#endif // COPTIONS_H
+#endif //IDE_COPTIONS_H

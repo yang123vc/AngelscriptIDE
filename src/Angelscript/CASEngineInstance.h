@@ -1,5 +1,5 @@
-#ifndef CASENGINEINSTANCE_H
-#define CASENGINEINSTANCE_H
+#ifndef ANGELSCRIPT_CASENGINEINSTANCE_H
+#define ANGELSCRIPT_CASENGINEINSTANCE_H
 
 #include <memory>
 #include <stdexcept>
@@ -51,4 +51,4 @@ private:
 	CASEngineInstance& operator=( const CASEngineInstance& ) = delete;
 };
 
-#endif // CASENGINEINSTANCE_H
+#endif //ANGELSCRIPT_CASENGINEINSTANCE_H

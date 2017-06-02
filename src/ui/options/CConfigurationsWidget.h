@@ -1,5 +1,5 @@
-#ifndef CCONFIGURATIONSWIDGET_H
-#define CCONFIGURATIONSWIDGET_H
+#ifndef IDE_UI_OPTIONS_CCONFIGURATIONSWIDGET_H
+#define IDE_UI_OPTIONS_CCONFIGURATIONSWIDGET_H
 
 #include "Angelscript/IConfigurationEventListener.h"
 
@@ -79,4 +79,4 @@ private:
 	QString m_szConfigName;
 };
 
-#endif // CCONFIGURATIONSWIDGET_H
+#endif //IDE_UI_OPTIONS_CCONFIGURATIONSWIDGET_H

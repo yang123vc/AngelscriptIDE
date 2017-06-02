@@ -1,5 +1,5 @@
-#ifndef CUI_H
-#define CUI_H
+#ifndef IDE_UI_CUI_H
+#define IDE_UI_CUI_H
 
 #include <memory>
 #include <string>
@@ -57,4 +57,4 @@ private:
 	CUI& operator=( const CUI& ) = delete;
 };
 
-#endif // CUI_H
+#endif //IDE_UI_CUI_H

@@ -1,5 +1,5 @@
-#ifndef CFINDDIALOG_H
-#define CFINDDIALOG_H
+#ifndef IDE_UI_CFINDDIALOG_H
+#define IDE_UI_CFINDDIALOG_H
 
 #include <memory>
 
@@ -49,4 +49,4 @@ private:
 	std::unique_ptr<Ui::CFindDialog> m_WidgetUI;
 };
 
-#endif // CFINDDIALOG_H
+#endif //IDE_UI_CFINDDIALOG_H

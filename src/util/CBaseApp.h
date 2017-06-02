@@ -1,5 +1,5 @@
-#ifndef CBASEAPP_H
-#define CBASEAPP_H
+#ifndef UTIL_CBASEAPP_H
+#define UTIL_CBASEAPP_H
 
 #include <memory>
 
@@ -30,4 +30,4 @@ private:
 	CListenerManager<IAppListener> m_AppListeners;
 };
 
-#endif // CBASEAPP_H
+#endif //UTIL_CBASEAPP_H

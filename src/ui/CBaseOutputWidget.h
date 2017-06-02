@@ -1,5 +1,5 @@
-#ifndef CBASEOUTPUTWIDGET_H
-#define CBASEOUTPUTWIDGET_H
+#ifndef IDE_UI_CBASEOUTPUTWIDGET_H
+#define IDE_UI_CBASEOUTPUTWIDGET_H
 
 #include <memory>
 #include <QWidget>
@@ -22,4 +22,4 @@ private:
 	QString m_szName;
 };
 
-#endif // CBASEOUTPUTWIDGET_H
+#endif //IDE_UI_CBASEOUTPUTWIDGET_H

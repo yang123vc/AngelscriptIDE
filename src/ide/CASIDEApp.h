@@ -1,5 +1,5 @@
-#ifndef CASIDEAPP_H
-#define CASIDEAPP_H
+#ifndef IDE_CASIDEAPP_H
+#define IDE_CASIDEAPP_H
 
 #include <memory>
 #include <vector>
@@ -74,4 +74,4 @@ private:
 	std::shared_ptr<COptions>				m_Options;
 };
 
-#endif // CASIDEAPP_H
+#endif //IDE_CASIDEAPP_H

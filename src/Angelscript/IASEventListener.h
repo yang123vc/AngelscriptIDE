@@ -1,5 +1,5 @@
-#ifndef IASEVENTLISTENER_H
-#define IASEVENTLISTENER_H
+#ifndef ANGELSCRIPT_IASEVENTLISTENER_H
+#define ANGELSCRIPT_IASEVENTLISTENER_H
 
 #include <string>
 
@@ -68,5 +68,4 @@ inline IASEventListener::~IASEventListener()
 
 }
 
-#endif // IASEVENTLISTENER_H
-
+#endif //ANGELSCRIPT_IASEVENTLISTENER_H

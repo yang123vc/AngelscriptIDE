@@ -1,5 +1,5 @@
-#ifndef IUI_H
-#define IUI_H
+#ifndef UTIL_IUI_H
+#define UTIL_IUI_H
 
 #include <memory>
 #include <string>
@@ -24,5 +24,4 @@ inline IUI::~IUI()
 {
 }
 
-#endif // IUI_H
-
+#endif //UTIL_IUI_H

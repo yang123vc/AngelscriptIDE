@@ -1,5 +1,5 @@
-#ifndef CASMAINWINDOW_H
-#define CASMAINWINDOW_H
+#ifndef IDE_UI_CASMAINWINDOW_H
+#define IDE_UI_CASMAINWINDOW_H
 
 #include <memory>
 #include <vector>
@@ -140,4 +140,4 @@ private:
 	QAction* m_pNoRecentFilesAction;
 };
 
-#endif // CASMAINWINDOW_H
+#endif //IDE_UI_CASMAINWINDOW_H

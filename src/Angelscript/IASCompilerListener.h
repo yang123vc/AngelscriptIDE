@@ -1,5 +1,5 @@
-#ifndef ICOMPILERLISTENER_H
-#define ICOMPILERLISTENER_H
+#ifndef ANGELSCRIPT_ICOMPILERLISTENER_H
+#define ANGELSCRIPT_ICOMPILERLISTENER_H
 
 struct asSMessageInfo;
 
@@ -16,5 +16,4 @@ inline IASCompilerListener::~IASCompilerListener()
 {
 }
 
-#endif // ICOMPILERLISTENER_H
-
+#endif //ANGELSCRIPT_ICOMPILERLISTENER_H

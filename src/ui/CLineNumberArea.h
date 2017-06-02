@@ -1,5 +1,5 @@
-#ifndef CLINENUMBERAREA_H
-#define CLINENUMBERAREA_H
+#ifndef IDE_UI_CLINENUMBERAREA_H
+#define IDE_UI_CLINENUMBERAREA_H
 
 #include <QWidget>
 
@@ -21,4 +21,4 @@ private:
 	CCodeTextEdit* m_pCodeEditor;
 };
 
-#endif // CLINENUMBERAREA_H
+#endif //IDE_UI_CLINENUMBERAREA_H

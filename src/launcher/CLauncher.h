@@ -1,5 +1,5 @@
-#ifndef CLAUNCHER_H
-#define CLAUNCHER_H
+#ifndef LAUNCHER_CLAUNCHER_H
+#define LAUNCHER_CLAUNCHER_H
 
 #include <memory>
 
@@ -37,4 +37,4 @@ private:
 	std::shared_ptr<CBaseApp> m_App;
 };
 
-#endif // CLAUNCHER_H
+#endif //LAUNCHER_CLAUNCHER_H

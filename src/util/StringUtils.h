@@ -1,5 +1,5 @@
-#ifndef STRINGUTILS_H
-#define STRINGUTILS_H
+#ifndef UTIL_STRINGUTILS_H
+#define UTIL_STRINGUTILS_H
 
 #include <vector>
 #include <string>
@@ -54,5 +54,4 @@ std::string Implode( const T& strings, char cDelim )
 	return stream.str();
 }
 
-#endif // STRINGUTILS_H
-
+#endif //UTIL_STRINGUTILS_H

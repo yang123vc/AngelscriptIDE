@@ -1,5 +1,5 @@
-#ifndef COUTSTREAM_H
-#define COUTSTREAM_H
+#ifndef UTIL_COUTSTREAM_H
+#define UTIL_COUTSTREAM_H
 
 #include <ostream>
 #include <string>
@@ -46,4 +46,4 @@ private:
 	COutStream& operator=( const COutStream& ) = delete;
 };
 
-#endif // COUTSTREAM_H
+#endif //UTIL_COUTSTREAM_H

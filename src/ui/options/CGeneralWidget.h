@@ -1,5 +1,5 @@
-#ifndef CGENERALWIDGET_H
-#define CGENERALWIDGET_H
+#ifndef IDE_UI_OPTIONS_CGENERALWIDGET_H
+#define IDE_UI_OPTIONS_CGENERALWIDGET_H
 
 #include <QWidget>
 
@@ -43,4 +43,4 @@ private:
 	std::unique_ptr<Ui::CGeneralWidget> m_WidgetUI;
 };
 
-#endif // CGENERALWIDGET_H
+#endif //IDE_UI_OPTIONS_CGENERALWIDGET_H
