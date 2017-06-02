@@ -304,7 +304,7 @@ void CConfigurationsWidget::SaveActiveConfiguration()
 		}
 		catch( const CConfigurationException& e )
 		{
-			m_UI->SendMessage( e.what(), UIMessageType::Error );
+			m_UI->SendMessage( e.what(), UIMessageType::ERROR );
 		}
 	}
 }

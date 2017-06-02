@@ -75,7 +75,7 @@ void CEditConfigurationsDialog::AddConfiguraton()
 			}
 			catch( const CConfigurationException& e )
 			{
-				m_UI->SendMessage( e.what(), UIMessageType::Error );
+				m_UI->SendMessage( e.what(), UIMessageType::ERROR );
 			}
 
 			fOk = false;
@@ -105,7 +105,7 @@ void CEditConfigurationsDialog::RemoveConfiguration()
 		}
 		catch( const CConfigurationException& e )
 		{
-			m_UI->SendMessage( e.what(), UIMessageType::Error );
+			m_UI->SendMessage( e.what(), UIMessageType::ERROR );
 		}
 
 		//The item returned by takeItem is the same as currentItem

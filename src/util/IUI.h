@@ -6,9 +6,9 @@
 
 enum class UIMessageType
 {
-	Info,
-	Warning,
-	Error
+	INFO,
+	WARNING,
+	ERROR
 };
 
 class IUI
@@ -16,8 +16,8 @@ class IUI
 public:
 	virtual ~IUI() = 0;
 
-	virtual void SendMessage( const char* pszString, UIMessageType type = UIMessageType::Info ) = 0;
-	virtual void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::Info ) = 0;
+	virtual void SendMessage( const char* pszString, UIMessageType type = UIMessageType::INFO ) = 0;
+	virtual void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::INFO ) = 0;
 };
 
 inline IUI::~IUI()

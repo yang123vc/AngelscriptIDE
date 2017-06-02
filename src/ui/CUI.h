@@ -44,9 +44,9 @@ public:
 	 * Sends a message
 	 * Listeners can choose to display this string
 	*/
-	void SendMessage( const char* pszString, UIMessageType type = UIMessageType::Info ) override;
-	void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::Info ) override;
-	void SendMessage( const QString& szString, UIMessageType type = UIMessageType::Info );
+	void SendMessage( const char* pszString, UIMessageType type = UIMessageType::INFO ) override;
+	void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::INFO ) override;
+	void SendMessage( const QString& szString, UIMessageType type = UIMessageType::INFO );
 
 private:
 	std::shared_ptr<CASIDEApp> m_App;

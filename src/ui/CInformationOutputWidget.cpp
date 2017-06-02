@@ -72,9 +72,9 @@ void CInformationOutputWidget::AngelscriptEventOccured(ASEvent event, const void
 			const ASAPIRegistrationResult& result = *reinterpret_cast<const ASAPIRegistrationResult*>( pArg );
 
 			if( result.fSuccess )
-				ReceiveUIMessage( ( std::string( "API Configuration \"" ) + result.szConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::Info );
+				ReceiveUIMessage( ( std::string( "API Configuration \"" ) + result.szConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
 			else
-				ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + result.szConfigFilename + "\"!\n" ).c_str(), UIMessageType::Warning );
+				ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + result.szConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
 			break;
 		}
 
@@ -166,9 +166,9 @@ void CInformationOutputWidget::ReceiveUIMessage( const char* pszString, UIMessag
 	switch( type )
 	{
 	default:
-	case UIMessageType::Info: szMessage = pszString; break;
-	case UIMessageType::Warning: szMessage = QString( "Warning: %1" ).arg( pszString ); break;
-	case UIMessageType::Error: szMessage = QString( "Error: %1" ).arg( pszString ); break;
+	case UIMessageType::INFO: szMessage = pszString; break;
+	case UIMessageType::WARNING: szMessage = QString( "Warning: %1" ).arg( pszString ); break;
+	case UIMessageType::ERROR: szMessage = QString( "Error: %1" ).arg( pszString ); break;
 	}
 
 	WriteString( szMessage.toStdString().c_str() );
