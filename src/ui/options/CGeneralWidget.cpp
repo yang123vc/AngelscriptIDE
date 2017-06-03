@@ -36,7 +36,7 @@ void CGeneralWidget::ApplyChanges()
 	{
 		const std::string szNewConfig = m_WidgetUI->m_pActiveConfigComboBox->currentText().toStdString();
 
-		m_App->SetActiveConfiguration( szNewConfig, true );
+		m_App->SetActiveConfiguration( szNewConfig );
 
 		auto options = m_App->GetOptions();
 

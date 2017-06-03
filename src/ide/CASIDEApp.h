@@ -56,9 +56,9 @@ public:
 
 	void LoadActiveConfiguration();
 
-	void SetActiveConfiguration( const std::string& szName, bool fSaveOldConfig = false );
+	void SetActiveConfiguration( const std::string& szName );
 
-	void ClearActiveConfiguration( bool fSave = false );
+	void ClearActiveConfiguration();
 
 	//IConfigurationEventListener
 	void ConfigEventOccurred( const ConfigEvent& event ) override;

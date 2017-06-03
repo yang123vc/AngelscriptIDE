@@ -60,7 +60,7 @@ void CASIDEApp::Shutdown()
 
 	m_Options->Save();
 
-	ClearActiveConfiguration( true );
+	ClearActiveConfiguration();
 
 	m_ASManager.reset();
 	m_ConfigurationManager.reset();
@@ -107,14 +107,14 @@ void CASIDEApp::LoadActiveConfiguration()
 	SetActiveConfiguration( m_Options->GetActiveConfigurationName() );
 }
 
-void CASIDEApp::SetActiveConfiguration( const std::string& szName, bool fSaveOldConfig )
+void CASIDEApp::SetActiveConfiguration( const std::string& szName )
 {
-	m_ASManager->SetActiveConfiguration( szName, fSaveOldConfig );
+	m_ASManager->SetActiveConfiguration( szName );
 }
 
-void CASIDEApp::ClearActiveConfiguration( bool fSave )
+void CASIDEApp::ClearActiveConfiguration()
 {
-	m_ASManager->ClearActiveConfiguration( fSave );
+	m_ASManager->ClearActiveConfiguration();
 }
 
 void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )
@@ -145,6 +145,7 @@ void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )
 		{
 			auto activeConfig = m_ASManager->GetActiveConfiguration();
 
+			//TODO: the save event is sent by the manager, so this just reloads it for no reason - Solokiller
 			if( activeConfig && *event.save.pszName == activeConfig->GetName() )
 				m_ASManager->ReloadActiveConfiguration();
 

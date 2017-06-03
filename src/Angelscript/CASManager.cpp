@@ -49,10 +49,10 @@ void CASManager::MessageCallback( const asSMessageInfo* pMsg )
 	m_CompilerListeners.NotifyListeners( &IASCompilerListener::CompilerMessage, pMsg );
 }
 
-void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOldConfig )
+void CASManager::SetActiveConfiguration( const std::string& szName )
 {
 	if( m_Instance )
-		ClearActiveConfiguration( fSaveOldConfig );
+		ClearActiveConfiguration();
 
 	try
 	{
@@ -105,7 +105,7 @@ void CASManager::SetActiveConfiguration( const std::string& szName, bool fSaveOl
 	}
 }
 
-void CASManager::ClearActiveConfiguration( bool fSave )
+void CASManager::ClearActiveConfiguration()
 {
 	if( m_Instance )
 	{
@@ -116,9 +116,6 @@ void CASManager::ClearActiveConfiguration( bool fSave )
 
 		if( m_ActiveConfiguration )
 		{
-			if( fSave )
-				m_ActiveConfiguration->Save();
-
 			m_ActiveConfiguration.reset();
 		}
 

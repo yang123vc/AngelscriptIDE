@@ -36,9 +36,9 @@ public:
 
 	void MessageCallback( const asSMessageInfo* pMsg );
 
-	void SetActiveConfiguration( const std::string& szName, bool fSaveOldConfig = false );
+	void SetActiveConfiguration( const std::string& szName );
 
-	void ClearActiveConfiguration( bool fSave = false );
+	void ClearActiveConfiguration();
 
 	void ReloadActiveConfiguration();
 
