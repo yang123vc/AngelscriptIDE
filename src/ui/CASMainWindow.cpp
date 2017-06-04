@@ -126,8 +126,8 @@ void CASMainWindow::OnBeforeRun()
 
 	if( !recentFiles.empty() )
 	{
-		for( const auto& recentFile : recentFiles )
-			AddRecentFile( recentFile );
+		for( auto it = recentFiles.rbegin(), end = recentFiles.rend(); it != end; ++it )
+			AddRecentFile( *it );
 	}
 }
 
