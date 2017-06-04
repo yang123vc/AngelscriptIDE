@@ -46,6 +46,7 @@ COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<
 	QPushButton* pCancelButton	= new QPushButton( tr( "Cancel" ) );
 	m_pApplyButton				= new QPushButton( tr( "Apply" ) );
 
+	pButtonsLayout->addStretch();
 	pButtonsLayout->addWidget( pOkButton );
 	pButtonsLayout->addWidget( pCancelButton );
 	pButtonsLayout->addWidget( m_pApplyButton );
