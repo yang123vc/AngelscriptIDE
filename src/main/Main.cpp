@@ -1,29 +1,31 @@
+#include <QApplication>
 #include <QMessageBox>
 
+#include "Main.h"
 #include "ide/CASIDEApp.h"
 #include "ui/CASMainWindow.h"
 #include "ui/CUI.h"
 
-#include "launcher/CLauncherException.h"
-#include "launcher/CLauncher.h"
-
-std::shared_ptr<IUI> CreateUI()
-{
-	return std::make_shared<CUI>();
-}
-
-std::shared_ptr<CBaseApp> CreateApp( std::shared_ptr<IUI> ui )
-{
-	return std::make_shared<CASIDEApp>( ui );
-}
-
-std::unique_ptr<QMainWindow> CreateMainWindow( std::shared_ptr<CBaseApp> app, std::shared_ptr<IUI> ui )
-{
-	return std::unique_ptr<QMainWindow>( new CASMainWindow( std::static_pointer_cast<CASIDEApp>( app ), std::static_pointer_cast<CUI>( ui ) ) );
-}
-
 int main( int argc, char* argv[] )
 {
 	//TODO: catch exception, show message box - Solokiller
-	return CLauncher( &CreateUI, &CreateApp, &CreateMainWindow ).Run( argc, argv );
+	auto ui = std::make_shared<CUI>();
+
+	CLauncher launcher;
+
+	launcher.m_App = std::make_shared<CASIDEApp>( ui );
+
+	launcher.m_App->Startup();
+
+	QApplication qApplication( argc, argv );
+
+	qApplication.connect( &qApplication, &QApplication::aboutToQuit, &launcher, &CLauncher::OnQuit );
+
+	auto mainWindow = std::make_shared<CASMainWindow>( launcher.m_App, ui );
+
+	launcher.m_App->OnBeforeRun();
+
+	mainWindow->show();
+
+	return qApplication.exec();
 }
