@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QSyntaxHighlighter>
 
 #include "Angelscript/CScript.h"
 #include "Angelscript/CConfiguration.h"
@@ -9,6 +10,7 @@
 
 #include "util/UIUtils.h"
 
+#include "CAngelscriptSyntaxHighlighter.h"
 #include "CScriptCodeTextEdit.h"
 
 CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, std::shared_ptr<CASIDEApp> app,  QWidget* pParent )
@@ -17,6 +19,8 @@ CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, std::shared
 	, m_App( app )
 {
 	setTabStopWidth( m_App->GetOptions()->GetTabWidth() );
+
+	m_SyntaxHighlighter = std::make_unique<CAngelscriptSyntaxHighlighter>( document(), m_App->GetOptions() );
 
 	connect( this, SIGNAL( textChanged() ), this, SLOT( ContentChanged() ) );
 	connect( this, SIGNAL( undoAvailable( bool ) ), this, SLOT( UndoStateChanged( bool ) ) );
@@ -122,6 +126,11 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( SaveMode saveMode, Pr
 		result = SaveResult::SAVED;
 
 	return result;
+}
+
+void CScriptCodeTextEdit::RefreshSyntaxHighlights()
+{
+	m_SyntaxHighlighter->rehighlight();
 }
 
 bool CScriptCodeTextEdit::OpenSaveDialog()

@@ -7,7 +7,6 @@ set( PROJECT_NAME AngelscriptIDE )
 #Add in the directories
 add_subdirectory( Angelscript )
 add_subdirectory( ide )
-add_subdirectory( launcher )
 add_subdirectory( main )
 add_subdirectory( ui )
 add_subdirectory( util )

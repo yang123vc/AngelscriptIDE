@@ -23,6 +23,8 @@ int main( int argc, char* argv[] )
 
 	auto mainWindow = std::make_shared<CASMainWindow>( launcher.m_App, ui );
 
+	launcher.m_App->SetMainWindow( mainWindow );
+
 	launcher.m_App->OnBeforeRun();
 
 	mainWindow->show();

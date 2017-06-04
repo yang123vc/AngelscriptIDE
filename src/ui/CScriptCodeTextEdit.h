@@ -9,6 +9,7 @@
 class CScript;
 
 class CASIDEApp;
+class CAngelscriptSyntaxHighlighter;
 
 class CScriptCodeTextEdit : public CCodeTextEdit
 {
@@ -60,6 +61,8 @@ public:
 
 	SaveResult Save( SaveMode saveMode = SaveMode::IF_NEEDED, PromptMode promptMode = PromptMode::IF_NEEDED, FileSelectMode fileSelect = FileSelectMode::IF_NEEDED );
 
+	void RefreshSyntaxHighlights();
+
 protected:
 
 	bool OpenSaveDialog();
@@ -78,6 +81,8 @@ private:
 	std::string m_szName;
 	std::shared_ptr<CScript> m_pScriptFile;
 	std::shared_ptr<CASIDEApp> m_App;
+
+	std::unique_ptr<CAngelscriptSyntaxHighlighter> m_SyntaxHighlighter;
 };
 
 #endif //IDE_UI_CSCRIPTCODETEXTEDIT_H

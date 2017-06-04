@@ -12,6 +12,7 @@
 #include "Angelscript/CScript.h"
 #include "Angelscript/IConfigurationEventListener.h"
 #include "Angelscript/CConfiguration.h"
+#include "ui/CASMainWindow.h"
 
 #include "CConfigurationManager.h"
 #include "COptions.h"
@@ -83,6 +84,11 @@ std::shared_ptr<CConfiguration> CASIDEApp::GetActiveConfiguration() const
 	return m_Options->GetConfigurationManager()->GetActiveConfiguration();
 }
 
+void CASIDEApp::SetMainWindow( const std::shared_ptr<CASMainWindow>& window )
+{
+	m_MainWindow = window;
+}
+
 void CASIDEApp::AddASEventListener( IASEventListener* pListener )
 {
 	if( m_ASManager )
@@ -112,6 +118,11 @@ bool CASIDEApp::CompileScript( const std::string& szSectionName, const std::stri
 	return m_ASManager->CompileScript( szSectionName, szScriptContents );
 }
 
+void CASIDEApp::RefreshSyntaxHighlights()
+{
+	m_MainWindow->RefreshSyntaxHighlights();
+}
+
 void CASIDEApp::LoadSettings()
 {
 	QSettings settings;
@@ -123,7 +134,12 @@ void CASIDEApp::SaveSettings()
 {
 	QSettings settings;
 
+	//Clear everything so no old stuff stays behind
+	settings.clear();
+
 	m_Options->SaveOptions( settings );
+
+	RefreshSyntaxHighlights();
 }
 
 void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )

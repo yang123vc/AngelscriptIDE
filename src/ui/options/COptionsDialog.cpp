@@ -10,8 +10,9 @@
 #include "ui/CUI.h"
 
 #include "CBaseOptionsWidget.h"
-#include "CGeneralWidget.h"
 #include "CConfigurationsWidget.h"
+#include "CGeneralWidget.h"
+#include "CSyntaxHighlightWidget.h"
 
 #include "COptionsDialog.h"
 
@@ -24,14 +25,17 @@ COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<
 
 	QTabWidget* pTabs = new QTabWidget();
 
-	CGeneralWidget* pGeneral		= new CGeneralWidget( m_App, ui, this );
-	CConfigurationsWidget* pConfig	= new CConfigurationsWidget( m_App, ui, this );
+	auto pGeneral	= new CGeneralWidget( m_App, ui, this );
+	auto pConfig	= new CConfigurationsWidget( m_App, ui, this );
+	auto pSyntax	= new CSyntaxHighlightWidget( m_App, ui, this );
 
 	m_Widgets.push_back( pGeneral );
 	m_Widgets.push_back( pConfig );
+	m_Widgets.push_back( pSyntax );
 
 	pTabs->addTab( pGeneral, tr( "General" ) );
 	pTabs->addTab( pConfig, tr( "Configurations" ) );
+	pTabs->addTab( pSyntax, tr( "Syntax Highlighting" ) );
 
 	m_pMessageLabel = new QLabel();
 	m_pMessageLabel->setStyleSheet( "QLabel { color: red; }" ); //Red color

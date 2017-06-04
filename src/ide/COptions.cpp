@@ -1,6 +1,8 @@
 #include <algorithm>
 
-#include <QSettings.h>
+#include <QColor>
+#include <QFont>
+#include <QSettings>
 
 #include "CConfigurationManager.h"
 #include "COptions.h"
@@ -43,6 +45,11 @@ void COptions::ClearRecentFiles()
 	m_RecentFiles.clear();
 }
 
+void COptions::SetPatterns( QVector<Pattern>&& patterns )
+{
+	m_Patterns = std::move( patterns );
+}
+
 void COptions::LoadOptions( QSettings& settings )
 {
 	ClearRecentFiles();
@@ -65,6 +72,8 @@ void COptions::LoadOptions( QSettings& settings )
 	settings.endArray();
 
 	settings.endGroup();
+
+	LoadPatterns( settings, m_Patterns );
 
 	m_ConfigurationManager->LoadConfigurations( settings );
 }
@@ -92,5 +101,60 @@ void COptions::SaveOptions( QSettings& settings )
 
 	settings.endGroup();
 
+	settings.beginGroup( "patterns" );
+
+	for( const auto& pattern : m_Patterns )
+	{
+		settings.beginGroup( pattern.m_szPatternName );
+
+		settings.setValue( "pattern", pattern.m_szPattern );
+		settings.setValue( "fg_color", pattern.m_FGColor.color() );
+		settings.setValue( "bg_color", pattern.m_BGColor.color() );
+		settings.setValue( "bold", pattern.m_bBold );
+		settings.setValue( "underline", pattern.m_bUnderline );
+
+		settings.endGroup();
+	}
+
+	settings.endGroup();
+
 	m_ConfigurationManager->SaveConfigurations( settings );
+}
+
+void COptions::LoadPatterns( QSettings& settings, QVector<Pattern>& patterns )
+{
+	patterns.clear();
+
+	settings.beginGroup( "patterns" );
+
+	for( const auto& szPatternName : settings.childGroups() )
+	{
+		settings.beginGroup( szPatternName );
+
+		auto szPattern = settings.value( "pattern" ).toString();
+
+		szPattern = szPattern.trimmed();
+
+		if( !szPattern.isEmpty() )
+		{
+			Pattern pattern;
+
+			pattern.m_szPatternName = szPatternName;
+			pattern.m_szPattern = std::move( szPattern );
+			pattern.m_FGColor = settings.value( "fg_color", QColor( Qt::black ) ).value<QColor>();
+			pattern.m_BGColor = settings.value( "bg_color", QColor( Qt::black ) ).value<QColor>();
+			pattern.m_bBold = settings.value( "bold", false ).toBool();
+			pattern.m_bUnderline = settings.value( "underline", false ).toBool();
+
+			patterns.push_back( std::move( pattern ) );
+		}
+		else
+		{
+			//TODO: log error - Solokiller
+		}
+
+		settings.endGroup();
+	}
+
+	settings.endGroup();
 }

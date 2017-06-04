@@ -10,6 +10,7 @@
 
 #include "Angelscript/IConfigurationEventListener.h"
 
+class CASMainWindow;
 class CASManager;
 class CConfiguration;
 class COptions;
@@ -41,6 +42,8 @@ public:
 
 	std::shared_ptr<CConfiguration> GetActiveConfiguration() const;
 
+	void SetMainWindow( const std::shared_ptr<CASMainWindow>& window );
+
 	//ASManager passthrough
 	void AddASEventListener( IASEventListener* pListener );
 
@@ -52,6 +55,8 @@ public:
 
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
+	void RefreshSyntaxHighlights();
+
 	void LoadSettings();
 	void SaveSettings();
 
@@ -59,9 +64,10 @@ public:
 	void ConfigEventOccurred( const ConfigEvent& event ) override;
 
 private:
-	std::shared_ptr<IUI>					m_UI;
-	std::shared_ptr<CASManager>				m_ASManager;
-	std::shared_ptr<COptions>				m_Options;
+	std::shared_ptr<IUI>			m_UI;
+	std::shared_ptr<CASManager>		m_ASManager;
+	std::shared_ptr<COptions>		m_Options;
+	std::shared_ptr<CASMainWindow>	m_MainWindow;
 };
 
 #endif //IDE_CASIDEAPP_H

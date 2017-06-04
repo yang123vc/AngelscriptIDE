@@ -137,6 +137,16 @@ void CASMainWindow::AppShutdown()
 	CloseAllFiles( true );
 }
 
+void CASMainWindow::RefreshSyntaxHighlights()
+{
+	for( int i = 0; i < m_WidgetUI->m_pFiles->count(); ++i )
+	{
+		auto pScript = m_WidgetUI->m_pFiles->widget( i );
+
+		static_cast<CScriptCodeTextEdit*>( pScript )->RefreshSyntaxHighlights();
+	}
+}
+
 void CASMainWindow::closeEvent( QCloseEvent* pEvent )
 {
 	//User saved or discarded all modified open files; close window

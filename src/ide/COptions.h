@@ -5,6 +5,9 @@
 #include <vector>
 #include <list>
 
+#include <QBrush>
+#include <QVector>
+
 class IConfigurationManager;
 class QSettings;
 
@@ -19,6 +22,19 @@ public:
 	static const bool DEFAULT_START_MAXIMIZED = true;
 
 	static const size_t MAX_RECENT_FILES = 5;
+
+public:
+	struct Pattern
+	{
+		QString m_szPatternName;
+		QString m_szPattern;
+
+		QBrush m_FGColor = Qt::black;
+		QBrush m_BGColor = Qt::white;
+
+		bool m_bBold = false;
+		bool m_bUnderline = false;
+	};
 
 public:
 	typedef std::list<std::string> RecentFiles_t;
@@ -49,8 +65,14 @@ public:
 
 	void ClearRecentFiles();
 
+	const QVector<Pattern>& GetPatterns() const { return m_Patterns; }
+
+	void SetPatterns( QVector<Pattern>&& patterns );
+
 	void LoadOptions( QSettings& settings );
 	void SaveOptions( QSettings& settings );
+
+	static void LoadPatterns( QSettings& settings, QVector<Pattern>& patterns );
 
 private:
 	int m_iTabWidth = DEFAULT_TAB_WIDTH;
@@ -61,6 +83,8 @@ private:
 	std::shared_ptr<IConfigurationManager> m_ConfigurationManager;
 
 	RecentFiles_t m_RecentFiles;
+
+	QVector<Pattern> m_Patterns;
 };
 
 #endif //IDE_COPTIONS_H

@@ -9,10 +9,13 @@ add_sources(
 	CGeneralWidget.h
 	COptionsDialog.cpp
 	COptionsDialog.h
+	CSyntaxHighlightWidget.cpp
+	CSyntaxHighlightWidget.h
 )
 
 add_forms(
 	CConfigurationsWidget.ui
 	CEditConfigurationsDialog.ui
 	CGeneralWidget.ui
+	CSyntaxHighlightWidget.ui
 )

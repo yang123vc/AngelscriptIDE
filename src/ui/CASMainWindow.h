@@ -44,6 +44,8 @@ public:
 	void OnBeforeRun() override;
 	void AppShutdown() override;
 
+	void RefreshSyntaxHighlights();
+
 protected:
 
 	virtual void closeEvent( QCloseEvent* pEvent ) override;
