@@ -56,12 +56,7 @@ struct ASCompilationEndEvent
 enum class ASConfigChangeType
 {
 	SET = 0,
-	CLEARED,
-
-	/**
-	*	A configuration was provided, but it failed to load
-	*/
-	FAILED_TO_LOAD
+	CLEARED
 };
 
 struct ASConfigChangeEvent

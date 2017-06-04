@@ -132,12 +132,6 @@ void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 					break;
 				}
 
-			case ASConfigChangeType::FAILED_TO_LOAD:
-				{
-					WriteString( std::string( "Could not find configuration \"" ) + *event.configChange.pszName + "\"!\n" );
-					break;
-				}
-
 			default: break;
 			}
 			break;

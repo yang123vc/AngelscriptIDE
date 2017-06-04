@@ -36,17 +36,17 @@ public slots:
 
 	//Input from child widgets
 	//A child was changed from saved settings
-	void ChangesMade( bool fState );
+	void ChangesMade( bool bState );
 
 private:
 	std::shared_ptr<CASIDEApp> m_App;
 	std::shared_ptr<CUI> m_UI;
 	std::vector<CBaseOptionsWidget*> m_Widgets;
-	int m_iChangesMade;
-	bool m_fApplyingChanges;
 
 	QLabel* m_pMessageLabel;
 	QPushButton* m_pApplyButton;
+
+	bool m_bInitialized = false;
 };
 
 #endif //IDE_UI_OPTIONS_COPTIONSDIALOG_H

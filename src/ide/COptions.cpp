@@ -1,22 +1,17 @@
 #include <algorithm>
-#include <iostream>
 
-#include "util/CProperties.h"
-#include "util/StringUtils.h"
+#include <QSettings.h>
 
+#include "CConfigurationManager.h"
 #include "COptions.h"
 
-COptions::COptions( const std::string& szFilename )
-	: m_szFilename( szFilename )
-	, m_iTabWidth( DEFAULT_TAB_WIDTH )
-	, m_fMaximized( true )
+COptions::COptions()
+	: m_ConfigurationManager( std::make_shared<CConfigurationManager>() )
 {
-
 }
 
-void COptions::SetActiveConfigurationName( const std::string& szActiveConfiguration )
+COptions::~COptions()
 {
-	m_szActiveConfiguration = szActiveConfiguration;
 }
 
 void COptions::AddRecentFile( const std::string& szFilename )
@@ -48,75 +43,54 @@ void COptions::ClearRecentFiles()
 	m_RecentFiles.clear();
 }
 
-std::shared_ptr<COptions> COptions::Load( const std::string& szFilename, bool* pLoaded )
+void COptions::LoadOptions( QSettings& settings )
 {
-	CProperties properties;
+	ClearRecentFiles();
 
-	auto options = std::make_shared<COptions>( szFilename );
+	settings.beginGroup( "general" );
 
-	bool fLoaded = false;
+	SetTabWidth( settings.value( "tabwidth", DEFAULT_TAB_WIDTH ).toInt() );
+	SetStartMaximized( settings.value( "startmaximized", DEFAULT_START_MAXIMIZED ).toBool() );
+	SetCurrentDirectory( settings.value( "currentdir" ).toString().toStdString() );
 
-	if( properties.Load( szFilename ) )
+	const auto iRecentFilesCount = settings.beginReadArray( "recentfiles" );
+	
+	for( int i = 0; i < iRecentFilesCount; ++i )
 	{
-		const auto& keyvalues = properties.GetKeyvalues();
+		settings.setArrayIndex( i );
 
-		auto configs = keyvalues.find( "configs" );
-
-		if( configs != keyvalues.end() )
-			Split( configs->second, CONFIGS_DELIMITER, options->GetConfigurations() );
-
-		auto activeConfig = keyvalues.find( "activeconfig" );
-
-		options->m_szActiveConfiguration = activeConfig != keyvalues.end() ? activeConfig->second : "";
-
-		auto tabWidth = keyvalues.find( "tabwidth" );
-
-		options->m_iTabWidth = tabWidth != keyvalues.end() ? std::stol( tabWidth->second ) : DEFAULT_TAB_WIDTH;
-
-		auto startMaximized = keyvalues.find( "startmaximized" );
-
-		options->m_fMaximized = startMaximized != keyvalues.end() ? startMaximized->second == "true" : true;
-
-		auto recentFiles = keyvalues.find( "recentfiles" );
-
-		if( recentFiles != keyvalues.end() )
-		{
-			Split( recentFiles->second, RECENTFILES_DELIMITER, options->m_RecentFiles );
-
-			if( options->m_RecentFiles.size() > MAX_RECENT_FILES )
-				options->m_RecentFiles.resize( MAX_RECENT_FILES );
-		}
-
-		auto currentDir = keyvalues.find( "currentdir" );
-
-		options->SetCurrentDirectory( currentDir != keyvalues.end() ? currentDir->second : "." );
-
-		fLoaded = true;
+		m_RecentFiles.emplace_back( settings.value( "file" ).toString().toStdString() );
 	}
 
-	if( pLoaded )
-		*pLoaded = fLoaded;
+	settings.endArray();
 
-	return options;
+	settings.endGroup();
+
+	m_ConfigurationManager->LoadConfigurations( settings );
 }
 
-bool COptions::Save()
+void COptions::SaveOptions( QSettings& settings )
 {
-	CProperties properties;
+	settings.beginGroup( "general" );
 
-	auto& keyvalues = properties.GetKeyvalues();
+	settings.setValue( "tabwidth", GetTabWidth() );
+	settings.setValue( "startmaximized", StartMaximized() );
+	settings.setValue( "currentdir", GetCurrentDirectory().c_str() );
 
-	keyvalues.insert( { "configs", Implode( GetConfigurations(), CONFIGS_DELIMITER ) } );
+	settings.beginWriteArray( "recentfiles", m_RecentFiles.size() );
 
-	keyvalues.insert( { "activeconfig", m_szActiveConfiguration } );
+	int iFile = 0;
 
-	keyvalues.insert( { "tabwidth", std::to_string( m_iTabWidth ) } );
+	for( const auto& file : m_RecentFiles )
+	{
+		settings.setArrayIndex( iFile++ );
 
-	keyvalues.insert( { "startmaximized", m_fMaximized ? "true" : "false" } );
+		settings.setValue( "file", file.c_str() );
+	}
 
-	keyvalues.insert( { "recentfiles", Implode( GetRecentFiles(), RECENTFILES_DELIMITER ) } );
+	settings.endArray();
 
-	keyvalues.insert( { "currentdir", m_szCurrentDir } );
+	settings.endGroup();
 
-	return properties.Save( m_szFilename );
+	m_ConfigurationManager->SaveConfigurations( settings );
 }

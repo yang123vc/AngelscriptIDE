@@ -7,19 +7,22 @@ CBaseOptionsWidget::CBaseOptionsWidget( std::shared_ptr<CASIDEApp> app, std::sha
 	, m_App( app )
 	, m_UI( ui )
 	, m_pParent( pParent )
-	, m_fChangesMade( false )
 {
-	connect( this, SIGNAL( ChangesMade( bool ) ), pParent, SLOT( ChangesMade( bool ) ) );
+	ConnectToParent();
 }
 
 CBaseOptionsWidget::~CBaseOptionsWidget()
 {
-
 }
 
-void CBaseOptionsWidget::SetChangesMade( bool fState )
+void CBaseOptionsWidget::SetChangesMade( bool bState )
 {
-	m_fChangesMade = fState;
+	m_bChangesMade = bState;
 
-	ChangesMade( fState );
+	ChangesMade( bState );
+}
+
+void CBaseOptionsWidget::ConnectToParent()
+{
+	connect( this, SIGNAL( ChangesMade( bool ) ), m_pParent, SLOT( ChangesMade( bool ) ) );
 }

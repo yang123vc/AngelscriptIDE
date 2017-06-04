@@ -9,6 +9,9 @@ class CASIDEApp;
 class COptionsDialog;
 class CUI;
 
+/**
+*	Base class for options pages.
+*/
 class CBaseOptionsWidget : public QWidget
 {
 	Q_OBJECT
@@ -22,13 +25,16 @@ public:
 
 	virtual void PostApply() {}
 
-	bool HaveChangesBeenMade() const { return m_fChangesMade; }
+	bool HaveChangesBeenMade() const { return m_bChangesMade; }
 
-	void SetChangesMade( bool fState );
+	void SetChangesMade( bool bState );
 
 signals:
 
-	void ChangesMade( bool fState );
+	void ChangesMade( bool bState );
+
+private:
+	void ConnectToParent();
 
 protected:
 	std::shared_ptr<CASIDEApp> m_App;
@@ -36,7 +42,7 @@ protected:
 	COptionsDialog* m_pParent;
 
 private:
-	bool m_fChangesMade;
+	bool m_bChangesMade = false;
 };
 
 #endif //IDE_UI_OPTIONS_CBASEOPTIONSWIDGET_H

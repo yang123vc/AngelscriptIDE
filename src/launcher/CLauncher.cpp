@@ -41,6 +41,9 @@ int CLauncher::Run( int iArgc, char** argv )
 	qApplication.connect( &qApplication, SIGNAL( aboutToQuit() ), this, SLOT( OnQuit() ) );
 
 	auto m_MainWindow = m_MainWindowFactory( m_App, ui );
+
+	m_App->OnBeforeRun();
+
 	m_MainWindow->show();
 
 	return qApplication.exec();

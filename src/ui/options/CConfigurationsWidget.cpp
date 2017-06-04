@@ -19,28 +19,30 @@
 
 CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, COptionsDialog* pParent )
 	: CBaseOptionsWidget( app, ui, pParent )
-	, m_WidgetUI( new Ui::CConfigurationsWidget )
-	, m_fChangingContents( false )
+	, m_WidgetUI( std::make_unique<Ui::CConfigurationsWidget>() )
 {
 	m_WidgetUI->setupUi( this );
 
-	app->GetConfigurationManager()->AddConfigurationEventListener( this );
+	auto configManager = app->GetOptions()->GetConfigurationManager();
 
-	auto options = m_App->GetOptions();
-	const auto& configurations = options->GetConfigurations();
+	configManager->AddConfigurationEventListener( this );
 
-	if( !configurations.empty() )
+	const auto uiCount = configManager->GetConfigurationCount();
+
+	SetFieldsEnabled( uiCount > 0 );
+
+	for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex )
 	{
-		for( const auto& config : configurations )
-			m_WidgetUI->m_pCurrentConfigurationComboBox->addItem( config.c_str() );
-
-		const auto& szActiveConfig = options->GetActiveConfigurationName();
-
-		if( !SetActiveConfiguration( szActiveConfig.c_str() ) )
-			SetActiveConfiguration( 0 );
+		m_WidgetUI->m_pCurrentConfigurationComboBox->addItem( configManager->GetConfiguration( uiIndex )->GetName().c_str() );
 	}
-	else
-		SetFieldsEnabled( false );
+
+	if( uiCount > 0 )
+	{
+		auto active = configManager->GetActiveConfiguration();
+
+		if( !active || !SetCurrentConfiguration( active->GetName().c_str() ) )
+			SetCurrentConfiguration( 0 );
+	}
 
 	connect( m_WidgetUI->m_pManageConfigs, SIGNAL( clicked() ), this, SLOT( OpenEditConfigs() ) );
 
@@ -67,7 +69,7 @@ CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, st
 
 CConfigurationsWidget::~CConfigurationsWidget()
 {
-	m_App->GetConfigurationManager()->RemoveConfigurationEventListener( this );
+	m_App->GetOptions()->GetConfigurationManager()->RemoveConfigurationEventListener( this );
 }
 
 bool CConfigurationsWidget::CanSave( QString& szReason )
@@ -79,38 +81,6 @@ bool CConfigurationsWidget::CanSave( QString& szReason )
 		szReason = "Configuration name must be valid";
 		return false;
 	}
-	else if( szName.contains( COptions::CONFIGS_DELIMITER ) )
-	{
-		szReason = QString( "Configuration names cannot contain a '%1'" ).arg( COptions::CONFIGS_DELIMITER );
-		return false;
-	}
-
-	for( int iIndex = 0; iIndex < m_WidgetUI->m_pWordList->count(); ++iIndex )
-	{
-		if( m_WidgetUI->m_pWordList->item( iIndex )->text().contains( CConfiguration::WORD_DELIMITER ) )
-		{
-			szReason = QString( "Words cannot contain the symbol '%1'" ).arg( CConfiguration::WORD_DELIMITER );
-			return false;
-		}
-	}
-
-	for( int iIndex = 0; iIndex < m_WidgetUI->m_pIncludePathsList->count(); ++iIndex )
-	{
-		if( m_WidgetUI->m_pIncludePathsList->item( iIndex )->text().contains( CConfiguration::INCLUDEPATH_DELIMITER ) )
-		{
-			szReason = QString( "Include paths cannot contain the symbol '%1'" ).arg( CConfiguration::INCLUDEPATH_DELIMITER );
-			return false;
-		}
-	}
-
-	for( int iIndex = 0; iIndex < m_WidgetUI->m_pExtensionsList->count(); ++iIndex )
-	{
-		if( m_WidgetUI->m_pExtensionsList->item( iIndex )->text().contains( CConfiguration::EXTENSION_DELIMITER ) )
-		{
-			szReason = QString( "Extensions cannot contain the symbol '%1'" ).arg( CConfiguration::EXTENSION_DELIMITER );
-			return false;
-		}
-	}
 
 	return true;
 }
@@ -120,7 +90,7 @@ void CConfigurationsWidget::ApplyChanges()
 	if( HaveChangesBeenMade() )
 	{
 		SetChangesMade( false );
-		SaveActiveConfiguration();
+		SaveCurrentConfiguration();
 	}
 }
 
@@ -175,14 +145,14 @@ void CConfigurationsWidget::ConfigEventOccurred( const ConfigEvent& event )
 	}
 }
 
-bool CConfigurationsWidget::SetActiveConfiguration( const QString& szActiveConfig )
+bool CConfigurationsWidget::SetCurrentConfiguration( const QString& szActiveConfig )
 {
-	return SetActiveConfiguration( m_WidgetUI->m_pCurrentConfigurationComboBox->findText( szActiveConfig ) );
+	return SetCurrentConfiguration( m_WidgetUI->m_pCurrentConfigurationComboBox->findText( szActiveConfig ) );
 }
 
-bool CConfigurationsWidget::SetActiveConfiguration( int iIndex )
+bool CConfigurationsWidget::SetCurrentConfiguration( int iIndex )
 {
-	bool fSuccess = false;
+	bool bSuccess = false;
 
 	if( iIndex != -1 )
 	{
@@ -200,7 +170,7 @@ bool CConfigurationsWidget::SetActiveConfiguration( int iIndex )
 
 			switch( iRet )
 			{
-			case QMessageBox::Save: SaveActiveConfiguration(); break;
+			case QMessageBox::Save: SaveCurrentConfiguration(); break;
 			case QMessageBox::Discard: break;
 			default:
 			case QMessageBox::Cancel: return false;
@@ -219,25 +189,22 @@ bool CConfigurationsWidget::SetActiveConfiguration( int iIndex )
 			m_WidgetUI->m_pIncludePathsList->clear();
 			m_WidgetUI->m_pExtensionsList->clear();
 
-			auto config = CConfiguration::Load( m_App->GetConfigurationManager(), szActiveConfig.toStdString() );
+			m_CurrentConfiguration = m_App->GetOptions()->GetConfigurationManager()->Find( szActiveConfig.toStdString() );
 
-			m_fChangingContents = true;
-
-			if( config )
+			if( m_CurrentConfiguration )
 			{
+				m_WidgetUI->m_pConfigurationNameLineEdit->setText( m_CurrentConfiguration->GetName().c_str() );
+				m_WidgetUI->m_pAngelscriptConfigFileLineEdit->setText( m_CurrentConfiguration->GetConfigFilename().c_str() );
+				m_WidgetUI->m_pIncludeFilenameLineEdit->setText( m_CurrentConfiguration->GetIncludeFilename().c_str() );
+				m_WidgetUI->m_pFallbackExtLineEdit->setText( m_CurrentConfiguration->GetFallbackExtension().c_str() );
+
+				AddStringsToList( m_WidgetUI->m_pWordList, m_CurrentConfiguration->GetWords() );
+				AddStringsToList( m_WidgetUI->m_pIncludePathsList, m_CurrentConfiguration->GetIncludePaths() );
+				AddStringsToList( m_WidgetUI->m_pExtensionsList, m_CurrentConfiguration->GetExtensions() );
+
 				SetFieldsEnabled( true );
 
-				m_WidgetUI->m_pConfigurationNameLineEdit->setText( config->GetName().c_str() );
-				m_szConfigName = m_WidgetUI->m_pConfigurationNameLineEdit->text();
-				m_WidgetUI->m_pAngelscriptConfigFileLineEdit->setText( config->GetConfigFilename().c_str() );
-				m_WidgetUI->m_pIncludeFilenameLineEdit->setText( config->GetIncludeFilename().c_str() );
-				m_WidgetUI->m_pFallbackExtLineEdit->setText( config->GetFallbackExtension().c_str() );
-
-				AddStringsToList( m_WidgetUI->m_pWordList, config->GetWords() );
-				AddStringsToList( m_WidgetUI->m_pIncludePathsList, config->GetIncludePaths() );
-				AddStringsToList( m_WidgetUI->m_pExtensionsList, config->GetExtensions() );
-
-				fSuccess = true;
+				bSuccess = true;
 			}
 			else
 			{
@@ -251,24 +218,32 @@ bool CConfigurationsWidget::SetActiveConfiguration( int iIndex )
 				SetFieldsEnabled( false );
 			}
 
-			m_fChangingContents = false;
+			//Could have been set by the field updates above
+			SetChangesMade( false );
 		}
 		else
+		{
+			m_CurrentConfiguration = nullptr;
 			std::cout << "Index out of range in CConfigurationsWidget::SetActiveConfiguration!" << std::endl;
+		}
+	}
+	else
+	{
+		m_CurrentConfiguration = nullptr;
 	}
 
-	return fSuccess;
+	return bSuccess;
 }
 
-void CConfigurationsWidget::SaveActiveConfiguration()
+void CConfigurationsWidget::SaveCurrentConfiguration()
 {
-	auto config = std::make_shared<CConfiguration>( m_App->GetConfigurationManager(), m_szConfigName.toStdString() );
+	m_CurrentConfiguration->SetConfigFilename( m_WidgetUI->m_pAngelscriptConfigFileLineEdit->text().trimmed().toStdString() );
+	m_CurrentConfiguration->SetIncludeFilename( m_WidgetUI->m_pIncludeFilenameLineEdit->text().trimmed().toStdString() );
+	m_CurrentConfiguration->SetFallbackExtension( m_WidgetUI->m_pFallbackExtLineEdit->text().trimmed().toStdString() );
 
-	config->SetConfigFilename( m_WidgetUI->m_pAngelscriptConfigFileLineEdit->text().trimmed().toStdString() );
-	config->SetIncludeFilename( m_WidgetUI->m_pIncludeFilenameLineEdit->text().trimmed().toStdString() );
-	config->SetFallbackExtension( m_WidgetUI->m_pFallbackExtLineEdit->text().trimmed().toStdString() );
+	auto& words = m_CurrentConfiguration->GetWords();
 
-	auto& words = config->GetWords();
+	words.clear();
 
 	for( int iIndex = 0; iIndex < m_WidgetUI->m_pWordList->count(); ++iIndex )
 	{
@@ -278,7 +253,9 @@ void CConfigurationsWidget::SaveActiveConfiguration()
 			words.push_back( szText.toStdString() );
 	}
 
-	auto& includePaths = config->GetIncludePaths();
+	auto& includePaths = m_CurrentConfiguration->GetIncludePaths();
+
+	includePaths.clear();
 
 	for( int iIndex = 0; iIndex < m_WidgetUI->m_pIncludePathsList->count(); ++iIndex )
 	{
@@ -288,7 +265,9 @@ void CConfigurationsWidget::SaveActiveConfiguration()
 			includePaths.push_back( szText.toStdString() );
 	}
 
-	auto& extensions = config->GetExtensions();
+	auto& extensions = m_CurrentConfiguration->GetExtensions();
+
+	extensions.clear();
 
 	for( int iIndex = 0; iIndex < m_WidgetUI->m_pExtensionsList->count(); ++iIndex )
 	{
@@ -298,21 +277,16 @@ void CConfigurationsWidget::SaveActiveConfiguration()
 			extensions.push_back( szText.toStdString() );
 	}
 
-	const QString szConfigName( config->GetName().c_str() );
-
-	if( config->Save() )
-		m_UI->SendMessage( QString( "Configuration '%1' saved\n" ).arg( szConfigName ) );
-	else
-		m_UI->SendMessage( QString( "Configuration '%1' not saved\n" ).arg( szConfigName ) );
+	const QString szConfigName( m_CurrentConfiguration->GetName().c_str() );
 
 	QString szNewName = m_WidgetUI->m_pConfigurationNameLineEdit->text().trimmed();
 
-	if( m_szConfigName != szNewName )
+	if( szConfigName != szNewName )
 	{
 		try
 		{
-			config->Rename( szNewName.toStdString() );
-			m_UI->SendMessage( QString( "Renaming configuration '%1' to '%2'\n" ).arg( szConfigName).arg( szNewName ) );
+			m_App->GetOptions()->GetConfigurationManager()->RenameConfiguration( m_CurrentConfiguration, szNewName.toStdString() );
+			m_UI->SendMessage( QString( "Renaming configuration '%1' to '%2'\n" ).arg( szConfigName ).arg( szNewName ) );
 		}
 		catch( const CConfigurationException& e )
 		{
@@ -321,29 +295,9 @@ void CConfigurationsWidget::SaveActiveConfiguration()
 	}
 }
 
-void CConfigurationsWidget::SetFieldsEnabled( bool fState )
+void CConfigurationsWidget::SetFieldsEnabled( bool bState )
 {
-	m_WidgetUI->m_pCurrentConfigurationComboBox->setEnabled( fState );
-
-	m_WidgetUI->m_pConfigurationNameLineEdit->setEnabled( fState );
-
-	m_WidgetUI->m_pAngelscriptConfigFileLineEdit->setEnabled( fState );
-	m_WidgetUI->m_pConfigFileSelectButton->setEnabled( fState );
-
-	m_WidgetUI->m_pIncludeFilenameLineEdit->setEnabled( fState );
-	m_WidgetUI->m_pIncludeFilenameButton->setEnabled( fState );
-
-	m_WidgetUI->m_pWordList->setEnabled( fState );
-	m_WidgetUI->m_pAddWordButton->setEnabled( fState );
-	m_WidgetUI->m_pRemoveWordButton->setEnabled( fState );
-
-	m_WidgetUI->m_pIncludePathsList->setEnabled( fState );
-	m_WidgetUI->m_pAddIncludePathButton->setEnabled( fState );
-	m_WidgetUI->m_pRemoveIncludePathButton->setEnabled( fState );
-
-	m_WidgetUI->m_pExtensionsList->setEnabled( fState );
-	m_WidgetUI->m_pAddExtensionButton->setEnabled( fState );
-	m_WidgetUI->m_pRemoveExtensionButton->setEnabled( fState );
+	m_WidgetUI->m_pConfigOptions->setEnabled( bState );
 }
 
 void CConfigurationsWidget::AddStringToList( QListWidget* pList, const std::string& szString )
@@ -371,19 +325,17 @@ void CConfigurationsWidget::OpenEditConfigs()
 
 void CConfigurationsWidget::ConfigurationSelected( int iIndex )
 {
-	SetActiveConfiguration( iIndex );
+	SetCurrentConfiguration( iIndex );
 }
 
 void CConfigurationsWidget::NameChanged( const QString& )
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 }
 
 void CConfigurationsWidget::ConfigFileChanged( const QString& )
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 }
 
 void CConfigurationsWidget::OpenSelectConfigFileDialog()
@@ -396,8 +348,7 @@ void CConfigurationsWidget::OpenSelectConfigFileDialog()
 
 void CConfigurationsWidget::IncludeFilenameChanged( const QString& )
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 }
 
 void CConfigurationsWidget::OpenIncludeFilenameFileDialog()
@@ -410,14 +361,12 @@ void CConfigurationsWidget::OpenIncludeFilenameFileDialog()
 
 void CConfigurationsWidget::FallbackExtensionsChanged( const QString& )
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 }
 
 void CConfigurationsWidget::AddWord()
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 
 	AddStringToList( m_WidgetUI->m_pWordList, "" );
 }
@@ -428,8 +377,7 @@ void CConfigurationsWidget::RemoveWord()
 
 	if( index.isValid() )
 	{
-		if( !m_fChangingContents )
-			SetChangesMade( true );
+		SetChangesMade( true );
 
 		delete m_WidgetUI->m_pWordList->takeItem( index.row() );
 	}
@@ -437,8 +385,7 @@ void CConfigurationsWidget::RemoveWord()
 
 void CConfigurationsWidget::AddIncludePath()
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 
 	AddStringToList( m_WidgetUI->m_pIncludePathsList, "" );
 }
@@ -449,8 +396,7 @@ void CConfigurationsWidget::RemoveIncludePath()
 
 	if( index.isValid() )
 	{
-		if( !m_fChangingContents )
-			SetChangesMade( true );
+		SetChangesMade( true );
 
 		delete m_WidgetUI->m_pIncludePathsList->takeItem( index.row() );
 	}
@@ -458,8 +404,7 @@ void CConfigurationsWidget::RemoveIncludePath()
 
 void CConfigurationsWidget::AddExtension()
 {
-	if( !m_fChangingContents )
-		SetChangesMade( true );
+	SetChangesMade( true );
 
 	AddStringToList( m_WidgetUI->m_pExtensionsList, "" );
 }
@@ -470,8 +415,7 @@ void CConfigurationsWidget::RemoveExtension()
 
 	if( index.isValid() )
 	{
-		if( !m_fChangingContents )
-			SetChangesMade( true );
+		SetChangesMade( true );
 
 		delete m_WidgetUI->m_pExtensionsList->takeItem( index.row() );
 	}

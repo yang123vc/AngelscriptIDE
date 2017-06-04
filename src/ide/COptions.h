@@ -5,46 +5,42 @@
 #include <vector>
 #include <list>
 
-class CConfiguration;
+class IConfigurationManager;
+class QSettings;
 
 /**
 *	Stores the configurations and global settings
-*	TODO: this is redundant because it stores data that is stored elsewhere as well. Refactor this class out of existence as much as possible - Solokiller
 */
 class COptions
 {
 public:
-	static const char CONFIGS_DELIMITER = ';';
-	static const char RECENTFILES_DELIMITER = ';';
-
 	static const int DEFAULT_TAB_WIDTH = 40;
+
+	static const bool DEFAULT_START_MAXIMIZED = true;
 
 	static const size_t MAX_RECENT_FILES = 5;
 
 public:
-	typedef std::vector<std::string> Configurations_t;
 	typedef std::list<std::string> RecentFiles_t;
 
-	COptions( const std::string& szFilename );
-	~COptions() = default;
+	COptions();
+	~COptions();
 
 	COptions( const COptions& other ) = default;
 	COptions& operator=( const COptions& other ) = default;
-
-	Configurations_t& GetConfigurations() { return m_Configurations; }
-	const Configurations_t& GetConfigurations() const { return m_Configurations; }
-
-	const std::string& GetActiveConfigurationName() const { return m_szActiveConfiguration; }
-
-	void SetActiveConfigurationName( const std::string& szActiveConfiguration );
 
 	int GetTabWidth() const { return m_iTabWidth; }
 
 	void SetTabWidth( int iTabWidth ) { m_iTabWidth = iTabWidth; }
 
-	bool StartMaximized() const { return m_fMaximized; }
+	bool StartMaximized() const { return m_bMaximized; }
 
-	void SetStartMaximized( bool fMaximized ) { m_fMaximized = fMaximized; }
+	void SetStartMaximized( bool bMaximized ) { m_bMaximized = bMaximized; }
+
+	const std::string& GetCurrentDirectory() const { return m_szCurrentDir; }
+	void SetCurrentDirectory( const std::string& szCurrentDir ) { m_szCurrentDir = szCurrentDir; }
+
+	const std::shared_ptr<IConfigurationManager>& GetConfigurationManager() { return m_ConfigurationManager; }
 
 	const RecentFiles_t& GetRecentFiles() const { return m_RecentFiles; }
 
@@ -53,23 +49,18 @@ public:
 
 	void ClearRecentFiles();
 
-	const std::string& GetCurrentDirectory() const { return m_szCurrentDir; }
-	void SetCurrentDirectory( const std::string& szCurrentDir ) { m_szCurrentDir = szCurrentDir; }
-
-	static std::shared_ptr<COptions> Load( const std::string& szFilename, bool* pLoaded = nullptr );
-
-	bool Save();
+	void LoadOptions( QSettings& settings );
+	void SaveOptions( QSettings& settings );
 
 private:
-	std::string m_szFilename;
-	Configurations_t m_Configurations;
-	std::string m_szActiveConfiguration;
-	int m_iTabWidth;
-	bool m_fMaximized;
-
-	RecentFiles_t m_RecentFiles;
+	int m_iTabWidth = DEFAULT_TAB_WIDTH;
+	bool m_bMaximized = DEFAULT_START_MAXIMIZED;
 
 	std::string m_szCurrentDir;				//The directory to start in for open and save operations
+
+	std::shared_ptr<IConfigurationManager> m_ConfigurationManager;
+
+	RecentFiles_t m_RecentFiles;
 };
 
 #endif //IDE_COPTIONS_H

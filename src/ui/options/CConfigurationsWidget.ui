@@ -14,57 +14,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="11" column="0">
-    <widget class="QLabel" name="m_pIncludePathsLabel">
-     <property name="toolTip">
-      <string>Include paths to search when handling #include statements.
-Paths starting with '.' are considered to be relative paths.</string>
-     </property>
-     <property name="text">
-      <string>Include paths to search:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="15" column="2">
-    <widget class="QPushButton" name="m_pAddExtensionButton">
-     <property name="text">
-      <string>Add</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="2">
-    <widget class="QPushButton" name="m_pAddIncludePathButton">
-     <property name="text">
-      <string>Add</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="2">
-    <widget class="QPushButton" name="m_pRemoveIncludePathButton">
-     <property name="text">
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="m_pAngelscriptConfigFileLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>Name of the configuration file used to set up the Angelscript API</string>
-     </property>
-     <property name="text">
-      <string>Angelscript config file:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="m_pIncludeFilenameLineEdit"/>
-   </item>
    <item row="0" column="0">
     <widget class="QPushButton" name="m_pManageConfigs">
      <property name="text">
@@ -73,6 +22,240 @@ Paths starting with '.' are considered to be relative paths.</string>
     </widget>
    </item>
    <item row="17" column="0" colspan="3">
+    <widget class="QWidget" name="m_pConfigOptions" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
+       <widget class="QLabel" name="m_pConfigurationNameLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Name of this configuration</string>
+        </property>
+        <property name="text">
+         <string>Configuration name:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="m_pAngelscriptConfigFileLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Name of the configuration file used to set up the Angelscript API</string>
+        </property>
+        <property name="text">
+         <string>Angelscript config file:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="m_pConfigurationNameLineEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="m_pIncludeFilename">
+        <property name="toolTip">
+         <string>Name of the file to include before compiling a script</string>
+        </property>
+        <property name="text">
+         <string>Include filename:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="m_pDefinedWordsLabel">
+        <property name="toolTip">
+         <string>Preprocessor words defined for a script being compiled</string>
+        </property>
+        <property name="text">
+         <string>Defined words:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="m_pFallbackExtLineEdit"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="m_pAngelscriptConfigFileLineEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="m_pConfigFileSelectButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="m_pIncludeFilenameLineEdit"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="m_pFallbackExtLabel">
+        <property name="toolTip">
+         <string>The fallback extension is used to find included files that have no extension</string>
+        </property>
+        <property name="text">
+         <string>Fallback extension:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QPushButton" name="m_pIncludeFilenameButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="3">
+       <widget class="QPushButton" name="m_pAddIncludePathButton">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" rowspan="2" colspan="3">
+       <widget class="QListWidget" name="m_pWordList">
+        <property name="selectionRectVisible">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLabel" name="m_pExtensionsLabel">
+        <property name="toolTip">
+         <string>File extensions to consider when opening and saving files</string>
+        </property>
+        <property name="text">
+         <string>Script file extensions to consider:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="m_pIncludePathsLabel">
+        <property name="toolTip">
+         <string>Include paths to search when handling #include statements.
+Paths starting with '.' are considered to be relative paths.</string>
+        </property>
+        <property name="text">
+         <string>Include paths to search:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0" rowspan="2" colspan="3">
+       <widget class="QListWidget" name="m_pIncludePathsList"/>
+      </item>
+      <item row="10" column="3">
+       <widget class="QPushButton" name="m_pRemoveIncludePathButton">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="3">
+       <widget class="QPushButton" name="m_pAddWordButton">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="3">
+       <widget class="QPushButton" name="m_pRemoveWordButton">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="3">
+       <widget class="QPushButton" name="m_pAddExtensionButton">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0" rowspan="2" colspan="3">
+       <widget class="QListWidget" name="m_pExtensionsList"/>
+      </item>
+      <item row="13" column="3">
+       <widget class="QPushButton" name="m_pRemoveExtensionButton">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="m_pCurrentConfigurationLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Current configuration</string>
+        </property>
+        <property name="text">
+         <string>Current configuration:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" colspan="2">
+       <widget class="QComboBox" name="m_pCurrentConfigurationComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="18" column="0" colspan="3">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -84,183 +267,6 @@ Paths starting with '.' are considered to be relative paths.</string>
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="4" column="2">
-    <widget class="QPushButton" name="m_pConfigFileSelectButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>40</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="m_pConfigurationNameLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>Name of this configuration</string>
-     </property>
-     <property name="text">
-      <string>Configuration name:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QComboBox" name="m_pCurrentConfigurationComboBox">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="m_pConfigurationNameLineEdit">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>2</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="m_pAngelscriptConfigFileLineEdit">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>2</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="2">
-    <widget class="QPushButton" name="m_pAddWordButton">
-     <property name="text">
-      <string>Add</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="m_pCurrentConfigurationLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string>Current configuration</string>
-     </property>
-     <property name="text">
-      <string>Current configuration:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="m_pIncludeFilename">
-     <property name="toolTip">
-      <string>Name of the file to include before compiling a script</string>
-     </property>
-     <property name="text">
-      <string>Include filename:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="m_pDefinedWordsLabel">
-     <property name="toolTip">
-      <string>Preprocessor words defined for a script being compiled</string>
-     </property>
-     <property name="text">
-      <string>Defined words:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0" rowspan="2" colspan="2">
-    <widget class="QListWidget" name="m_pWordList">
-     <property name="selectionRectVisible">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="2">
-    <widget class="QPushButton" name="m_pRemoveWordButton">
-     <property name="text">
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="2">
-    <widget class="QPushButton" name="m_pIncludeFilenameButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>40</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="16" column="2">
-    <widget class="QPushButton" name="m_pRemoveExtensionButton">
-     <property name="text">
-      <string>Remove</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="0" rowspan="2" colspan="2">
-    <widget class="QListWidget" name="m_pIncludePathsList"/>
-   </item>
-   <item row="14" column="0">
-    <widget class="QLabel" name="m_pExtensionsLabel">
-     <property name="toolTip">
-      <string>File extensions to consider when opening and saving files</string>
-     </property>
-     <property name="text">
-      <string>Script file extensions to consider:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="15" column="0" rowspan="2" colspan="2">
-    <widget class="QListWidget" name="m_pExtensionsList"/>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="m_pFallbackExtLabel">
-     <property name="toolTip">
-      <string>The fallback extension is used to find included files that have no extension</string>
-     </property>
-     <property name="text">
-      <string>Fallback extension:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QLineEdit" name="m_pFallbackExtLineEdit"/>
    </item>
   </layout>
  </widget>

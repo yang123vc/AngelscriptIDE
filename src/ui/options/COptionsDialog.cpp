@@ -19,8 +19,6 @@ COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<
 	: QDialog( pParent )
 	, m_App( app )
 	, m_UI( ui )
-	, m_iChangesMade( 0 )
-	, m_fApplyingChanges( false )
 {
 	setModal( true );
 
@@ -63,6 +61,8 @@ COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<
 	setLayout( pMainLayout );
 
 	resize( 400, 600 );
+
+	m_bInitialized = true;
 }
 
 COptionsDialog::~COptionsDialog()
@@ -71,44 +71,39 @@ COptionsDialog::~COptionsDialog()
 
 void COptionsDialog::ApplyChanges()
 {
-	if( m_iChangesMade )
-	{
-		bool fCanSave = true;
+	bool bCanSave = true;
 
-		QString szReason;
+	QString szReason;
+
+	for( auto optionPanel : m_Widgets )
+	{
+		bCanSave = optionPanel->CanSave( szReason );
+
+		if( !bCanSave )
+			break;
+	}
+
+	if( bCanSave )
+	{
+		m_pMessageLabel->setText( "" );
 
 		for( auto optionPanel : m_Widgets )
-		{
-			fCanSave = optionPanel->CanSave( szReason );
+			optionPanel->ApplyChanges();
 
-			if( !fCanSave )
-				break;
-		}
+		for( auto optionPanel : m_Widgets )
+			optionPanel->PostApply();
 
-		if( fCanSave )
-		{
-			m_pMessageLabel->setText( "" );
+		m_App->SaveSettings();
 
-			m_fApplyingChanges = true;
+		for( auto optionPanel : m_Widgets )
+			optionPanel->SetChangesMade( false );
 
-			for( auto optionPanel : m_Widgets )
-				optionPanel->ApplyChanges();
+		m_pApplyButton->setEnabled( false );
 
-			for( auto optionPanel : m_Widgets )
-				optionPanel->PostApply();
-
-			for( auto optionPanel : m_Widgets )
-				optionPanel->SetChangesMade( false );
-
-			m_fApplyingChanges = false;
-
-			ChangesMade( false );
-
-			m_UI->SendMessage( "Options saved\n" );
-		}
-		else
-			m_pMessageLabel->setText( szReason );
+		m_UI->SendMessage( "Options saved\n" );
 	}
+	else
+		m_pMessageLabel->setText( szReason );
 }
 
 void COptionsDialog::Ok()
@@ -129,17 +124,9 @@ void COptionsDialog::Apply()
 
 void COptionsDialog::ChangesMade( bool )
 {
-	//Ignore messages while applying changes
-	if( m_fApplyingChanges )
+	//Ignore changes made during construction
+	if( !m_bInitialized )
 		return;
 
-	m_iChangesMade = 0;
-
-	for( auto pWidget : m_Widgets )
-	{
-		if( pWidget->HaveChangesBeenMade() )
-			++m_iChangesMade;
-	}
-
-	m_pApplyButton->setEnabled( m_iChangesMade != 0 );
+	m_pApplyButton->setEnabled( true );
 }

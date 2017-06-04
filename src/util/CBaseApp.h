@@ -31,6 +31,11 @@ public:
 	virtual void Startup();
 
 	/**
+	*	Called right before the app starts running the main loop
+	*/
+	virtual void OnBeforeRun();
+
+	/**
 	*	Shuts down the app
 	*/
 	virtual void Shutdown();

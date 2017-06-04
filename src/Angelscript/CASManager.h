@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "IConfigurationEventListener.h"
 #include "util/CListenerManager.h"
 
 class CASEngineInstance;
@@ -14,17 +15,15 @@ struct asSMessageInfo;
 struct ASEvent;
 
 /**
-*	Manages the Angelscript engine, configurations and handles compilation
+*	Manages the Angelscript engine and handles compilation
 */
-class CASManager
+class CASManager : public IConfigurationEventListener
 {
 public:
 	CASManager( std::shared_ptr<IConfigurationManager> configurationManager );
 	~CASManager();
 
 	std::shared_ptr<IConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
-
-	std::shared_ptr<CConfiguration> GetActiveConfiguration() const { return m_ActiveConfiguration; }
 
 	void AddEventListener( IASEventListener* pListener );
 
@@ -36,26 +35,24 @@ public:
 
 	void MessageCallback( const asSMessageInfo* pMsg );
 
-	void SetActiveConfiguration( const std::string& szName );
-
-	void ClearActiveConfiguration();
-
-	void ReloadActiveConfiguration();
-
 	/**
 	*	Compiles a script
 	*/
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
+	void ConfigEventOccurred( const ConfigEvent& event ) override;
+
 protected:
 	void NotifyEventListeners( const ASEvent& event );
 
 private:
+	void ActiveConfigSet( const CConfiguration* pConfig );
+
+private:
 	std::unique_ptr<CASEngineInstance>		m_Instance;
 	std::shared_ptr<IConfigurationManager>	m_ConfigurationManager;
-	std::shared_ptr<CConfiguration>			m_ActiveConfiguration;
 	CListenerManager<IASEventListener>		m_EventListeners;
-	CListenerManager<IASCompilerListener>		m_CompilerListeners;
+	CListenerManager<IASCompilerListener>	m_CompilerListeners;
 
 private:
 	CASManager( const CASManager& ) = delete;

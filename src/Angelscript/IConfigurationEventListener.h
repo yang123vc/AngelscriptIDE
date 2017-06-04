@@ -1,7 +1,10 @@
 #ifndef ANGELSCRIPT_ICONFIGURATIONEVENTLISTENER_H
 #define ANGELSCRIPT_ICONFIGURATIONEVENTLISTENER_H
 
+#include <memory>
 #include <string>
+
+class CConfiguration;
 
 struct ConfigAddEvent
 {
@@ -11,17 +14,20 @@ struct ConfigAddEvent
 struct ConfigRemoveEvent
 {
 	const std::string* pszName;
+	bool bIsActiveConfig;
 };
 
 struct ConfigRenameEvent
 {
 	const std::string* pszOldName;
 	const std::string* pszNewName;
+	bool bIsActiveConfig;
 };
 
-struct ConfigSaveEvent
+struct ConfigChangeEvent
 {
-	const std::string* pszName;
+	const CConfiguration* pOldConfig;
+	const CConfiguration* pNewConfig;
 };
 
 enum class ConfigEventType
@@ -31,7 +37,7 @@ enum class ConfigEventType
 	ADD,
 	REMOVE,
 	RENAME,
-	SAVE
+	CHANGE,
 };
 
 struct ConfigEvent
@@ -48,7 +54,7 @@ struct ConfigEvent
 		ConfigAddEvent add;
 		ConfigRemoveEvent remove;
 		ConfigRenameEvent rename;
-		ConfigSaveEvent save;
+		ConfigChangeEvent change;
 	};
 };
 

@@ -1,6 +1,8 @@
 #ifndef IDE_UI_OPTIONS_CCONFIGURATIONSWIDGET_H
 #define IDE_UI_OPTIONS_CCONFIGURATIONSWIDGET_H
 
+#include <memory>
+
 #include "Angelscript/IConfigurationEventListener.h"
 
 #include "CBaseOptionsWidget.h"
@@ -11,6 +13,7 @@ class CConfigurationsWidget;
 }
 
 class CASIDEApp;
+class CConfiguration;
 class CUI;
 class QListWidget;
 
@@ -30,12 +33,12 @@ public:
 
 protected:
 
-	bool SetActiveConfiguration( const QString& szActiveConfig );
-	bool SetActiveConfiguration( int iIndex );
+	bool SetCurrentConfiguration( const QString& szActiveConfig );
+	bool SetCurrentConfiguration( int iIndex );
 
-	void SaveActiveConfiguration();
+	void SaveCurrentConfiguration();
 
-	void SetFieldsEnabled( bool fState );
+	void SetFieldsEnabled( bool bState );
 
 	static void AddStringToList( QListWidget* pList, const std::string& szString );
 
@@ -73,8 +76,8 @@ protected slots:
 
 private:
 	std::unique_ptr<Ui::CConfigurationsWidget> m_WidgetUI;
-	bool m_fChangingContents; //Set to true if we're currently changing ui contents
-	QString m_szConfigName;
+
+	std::shared_ptr<CConfiguration> m_CurrentConfiguration;
 };
 
 #endif //IDE_UI_OPTIONS_CCONFIGURATIONSWIDGET_H

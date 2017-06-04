@@ -31,6 +31,11 @@ void CBaseApp::Startup()
 	m_AppListeners.NotifyListeners( &IAppListener::AppStartedUp );
 }
 
+void CBaseApp::OnBeforeRun()
+{
+	m_AppListeners.NotifyListeners( &IAppListener::OnBeforeRun );
+}
+
 void CBaseApp::Shutdown()
 {
 	m_AppListeners.NotifyListeners( &IAppListener::AppShutdown );

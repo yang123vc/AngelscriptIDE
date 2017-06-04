@@ -1,6 +1,9 @@
 #include <iostream>
 #include <fstream>
 
+#include <QCoreApplication.h>
+#include <QSettings.h>
+
  #include "util/IUI.h"
 
 #include "angelscript.h"
@@ -17,9 +20,12 @@
 
 CASIDEApp::CASIDEApp( std::shared_ptr<IUI> ui )
 	: m_UI( ui )
-	, m_ConfigurationManager()
-	, m_ASManager()
 {
+	//Set up the settings file data so it saves in the right place
+	QCoreApplication::setOrganizationName( "Sam Vanheer" );
+	QCoreApplication::setApplicationName( "Angelscript IDE" );
+
+	QSettings::setDefaultFormat( QSettings::IniFormat );
 }
 
 CASIDEApp::~CASIDEApp()
@@ -45,32 +51,36 @@ void CASIDEApp::Startup()
 {
 	CBaseApp::Startup();
 
-	m_ConfigurationManager = std::make_shared<CConfigurationManager>( shared_from_this() );
-	m_ASManager = std::make_shared<CASManager>( m_ConfigurationManager );
+	m_Options = std::make_shared<COptions>();
 
-	bool fOptionsLoaded = false;
-	m_Options = COptions::Load( "options.properties", &fOptionsLoaded );
+	m_ASManager = std::make_shared<CASManager>( m_Options->GetConfigurationManager() );
 
-	m_ConfigurationManager->AddConfigurationEventListener( this );
+	m_Options->GetConfigurationManager()->AddConfigurationEventListener( this );
+}
+
+void CASIDEApp::OnBeforeRun()
+{
+	//Load settings now that everything's initialized.
+	LoadSettings();
+
+	CBaseApp::OnBeforeRun();
 }
 
 void CASIDEApp::Shutdown()
 {
-	m_ConfigurationManager->RemoveConfigurationEventListener( this );
+	SaveSettings();
 
-	m_Options->Save();
-
-	ClearActiveConfiguration();
+	m_Options->GetConfigurationManager()->RemoveConfigurationEventListener( this );
 
 	m_ASManager.reset();
-	m_ConfigurationManager.reset();
+	m_Options.reset();
 
 	CBaseApp::Shutdown();
 }
 
 std::shared_ptr<CConfiguration> CASIDEApp::GetActiveConfiguration() const
 {
-	return m_ASManager->GetActiveConfiguration();
+	return m_Options->GetConfigurationManager()->GetActiveConfiguration();
 }
 
 void CASIDEApp::AddASEventListener( IASEventListener* pListener )
@@ -102,19 +112,18 @@ bool CASIDEApp::CompileScript( const std::string& szSectionName, const std::stri
 	return m_ASManager->CompileScript( szSectionName, szScriptContents );
 }
 
-void CASIDEApp::LoadActiveConfiguration()
+void CASIDEApp::LoadSettings()
 {
-	SetActiveConfiguration( m_Options->GetActiveConfigurationName() );
+	QSettings settings;
+
+	m_Options->LoadOptions( settings );
 }
 
-void CASIDEApp::SetActiveConfiguration( const std::string& szName )
+void CASIDEApp::SaveSettings()
 {
-	m_ASManager->SetActiveConfiguration( szName );
-}
+	QSettings settings;
 
-void CASIDEApp::ClearActiveConfiguration()
-{
-	m_ASManager->ClearActiveConfiguration();
+	m_Options->SaveOptions( settings );
 }
 
 void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )
@@ -123,58 +132,9 @@ void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )
 	{
 	case ConfigEventType::REMOVE:
 		{
-			if( m_Options->GetActiveConfigurationName() == *event.remove.pszName )
+			if( event.remove.bIsActiveConfig )
 			{
 				WriteString( "Active configuration removed\n" );
-				SetActiveConfiguration( "" );
-			}
-			break;
-		}
-
-	case ConfigEventType::RENAME:
-		{
-			if( *event.rename.pszOldName == m_Options->GetActiveConfigurationName() )
-			{
-				m_Options->SetActiveConfigurationName( *event.rename.pszNewName );
-				SetActiveConfiguration( *event.rename.pszNewName );
-			}
-			break;
-		}
-
-	case ConfigEventType::SAVE:
-		{
-			auto activeConfig = m_ASManager->GetActiveConfiguration();
-
-			//TODO: the save event is sent by the manager, so this just reloads it for no reason - Solokiller
-			if( activeConfig && *event.save.pszName == activeConfig->GetName() )
-				m_ASManager->ReloadActiveConfiguration();
-
-			break;
-		}
-	}
-}
-
-void CASIDEApp::AngelscriptEventOccured( const ASEvent& event )
-{
-	switch( event.type )
-	{
-	case ASEventType::CONFIG_CHANGE:
-		{
-			switch( event.configChange.changeType )
-			{
-			case ASConfigChangeType::SET:
-				{
-					m_Options->SetActiveConfigurationName( *event.configChange.pszName );
-					break;
-				}
-
-			case ASConfigChangeType::CLEARED:
-				{
-					m_Options->SetActiveConfigurationName( "" );
-					break;
-				}
-
-			default: break;
 			}
 			break;
 		}

@@ -68,7 +68,6 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 
 	//Script menu
 	connect( m_WidgetUI->actionCompile, SIGNAL( triggered() ), this, SLOT( CompileScript() ) );
-	connect( m_WidgetUI->actionReload_configuration, SIGNAL( triggered() ), this, SLOT( ReloadConfiguration() ) );
 
 	//View menu
 	connect( m_WidgetUI->actionOutput, SIGNAL( triggered() ), this, SLOT( AddOutputWindow() ) );
@@ -90,32 +89,14 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 	//Disable buttons that require an open script
 	SetDependentActionsState( false );
 
-	//Set window maximized state
-	auto options = m_App->GetOptions();
-
-	if( options->StartMaximized() )
-		setWindowState( windowState() | Qt::WindowMaximized );
-	else
-		setWindowState( windowState() & ~Qt::WindowMaximized );
-
 	m_pNoRecentFilesAction = new QAction( "No recent files", nullptr );
 	m_pNoRecentFilesAction->setEnabled( false );
 
-	const auto& recentFiles = options->GetRecentFiles();
-
-	if( !recentFiles.empty() )
-	{
-		for( const auto& recentFile : recentFiles )
-			AddRecentFile( recentFile );
-	}
-	else
-		m_WidgetUI->menuRecent_Files->addAction( m_pNoRecentFilesAction );
+	m_WidgetUI->menuRecent_Files->addAction( m_pNoRecentFilesAction );
 
 	//Open output windows
 	AddOutputWindow( OutputWindow::OUTPUT );
 	AddOutputWindow( OutputWindow::INFORMATION );
-
-	m_App->LoadActiveConfiguration();
 }
 
 CASMainWindow::~CASMainWindow()
@@ -129,6 +110,25 @@ CASMainWindow::~CASMainWindow()
 
 void CASMainWindow::AppStartedUp()
 {
+}
+
+void CASMainWindow::OnBeforeRun()
+{
+	//Set window maximized state
+	auto options = m_App->GetOptions();
+
+	if( options->StartMaximized() )
+		setWindowState( windowState() | Qt::WindowMaximized );
+	else
+		setWindowState( windowState() & ~Qt::WindowMaximized );
+
+	const auto& recentFiles = options->GetRecentFiles();
+
+	if( !recentFiles.empty() )
+	{
+		for( const auto& recentFile : recentFiles )
+			AddRecentFile( recentFile );
+	}
 }
 
 void CASMainWindow::AppShutdown()
@@ -599,11 +599,6 @@ void CASMainWindow::CompileScript()
 					pCodeEdit->GetName(),
 					pCodeEdit->toPlainText().toStdString() );
 	}
-}
-
-void CASMainWindow::ReloadConfiguration()
-{
-	m_App->SetActiveConfiguration( m_App->GetOptions()->GetActiveConfigurationName() );
 }
 
 void CASMainWindow::AddOutputWindow()

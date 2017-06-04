@@ -8,6 +8,8 @@ public:
 
 	virtual void AppStartedUp() = 0;
 
+	virtual void OnBeforeRun() {}
+
 	virtual void AppShutdown() = 0;
 };
 

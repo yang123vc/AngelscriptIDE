@@ -5,6 +5,7 @@
 #include "CASEngineInstance.h"
 #include "IASEventListener.h"
 #include "IASCompilerListener.h"
+#include "IConfigurationManager.h"
 #include "CConfiguration.h"
 #include "CScript.h"
 
@@ -13,10 +14,12 @@
 CASManager::CASManager( std::shared_ptr<IConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
 {
+	m_ConfigurationManager->AddConfigurationEventListener( this );
 }
 
 CASManager::~CASManager()
 {
+	m_ConfigurationManager->RemoveConfigurationEventListener( this );
 }
 
 void CASManager::AddEventListener( IASEventListener* pListener )
@@ -49,95 +52,9 @@ void CASManager::MessageCallback( const asSMessageInfo* pMsg )
 	m_CompilerListeners.NotifyListeners( &IASCompilerListener::CompilerMessage, pMsg );
 }
 
-void CASManager::SetActiveConfiguration( const std::string& szName )
-{
-	if( m_Instance )
-		ClearActiveConfiguration();
-
-	try
-	{
-		m_Instance = std::make_unique<CASEngineInstance>();
-
-		m_Instance->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
-
-		const std::string szVersion = m_Instance->GetVersion();
-
-		{
-			ASEvent event( ASEventType::CREATED );
-
-			event.create.pszVersion = &szVersion;
-			event.create.bHasConfig = !szName.empty();
-
-			NotifyEventListeners( event );
-		}
-
-
-		if( !szName.empty() )
-		{
-			auto config = CConfiguration::Load( GetConfigurationManager(), szName );
-
-			if( config )
-			{
-				m_ActiveConfiguration = config;
-			}
-
-			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
-
-			configEvent.configChange.changeType = config ? ASConfigChangeType::SET : ASConfigChangeType::FAILED_TO_LOAD;
-			configEvent.configChange.pszName = &szName;
-
-			NotifyEventListeners( configEvent );
-
-			if( config )
-			{
-				ASEvent regEvent( ASEventType::API_REGISTERED );
-
-				regEvent.apiRegistration.pszConfigFilename = &config->GetConfigFilename();
-				regEvent.apiRegistration.bSuccess = m_Instance->LoadAPIFromFile( config->GetConfigFilename() );
-
-				NotifyEventListeners( regEvent );
-			}
-		}
-	}
-	catch( const CASEngineException& e )
-	{
-		std::cerr << e.what() << std::endl;
-	}
-}
-
-void CASManager::ClearActiveConfiguration()
-{
-	if( m_Instance )
-	{
-		ASEvent destroyEvent( ASEventType::DESTROYED );
-
-		NotifyEventListeners( destroyEvent );
-		m_Instance.reset();
-
-		if( m_ActiveConfiguration )
-		{
-			m_ActiveConfiguration.reset();
-		}
-
-		ASEvent configEvent( ASEventType::CONFIG_CHANGE );
-
-		configEvent.configChange.changeType = ASConfigChangeType::CLEARED;
-		std::string szName;
-		configEvent.configChange.pszName = &szName;
-
-		NotifyEventListeners( configEvent );
-	}
-}
-
-void CASManager::ReloadActiveConfiguration()
-{
-	if( m_ActiveConfiguration )
-		SetActiveConfiguration( m_ActiveConfiguration->GetName() );
-}
-
 bool CASManager::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
-	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ), m_ActiveConfiguration );
+	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ), m_ConfigurationManager->GetActiveConfiguration() );
 
 	ASEvent startEvent( ASEventType::COMPILATION_STARTED );
 
@@ -154,4 +71,77 @@ bool CASManager::CompileScript( const std::string& szSectionName, const std::str
 	NotifyEventListeners( endEvent );
 
 	return bResult;
+}
+
+void CASManager::ConfigEventOccurred( const ConfigEvent& event )
+{
+	switch( event.type )
+	{
+	case ConfigEventType::CHANGE:
+		{
+			ActiveConfigSet( event.change.pNewConfig );
+			break;
+		}
+	}
+}
+
+void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
+{
+	if( m_Instance )
+	{
+		ASEvent destroyEvent( ASEventType::DESTROYED );
+
+		NotifyEventListeners( destroyEvent );
+		m_Instance.reset();
+	}
+
+	try
+	{
+		m_Instance = std::make_unique<CASEngineInstance>();
+
+		m_Instance->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
+
+		const std::string szVersion = m_Instance->GetVersion();
+
+		{
+			ASEvent event( ASEventType::CREATED );
+
+			event.create.pszVersion = &szVersion;
+			event.create.bHasConfig = pConfig != nullptr;
+
+			NotifyEventListeners( event );
+		}
+
+
+		if( pConfig )
+		{
+			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
+
+			configEvent.configChange.changeType = ASConfigChangeType::SET;
+			configEvent.configChange.pszName = &pConfig->GetName();
+
+			NotifyEventListeners( configEvent );
+
+			ASEvent regEvent( ASEventType::API_REGISTERED );
+
+			regEvent.apiRegistration.pszConfigFilename = &pConfig->GetConfigFilename();
+			regEvent.apiRegistration.bSuccess = m_Instance->LoadAPIFromFile( pConfig->GetConfigFilename() );
+
+			NotifyEventListeners( regEvent );
+		}
+		else
+		{
+			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
+
+			configEvent.configChange.changeType = ASConfigChangeType::CLEARED;
+			std::string szName;
+			configEvent.configChange.pszName = &szName;
+
+			NotifyEventListeners( configEvent );
+		}
+	}
+	catch( const CASEngineException& e )
+	{
+		std::cerr << e.what() << std::endl;
+	}
 }

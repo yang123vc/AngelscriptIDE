@@ -1,22 +1,14 @@
+#include <QSettings.h>
+
 #include "Angelscript/CConfiguration.h"
-#include "Angelscript/IConfigurationEventListener.h"
-
 #include "Angelscript/CConfigurationException.h"
-
-#include "COptions.h"
-#include "CASIDEApp.h"
-
+#include "Angelscript/IConfigurationEventListener.h"
 #include "CConfigurationManager.h"
 
-CConfigurationManager::CConfigurationManager( std::shared_ptr<CASIDEApp> app )
-	: m_App( app )
+#include "CASIDEApp.h"
+
+CConfigurationManager::CConfigurationManager()
 {
-
-}
-
-CConfigurationManager::~CConfigurationManager()
-{
-
 }
 
 void CConfigurationManager::AddConfigurationEventListener( IConfigurationEventListener* pListener )
@@ -29,107 +21,298 @@ void CConfigurationManager::RemoveConfigurationEventListener( IConfigurationEven
 	m_ConfigurationListeners.RemoveListener( pListener );
 }
 
-bool CConfigurationManager::ConfigurationExists( const std::string& szName )
+size_t CConfigurationManager::GetConfigurationCount() const
 {
-	auto config = CConfiguration::Load( shared_from_this(), szName );
-
-	return config != nullptr;
+	return m_Configurations.size();
 }
 
-bool CConfigurationManager::AddConfiguration( const std::string& szName )
+std::shared_ptr<const CConfiguration> CConfigurationManager::GetConfiguration( size_t uiIndex ) const
 {
-	COptions::Configurations_t& configs = m_App->GetOptions()->GetConfigurations();
+	return const_cast<CConfigurationManager*>( this )->GetConfiguration( uiIndex );
+}
 
-	auto it = std::find( configs.begin(), configs.end(), szName );
+std::shared_ptr<CConfiguration> CConfigurationManager::GetConfiguration( size_t uiIndex )
+{
+	return m_Configurations[ uiIndex ];
+}
 
-	if( it != configs.end() )
+size_t CConfigurationManager::IndexOf( const std::shared_ptr<const CConfiguration>& config ) const
+{
+	for( size_t uiIndex = 0; uiIndex < m_Configurations.size(); ++uiIndex )
 	{
-		throw CConfigurationException( "Attempted to add duplicate configuration!" );
-		return false;
+		if( m_Configurations[ uiIndex ] == config )
+			return uiIndex;
 	}
 
-	auto config = CConfiguration::Load( shared_from_this(), szName );
+	return INVALID_INDEX;
+}
 
-	//If it doesn't already exist, create it
+std::shared_ptr<const CConfiguration> CConfigurationManager::Find( const std::string& szName ) const
+{
+	return const_cast<CConfigurationManager*>( this )->Find( szName );
+}
+
+std::shared_ptr<CConfiguration> CConfigurationManager::Find( const std::string& szName )
+{
+	for( size_t uiIndex = 0; uiIndex < m_Configurations.size(); ++uiIndex )
+	{
+		if( m_Configurations[ uiIndex ]->GetName() == szName )
+			return m_Configurations[ uiIndex ];
+	}
+
+	return nullptr;
+}
+
+bool CConfigurationManager::AddConfiguration( const std::shared_ptr<CConfiguration>& config )
+{
 	if( !config )
-		config = std::make_shared<CConfiguration>( shared_from_this(), szName );
+		return false;
 
-	const bool fSuccess = config->Save();
+	if( config->GetName().empty() )
+		throw CConfigurationException( "A configuration must have a valid name" );
 
-	//TODO: not really that useful - Solokiller
-	if( fSuccess )
-	{
-		configs.push_back( szName );
+	if( Find( config->GetName() ) )
+		throw CConfigurationException( "Attempted to add duplicate configuration" );
 
-		ConfigEvent addEvent( ConfigEventType::ADD );
+	m_Configurations.emplace_back( config );
 
-		addEvent.add.pszName = &szName;
+	ConfigEvent addEvent( ConfigEventType::ADD );
 
-		NotifyListeners( addEvent );
-	}
-	else
-		throw CConfigurationException( std::string( "Failed to save configuration \"" ) + szName + "\"!" );
+	addEvent.add.pszName = &config->GetName();
 
-	return fSuccess;
+	NotifyListeners( addEvent );
+
+	return true;
 }
 
-void CConfigurationManager::RemoveConfiguration( const std::string& szName, bool fRemoveFile )
+void CConfigurationManager::RemoveConfiguration( const std::shared_ptr<CConfiguration>& config )
 {
-	COptions::Configurations_t& configs = m_App->GetOptions()->GetConfigurations();
+	if( !config )
+		throw CConfigurationException( "Attempted to remove null configuration" );
 
-	auto it = std::find( configs.begin(), configs.end(), szName );
+	const auto uiIndex = IndexOf( config );
 
-	if( it == configs.end() )
+	if( uiIndex == INVALID_INDEX )
 	{
-		throw CConfigurationException( "Attempted to remove non-existent configuration!" );
-		return;
+		throw CConfigurationException( "Attempted to remove non-existent configuration" );
 	}
 
-	configs.erase( it );
+	const bool bIsActiveConfig = uiIndex == m_uiActiveConfiguration;
 
-	if( fRemoveFile )
-		remove( CConfiguration::MakeConfigurationPath( szName ).c_str() );
+	if( bIsActiveConfig )
+	{
+		//TODO: switch to next available config - Solokiller
+		SetActiveConfiguration( std::shared_ptr<CConfiguration>() );
+	}
+
+	m_Configurations.erase( m_Configurations.begin() + uiIndex );
 
 	ConfigEvent removeEvent( ConfigEventType::REMOVE );
 
-	removeEvent.remove.pszName = &szName;
+	removeEvent.remove.pszName = &config->GetName();
+	removeEvent.remove.bIsActiveConfig = bIsActiveConfig;
 
 	NotifyListeners( removeEvent );
 }
 
-void CConfigurationManager::ConfigurationRenamed( const std::string& szOldName, const std::string& szNewName )
+std::shared_ptr<const CConfiguration> CConfigurationManager::GetActiveConfiguration() const
 {
-	auto options = m_App->GetOptions();
+	return const_cast<CConfigurationManager*>( this )->GetActiveConfiguration();
+}
 
-	COptions::Configurations_t& configs = options->GetConfigurations();
+std::shared_ptr<CConfiguration> CConfigurationManager::GetActiveConfiguration()
+{
+	return m_uiActiveConfiguration != INVALID_INDEX ? m_Configurations[ m_uiActiveConfiguration ] : nullptr;
+}
 
-	configs.push_back( szNewName );
+void CConfigurationManager::SetActiveConfiguration( const std::shared_ptr<const CConfiguration>& config )
+{
+	auto oldConfig = GetActiveConfiguration();
 
-	auto it = std::find( configs.begin(), configs.end(), szOldName );
-
-	if( it == configs.end() )
+	if( config )
 	{
-		throw CConfigurationException( "Attempted to rename non-existent configuration!" );
-		return;
+		m_uiActiveConfiguration = IndexOf( config );
+	}
+	else
+	{
+		m_uiActiveConfiguration = INVALID_INDEX;
 	}
 
-	configs.erase( it );
+	ConfigEvent changeEvent( ConfigEventType::CHANGE );
+
+	changeEvent.change.pOldConfig = oldConfig.get();
+	changeEvent.change.pNewConfig = config.get();
+
+	NotifyListeners( changeEvent );
+}
+
+void CConfigurationManager::SetActiveConfiguration( const std::string& szName )
+{
+	SetActiveConfiguration( Find( szName ) );
+}
+
+bool CConfigurationManager::RenameConfiguration( const std::shared_ptr<CConfiguration>& config, const std::string& szNewName )
+{
+	if( !config )
+		throw CConfigurationException( "Attempted to rename null configuration" );
+
+	if( config->GetName().empty() )
+		throw CConfigurationException( "A configuration must have a valid name" );
+
+	if( config->GetName() == szNewName )
+		return true;
+
+	if( Find( szNewName ) )
+		return false;
+
+	const auto szOldName = config->GetName();
+
+	config->SetName( szNewName );
 
 	ConfigEvent renameEvent( ConfigEventType::RENAME );
 
 	renameEvent.rename.pszOldName = &szOldName;
 	renameEvent.rename.pszNewName = &szNewName;
+	renameEvent.rename.bIsActiveConfig = config == GetActiveConfiguration();
 
 	NotifyListeners( renameEvent );
+
+	return true;
 }
 
-void CConfigurationManager::ConfigurationSaved( const std::string& szName )
+void CConfigurationManager::LoadConfigurations( QSettings& settings )
 {
-	ConfigEvent saveEvent( ConfigEventType::SAVE );
+	settings.beginGroup( "configurationmanager" );
 
-	saveEvent.save.pszName = &szName;
+	m_Configurations.clear();
 
-	NotifyListeners( saveEvent );
+	const auto iConfigsCount = settings.beginReadArray( "configs" );
+
+	for( int i = 0; i < iConfigsCount; ++i )
+	{
+		settings.setArrayIndex( i );
+
+		auto szName = settings.value( "name" ).toString().toStdString();
+
+		if( !szName.empty() )
+		{
+			auto config = std::make_shared<CConfiguration>( std::move( szName ) );
+
+			config->SetConfigFilename( settings.value( "asconfig" ).toString().toStdString() );
+			config->SetIncludeFilename( settings.value( "includefilename" ).toString().toStdString() );
+			config->SetFallbackExtension( settings.value( "fallbackextension" ).toString().toStdString() );
+
+			const auto iWordsCount = settings.beginReadArray( "words" );
+
+			for( int iWord = 0; iWord < iWordsCount; ++iWord )
+			{
+				settings.setArrayIndex( iWord );
+
+				config->GetWords().emplace_back( settings.value( "word" ).toString().toStdString() );
+			}
+
+			settings.endArray();
+
+			const auto iPathsCount = settings.beginReadArray( "includepaths" );
+
+			for( int iPath = 0; iPath < iPathsCount; ++iPath )
+			{
+				settings.setArrayIndex( iPath );
+
+				config->GetIncludePaths().emplace_back( settings.value( "path" ).toString().toStdString() );
+			}
+
+			settings.endArray();
+
+			const auto iExtsCount = settings.beginReadArray( "extensions" );
+
+			for( int iExt = 0; iExt < iExtsCount; ++iExt )
+			{
+				settings.setArrayIndex( iExt );
+
+				config->GetExtensions().emplace_back( settings.value( "ext" ).toString().toStdString() );
+			}
+
+			settings.endArray();
+
+			AddConfiguration( config );
+		}
+	}
+
+	settings.endArray();
+
+	const auto szActiveConfiguration = settings.value( "activeconfiguration" ).toString().toStdString();
+
+	//Any old config is wiped here
+	SetActiveConfiguration( Find( szActiveConfiguration ) );
+
+	settings.endGroup();
+}
+
+void CConfigurationManager::SaveConfigurations( QSettings& settings )
+{
+	settings.beginGroup( "configurationmanager" );
+
+	settings.beginWriteArray( "configs", m_Configurations.size() );
+
+	int iIndex = 0;
+
+	for( const auto& config : m_Configurations )
+	{
+		settings.setArrayIndex( iIndex++ );
+
+		settings.setValue( "name", QString( config->GetName().c_str() ) );
+		settings.setValue( "asconfig", QString( config->GetConfigFilename().c_str() ) );
+		settings.setValue( "includefilename", QString( config->GetIncludeFilename().c_str() ) );
+		settings.setValue( "fallbackextension", QString( config->GetFallbackExtension().c_str() ) );
+
+		const auto& words = config->GetWords();
+
+		settings.beginWriteArray( "words", words.size() );
+
+		for( size_t uiIndex = 0; uiIndex < words.size(); ++uiIndex )
+		{
+			settings.setArrayIndex( uiIndex );
+
+			settings.setValue( "word", QString( words[ uiIndex ].c_str() ) );
+		}
+
+		settings.endArray();
+
+		const auto& includePaths = config->GetIncludePaths();
+
+		settings.beginWriteArray( "includepaths", includePaths.size() );
+
+		for( size_t uiIndex = 0; uiIndex < includePaths.size(); ++uiIndex )
+		{
+			settings.setArrayIndex( uiIndex );
+
+			settings.setValue( "path", QString( includePaths[ uiIndex ].c_str() ) );
+		}
+
+		settings.endArray();
+
+		const auto& extensions = config->GetExtensions();
+
+		settings.beginWriteArray( "extensions", extensions.size() );
+
+		for( size_t uiIndex = 0; uiIndex < extensions.size(); ++uiIndex )
+		{
+			settings.setArrayIndex( uiIndex );
+
+			settings.setValue( "ext", QString( extensions[ uiIndex ].c_str() ) );
+		}
+
+		settings.endArray();
+	}
+
+	settings.endArray();
+
+	auto activeConfig = GetActiveConfiguration();
+
+	settings.setValue( "activeconfiguration", QString( activeConfig ? activeConfig->GetName().c_str() : "" ) );
+
+	settings.endGroup();
 }
 
 void CConfigurationManager::NotifyListeners( const ConfigEvent& event )

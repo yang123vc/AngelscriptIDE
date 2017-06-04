@@ -41,6 +41,7 @@ public:
 	~CASMainWindow();
 
 	void AppStartedUp() override;
+	void OnBeforeRun() override;
 	void AppShutdown() override;
 
 protected:
@@ -108,7 +109,6 @@ public slots:
 
 	//Script menu
 	void CompileScript();
-	void ReloadConfiguration();
 
 	//View menu
 	void AddOutputWindow();

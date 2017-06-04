@@ -1,4 +1,5 @@
 #include "Angelscript/CConfiguration.h"
+#include "Angelscript/IConfigurationManager.h"
 
 #include "ide/CASIDEApp.h"
 #include "ide/COptions.h"
@@ -36,13 +37,7 @@ void CGeneralWidget::ApplyChanges()
 	{
 		const std::string szNewConfig = m_WidgetUI->m_pActiveConfigComboBox->currentText().toStdString();
 
-		m_App->SetActiveConfiguration( szNewConfig );
-
-		auto options = m_App->GetOptions();
-
-		options->SetActiveConfigurationName( szNewConfig );
-		options->SetTabWidth( m_WidgetUI->m_pTabWidthSpinner->value() );
-		options->Save();
+		m_App->GetOptions()->GetConfigurationManager()->SetActiveConfiguration( szNewConfig );
 
 		SetChangesMade( false );
 	}
@@ -57,22 +52,27 @@ void CGeneralWidget::LoadConfigurations()
 {
 	m_WidgetUI->m_pActiveConfigComboBox->clear();
 
-	auto options = m_App->GetOptions();
-
-	const auto& configs = options->GetConfigurations();
+	auto configManager = m_App->GetOptions()->GetConfigurationManager();
 
 	//Empty active config option
 	m_WidgetUI->m_pActiveConfigComboBox->addItem( "" );
 
-	for( const auto& config : configs )
-		m_WidgetUI->m_pActiveConfigComboBox->addItem( config.c_str() );
+	const auto uiCount = configManager->GetConfigurationCount();
 
-	const auto& szActiveConfig = options->GetActiveConfigurationName();
+	for( size_t uiIndex = 0; uiIndex < uiCount; ++uiIndex )
+	{
+		m_WidgetUI->m_pActiveConfigComboBox->addItem( configManager->GetConfiguration( uiIndex )->GetName().c_str() );
+	}
 
-	const int iIndex = m_WidgetUI->m_pActiveConfigComboBox->findText( szActiveConfig.c_str() );
+	auto active = configManager->GetActiveConfiguration();
 
-	if( iIndex != -1 )
-		m_WidgetUI->m_pActiveConfigComboBox->setCurrentIndex( iIndex );
+	if( active )
+	{
+		const int iIndex = m_WidgetUI->m_pActiveConfigComboBox->findText( active->GetName().c_str() );
+
+		if( iIndex != -1 )
+			m_WidgetUI->m_pActiveConfigComboBox->setCurrentIndex( iIndex );
+	}
 }
 
 void CGeneralWidget::ActiveConfigurationChanged( int iIndex )
