@@ -1,5 +1,6 @@
-#include <QMessageBox>
+#include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QSyntaxHighlighter>
 
 #include "Angelscript/CScript.h"
@@ -95,7 +96,10 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( SaveMode saveMode, Pr
 				if( m_pScriptFile )
 				{
 					m_pScriptFile->SetContents( this->toPlainText().toStdString() );
-					const bool bResult = m_pScriptFile->SaveToFile( m_szName );
+
+					auto szPath = QDir( m_App->GetOptions()->GetCurrentDirectory().c_str() ).filePath( m_szName.c_str() ).toStdString();
+
+					const bool bResult = m_pScriptFile->SaveToFile( szPath );
 
 					if( bResult )
 					{
@@ -156,7 +160,7 @@ bool CScriptCodeTextEdit::OpenSaveDialog()
 
 		QFileInfo file( szFilename.c_str() );
 
-		options->SetCurrentDirectory( file.canonicalPath().toStdString() );
+		options->SetCurrentDirectory( file.absolutePath().toStdString() );
 
 		m_szName = file.fileName().toStdString();
 
