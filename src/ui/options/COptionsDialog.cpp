@@ -1,9 +1,3 @@
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QTabWidget>
-#include <QPushButton>
-#include <QLabel>
-
 #include "ide/CASIDEApp.h"
 #include "ide/COptions.h"
 
@@ -15,15 +9,17 @@
 #include "CSyntaxHighlightWidget.h"
 
 #include "COptionsDialog.h"
+#include "ui_COptionsDialog.h"
 
 COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* pParent )
 	: QDialog( pParent )
 	, m_App( app )
 	, m_UI( ui )
+	, m_WidgetUI( std::make_unique<Ui::COptionsDialog>() )
 {
-	setModal( true );
+	m_WidgetUI->setupUi( this );
 
-	QTabWidget* pTabs = new QTabWidget();
+	setModal( true );
 
 	auto pGeneral	= new CGeneralWidget( m_App, ui, this );
 	auto pConfig	= new CConfigurationsWidget( m_App, ui, this );
@@ -33,37 +29,15 @@ COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<
 	m_Widgets.push_back( pConfig );
 	m_Widgets.push_back( pSyntax );
 
-	pTabs->addTab( pGeneral, tr( "General" ) );
-	pTabs->addTab( pConfig, tr( "Configurations" ) );
-	pTabs->addTab( pSyntax, tr( "Syntax Highlighting" ) );
+	m_WidgetUI->m_pTabs->addTab( pGeneral, tr( "General" ) );
+	m_WidgetUI->m_pTabs->addTab( pConfig, tr( "Configurations" ) );
+	m_WidgetUI->m_pTabs->addTab( pSyntax, tr( "Syntax Highlighting" ) );
 
-	m_pMessageLabel = new QLabel();
-	m_pMessageLabel->setStyleSheet( "QLabel { color: red; }" ); //Red color
+	connect( m_WidgetUI->m_pOk,			SIGNAL( clicked() ), this, SLOT( Ok() ) );
+	connect( m_WidgetUI->m_pCancel,		SIGNAL( clicked() ), this, SLOT( Cancel() ) );
+	connect( m_WidgetUI->m_pApply,		SIGNAL( clicked() ), this, SLOT( Apply() ) );
 
-	QHBoxLayout* pButtonsLayout = new QHBoxLayout();
-
-	QPushButton* pOkButton		= new QPushButton( tr( "Ok" ) );
-	QPushButton* pCancelButton	= new QPushButton( tr( "Cancel" ) );
-	m_pApplyButton				= new QPushButton( tr( "Apply" ) );
-
-	pButtonsLayout->addStretch();
-	pButtonsLayout->addWidget( pOkButton );
-	pButtonsLayout->addWidget( pCancelButton );
-	pButtonsLayout->addWidget( m_pApplyButton );
-
-	connect( pOkButton,			SIGNAL( clicked() ), this, SLOT( Ok() ) );
-	connect( pCancelButton,		SIGNAL( clicked() ), this, SLOT( Cancel() ) );
-	connect( m_pApplyButton,	SIGNAL( clicked() ), this, SLOT( Apply() ) );
-
-	m_pApplyButton->setEnabled( false );
-
-	QVBoxLayout* pMainLayout = new QVBoxLayout();
-
-	pMainLayout->addWidget( pTabs );
-	pMainLayout->addWidget( m_pMessageLabel );
-	pMainLayout->addLayout( pButtonsLayout );
-
-	setLayout( pMainLayout );
+	m_WidgetUI->m_pApply->setEnabled( false );
 
 	resize( 400, 600 );
 
@@ -90,7 +64,7 @@ void COptionsDialog::ApplyChanges()
 
 	if( bCanSave )
 	{
-		m_pMessageLabel->setText( "" );
+		m_WidgetUI->m_pMessageLabel->setText( "" );
 
 		for( auto optionPanel : m_Widgets )
 			optionPanel->ApplyChanges();
@@ -103,12 +77,12 @@ void COptionsDialog::ApplyChanges()
 		for( auto optionPanel : m_Widgets )
 			optionPanel->SetChangesMade( false );
 
-		m_pApplyButton->setEnabled( false );
+		m_WidgetUI->m_pApply->setEnabled( false );
 
 		m_UI->SendMessage( "Options saved\n" );
 	}
 	else
-		m_pMessageLabel->setText( szReason );
+		m_WidgetUI->m_pMessageLabel->setText( szReason );
 }
 
 void COptionsDialog::Ok()
@@ -133,5 +107,5 @@ void COptionsDialog::ChangesMade( bool )
 	if( !m_bInitialized )
 		return;
 
-	m_pApplyButton->setEnabled( true );
+	m_WidgetUI->m_pApply->setEnabled( true );
 }

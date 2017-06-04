@@ -17,5 +17,6 @@ add_forms(
 	CConfigurationsWidget.ui
 	CEditConfigurationsDialog.ui
 	CGeneralWidget.ui
+	COptionsDialog.ui
 	CSyntaxHighlightWidget.ui
 )

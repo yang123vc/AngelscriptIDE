@@ -13,6 +13,11 @@ class QPushButton;
 class QLabel;
 class CUI;
 
+namespace Ui
+{
+class COptionsDialog;
+}
+
 class COptionsDialog : public QDialog
 {
 	Q_OBJECT
@@ -41,10 +46,8 @@ public slots:
 private:
 	std::shared_ptr<CASIDEApp> m_App;
 	std::shared_ptr<CUI> m_UI;
+	std::unique_ptr<Ui::COptionsDialog> m_WidgetUI;
 	std::vector<CBaseOptionsWidget*> m_Widgets;
-
-	QLabel* m_pMessageLabel;
-	QPushButton* m_pApplyButton;
 
 	bool m_bInitialized = false;
 };
