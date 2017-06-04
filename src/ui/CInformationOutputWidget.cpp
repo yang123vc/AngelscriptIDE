@@ -112,11 +112,13 @@ void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 			auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>( time );
 
 			WriteString(
-						QString( "Compilation took %1:%2:%3.%4\n" )
-							.arg( hours.count() )
-							.arg( minutes.count() )
-							.arg( seconds.count() )
-							.arg( milliseconds.count() ).toStdString().c_str() );
+				QString( "Compilation time: %1:%2:%3.%4\n" )
+					.arg( hours.count(), 2, 10, QLatin1Char( '0' ) )
+					.arg( minutes.count(), 2, 10, QLatin1Char( '0' ) )
+					.arg( seconds.count(), 2, 10, QLatin1Char( '0' ) )
+					.arg( milliseconds.count() )
+					.toStdString().c_str()
+			);
 
 			WriteCompileSeparator();
 			break;
