@@ -12,7 +12,7 @@ configuration:
 # Build with all those possible configurations
 environment:
   matrix:
-    - BUILD_RULES: -DQT_CMAKE_PREFIX="C:\Qt\5.8\msvc2015" -DOUTPUT_DIR="%APPVEYOR_BUILD_FOLDER%\AngelscriptIDE"
+    - BUILD_RULES: -DQT_CMAKE_PREFIX="C:\Qt\5.8\msvc2015" -DOUTPUT_DIR="%APPVEYOR_BUILD_FOLDER%\AngelscriptIDE" -DCOPY_QT_DEBUG_LIBS=ON
 
 before_build:
   # Appveyor uses CMake 2.8, we require at least 3.6, so make the update
