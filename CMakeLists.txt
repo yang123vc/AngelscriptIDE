@@ -92,6 +92,11 @@ foreach( lib_name IN LISTS QT_LIBS )
 	endif()
 endforeach()
 
+#Copy all resources to the destination directory
+MESSAGE( STATUS "Copying resources..." )
+file( COPY ${CMAKE_SOURCE_DIR}/resources/ DESTINATION ${OUTPUT_DIR} PATTERN "${CMAKE_SOURCE_DIR}/resources/*" )
+MESSAGE( STATUS "Done" )
+
 #Add Angelscript library
 add_library( Angelscript STATIC IMPORTED )
 set_property( TARGET Angelscript PROPERTY IMPORTED_LOCATION "${EXTERNAL_DIR}/Angelscript/lib/Angelscript.lib" )
