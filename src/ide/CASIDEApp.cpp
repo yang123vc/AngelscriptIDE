@@ -141,8 +141,6 @@ void CASIDEApp::SaveSettings()
 	settings.clear();
 
 	m_Options->SaveOptions( settings );
-
-	RefreshSyntaxHighlights();
 }
 
 void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )

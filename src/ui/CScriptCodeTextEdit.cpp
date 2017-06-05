@@ -25,6 +25,9 @@ CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, std::shared
 
 	connect( this, SIGNAL( textChanged() ), this, SLOT( ContentChanged() ) );
 	connect( this, SIGNAL( undoAvailable( bool ) ), this, SLOT( UndoStateChanged( bool ) ) );
+
+	connect( m_App->GetOptions().get(), &COptions::OptionsLoaded, this, &CScriptCodeTextEdit::OnOptionsChanged );
+	connect( m_App->GetOptions().get(), &COptions::OptionsSaved, this, &CScriptCodeTextEdit::OnOptionsChanged );
 }
 
 CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, const std::string& szFilename, std::shared_ptr<CASIDEApp> app,  QWidget* pParent )
@@ -179,4 +182,11 @@ void CScriptCodeTextEdit::UndoStateChanged( bool fState )
 {
 	if( !fState )
 		SetUnsavedChangesMade( false );
+}
+
+void CScriptCodeTextEdit::OnOptionsChanged()
+{
+	setTabStopWidth( m_App->GetOptions()->GetTabWidth() );
+
+	m_SyntaxHighlighter->rehighlight();
 }

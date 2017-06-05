@@ -77,6 +77,8 @@ protected slots:
 
 	void UndoStateChanged( bool fState );
 
+	void OnOptionsChanged();
+
 private:
 	std::string m_szName;
 	std::shared_ptr<CScript> m_pScriptFile;

@@ -6,6 +6,7 @@
 #include <list>
 
 #include <QBrush>
+#include <QObject>
 #include <QVector>
 
 class IConfigurationManager;
@@ -14,8 +15,10 @@ class QSettings;
 /**
 *	Stores the configurations and global settings
 */
-class COptions
+class COptions : public QObject
 {
+	Q_OBJECT
+
 public:
 	static const int DEFAULT_TAB_WIDTH = 40;
 
@@ -73,6 +76,17 @@ public:
 	void SaveOptions( QSettings& settings );
 
 	static void LoadPatterns( QSettings& settings, QVector<Pattern>& patterns );
+
+signals:
+	/**
+	*	Called when options have been loaded
+	*/
+	void OptionsLoaded();
+
+	/**
+	*	Called when options have been saved
+	*/
+	void OptionsSaved();
 
 private:
 	int m_iTabWidth = DEFAULT_TAB_WIDTH;

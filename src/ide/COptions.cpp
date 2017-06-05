@@ -76,6 +76,8 @@ void COptions::LoadOptions( QSettings& settings )
 	LoadPatterns( settings, m_Patterns );
 
 	m_ConfigurationManager->LoadConfigurations( settings );
+
+	OptionsLoaded();
 }
 
 void COptions::SaveOptions( QSettings& settings )
@@ -119,6 +121,8 @@ void COptions::SaveOptions( QSettings& settings )
 	settings.endGroup();
 
 	m_ConfigurationManager->SaveConfigurations( settings );
+
+	OptionsSaved();
 }
 
 void COptions::LoadPatterns( QSettings& settings, QVector<Pattern>& patterns )
