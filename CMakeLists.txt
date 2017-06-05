@@ -73,6 +73,11 @@ set( QT_LIBS Qt5::Core Qt5::Widgets Qt5::Gui )
 
 set( COPY_QT_DEBUG_LIBS OFF CACHE BOOL "Whether to copy Qt debug libraries" )
 
+#Copy the platform plugins
+MESSAGE( STATUS "Copying QT platform plugins..." )
+file( COPY ${QT_CMAKE_PREFIX}/plugins/platforms DESTINATION ${OUTPUT_DIR}/plugins )
+MESSAGE( STATUS "Done" )
+
 foreach( lib_name IN LISTS QT_LIBS )
 	get_target_property( lib ${lib_name} LOCATION )
 	
