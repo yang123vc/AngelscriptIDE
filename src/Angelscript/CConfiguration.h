@@ -28,6 +28,10 @@ public:
 
 	void SetConfigFilename( const std::string& szConfigFilename );
 
+	const std::string& GetConfigScriptFilename() const { return m_szConfigScriptFilename; }
+
+	void SetConfigScriptFilename( std::string&& szConfigScriptFilename );
+
 	const std::string& GetIncludeFilename() const { return m_szIncludeFilename; }
 
 	void SetIncludeFilename( const std::string& szIncludeFilename );
@@ -48,6 +52,7 @@ public:
 private:
 	std::string m_szName;								//Name of this configuration, without extension or path
 	std::string m_szConfigFilename;						//Complete path and filename of a configuration file used to initialize the Angelscript API
+	std::string m_szConfigScriptFilename;				//Complete path and filename of a script that handles advanced Angelscript handling
 	std::string m_szIncludeFilename;					//Name of a file to include in all files being compiled
 	std::string m_szFallbackExtension;					//Extension to add when searching for #include'd files with no extension given
 

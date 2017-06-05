@@ -1,4 +1,6 @@
 add_sources(
+	CASConfigModuleBuilder.cpp
+	CASConfigModuleBuilder.h
 	CASEngineInstance.cpp
 	CASEngineInstance.h
 	CASManager.cpp
@@ -12,4 +14,8 @@ add_sources(
 	IConfigurationEventListener.h
 	IASEventListener.h
 	IASCompilerListener.h
+	IDE_API.cpp
+	IDE_API.h
 )
+
+add_subdirectory( ScriptAPI )

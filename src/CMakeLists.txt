@@ -22,8 +22,10 @@ qt5_wrap_ui( UI_SRCS ${PREP_FORMS} )
 
 add_executable( ${PROJECT_NAME} WIN32 ${PREP_SRCS} ${UI_SRCS} )
 
+#TODO: the AngelscriptUtils directory shouldn't be added here, fix the repo - Solokiller
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${EXTERNAL_DIR}/Angelscript/include
+	${EXTERNAL_DIR}/Angelscript/include/AngelscriptUtils
 	${SHARED_INCLUDE_DIRECTORIES}
 )
 

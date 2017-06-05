@@ -52,6 +52,9 @@ CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, st
 	connect( m_WidgetUI->m_pAngelscriptConfigFileLineEdit, SIGNAL( textChanged( QString ) ), this, SLOT( ConfigFileChanged( QString ) ) );
 	connect( m_WidgetUI->m_pConfigFileSelectButton, SIGNAL( clicked() ), this, SLOT( OpenSelectConfigFileDialog() ) );
 
+	connect( m_WidgetUI->m_pConfigScript, &QLineEdit::textChanged, this, &CConfigurationsWidget::ConfigScriptFileChanged );
+	connect( m_WidgetUI->m_pConfigScriptSelect, &QPushButton::clicked, this, &CConfigurationsWidget::OpenSelectConfigScriptFileDialog );
+
 	connect( m_WidgetUI->m_pIncludeFilenameLineEdit, SIGNAL( textChanged( QString ) ), this, SLOT( IncludeFilenameChanged( QString ) ) );
 	connect( m_WidgetUI->m_pIncludeFilenameButton, SIGNAL( clicked() ), this, SLOT( OpenIncludeFilenameFileDialog() ) );
 
@@ -195,6 +198,7 @@ bool CConfigurationsWidget::SetCurrentConfiguration( int iIndex )
 			{
 				m_WidgetUI->m_pConfigurationNameLineEdit->setText( m_CurrentConfiguration->GetName().c_str() );
 				m_WidgetUI->m_pAngelscriptConfigFileLineEdit->setText( m_CurrentConfiguration->GetConfigFilename().c_str() );
+				m_WidgetUI->m_pConfigScript->setText( m_CurrentConfiguration->GetConfigScriptFilename().c_str() );
 				m_WidgetUI->m_pIncludeFilenameLineEdit->setText( m_CurrentConfiguration->GetIncludeFilename().c_str() );
 				m_WidgetUI->m_pFallbackExtLineEdit->setText( m_CurrentConfiguration->GetFallbackExtension().c_str() );
 
@@ -212,6 +216,7 @@ bool CConfigurationsWidget::SetCurrentConfiguration( int iIndex )
 
 				m_WidgetUI->m_pConfigurationNameLineEdit->setText( "" );
 				m_WidgetUI->m_pAngelscriptConfigFileLineEdit->setText( "" );
+				m_WidgetUI->m_pConfigScript->setText( "" );
 				m_WidgetUI->m_pIncludeFilenameLineEdit->setText( "" );
 				m_WidgetUI->m_pFallbackExtLineEdit->setText( "" );
 
@@ -238,6 +243,7 @@ bool CConfigurationsWidget::SetCurrentConfiguration( int iIndex )
 void CConfigurationsWidget::SaveCurrentConfiguration()
 {
 	m_CurrentConfiguration->SetConfigFilename( m_WidgetUI->m_pAngelscriptConfigFileLineEdit->text().trimmed().toStdString() );
+	m_CurrentConfiguration->SetConfigScriptFilename( m_WidgetUI->m_pConfigScript->text().trimmed().toStdString() );
 	m_CurrentConfiguration->SetIncludeFilename( m_WidgetUI->m_pIncludeFilenameLineEdit->text().trimmed().toStdString() );
 	m_CurrentConfiguration->SetFallbackExtension( m_WidgetUI->m_pFallbackExtLineEdit->text().trimmed().toStdString() );
 
@@ -344,6 +350,19 @@ void CConfigurationsWidget::OpenSelectConfigFileDialog()
 
 	if( !szResult.isEmpty() )
 		m_WidgetUI->m_pAngelscriptConfigFileLineEdit->setText( szResult );
+}
+
+void CConfigurationsWidget::ConfigScriptFileChanged( const QString& szText )
+{
+	SetChangesMade( true );
+}
+
+void CConfigurationsWidget::OpenSelectConfigScriptFileDialog()
+{
+	QString szResult = QFileDialog::getOpenFileName( this, tr( "Select configuration script file" ) );
+
+	if( !szResult.isEmpty() )
+		m_WidgetUI->m_pConfigScript->setText( szResult );
 }
 
 void CConfigurationsWidget::IncludeFilenameChanged( const QString& )

@@ -17,6 +17,9 @@
 #include "CConfigurationManager.h"
 #include "COptions.h"
 
+//TODO: Windows header is included somewhere - Solokiller
+#undef SendMessage
+
 #include "CASIDEApp.h"
 
 CASIDEApp::CASIDEApp( std::shared_ptr<IUI> ui )

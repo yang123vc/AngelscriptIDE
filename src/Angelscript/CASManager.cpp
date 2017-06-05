@@ -1,6 +1,11 @@
+#include <cassert>
 #include <iostream>
+#include <stdexcept>
 
 #include "angelscript.h"
+
+#include <AngelscriptUtils/CASModule.h>
+#include <AngelscriptUtils/wrapper/ASCallable.h>
 
 #include "CASEngineInstance.h"
 #include "IASEventListener.h"
@@ -8,18 +13,51 @@
 #include "IConfigurationManager.h"
 #include "CConfiguration.h"
 #include "CScript.h"
+#include "IDE_API.h"
 
+#include "CASConfigModuleBuilder.h"
 #include "CASManager.h"
+#include "AngelscriptUtils/add_on/scriptbuilder.h"
+#include "ScriptAPI/ASIConfiguration.h"
 
 CASManager::CASManager( std::shared_ptr<IConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
 {
 	m_ConfigurationManager->AddConfigurationEventListener( this );
+	m_pIDEEngine = asCreateScriptEngine( ANGELSCRIPT_VERSION );
+
+	if( !m_pIDEEngine )
+		throw std::runtime_error( "Couldn't create IDE script engine" );
+
+	m_pIDEEngine->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
+
+	RegisterIDE_API( *m_pIDEEngine );
+
+	m_Context.Set( m_pIDEEngine->CreateContext(), true );
+
+	m_ModuleManager = std::make_unique<CASModuleManager>( *m_pIDEEngine );
+
+	m_ModuleManager->AddDescriptor( "Config", 0xFFFFFFFF );
 }
 
 CASManager::~CASManager()
 {
 	m_ConfigurationManager->RemoveConfigurationEventListener( this );
+	ClearConfigurationScript();
+
+	if( m_ModuleManager )
+	{
+		m_ModuleManager->Clear();
+		m_ModuleManager.reset();
+	}
+
+	if( m_Context )
+	{
+		m_Context.Reset();
+	}
+
+	if( m_pIDEEngine )
+		m_pIDEEngine->ShutDownAndRelease();
 }
 
 void CASManager::AddEventListener( IASEventListener* pListener )
@@ -95,6 +133,8 @@ void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
 		m_Instance.reset();
 	}
 
+	ClearConfigurationScript();
+
 	try
 	{
 		m_Instance = std::make_unique<CASEngineInstance>();
@@ -112,7 +152,6 @@ void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
 			NotifyEventListeners( event );
 		}
 
-
 		if( pConfig )
 		{
 			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
@@ -121,6 +160,40 @@ void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
 			configEvent.configChange.pszName = &pConfig->GetName();
 
 			NotifyEventListeners( configEvent );
+
+			//TODO: need to pass the smart pointer directly, needs redesign to Qt signals - Solokiller
+			auto config = m_ConfigurationManager->Find( pConfig->GetName() );
+
+			if( config )
+			{
+				CASConfigModuleBuilder builder( config, m_Context );
+
+				m_pConfigModule = m_ModuleManager->BuildModule( "Config", "Config", builder );
+
+				if( m_pConfigModule )
+				{
+					m_pConfigModule->AddRef();
+				}
+
+				m_ConfigurationObject = builder.GetConfigurationObject();
+			}
+			else
+			{
+				std::cerr << "Couldn't find config" << "\"" << config->GetName() << "\"" << std::endl;
+			}
+
+			if( m_ConfigurationObject )
+			{
+				std::cout << "Configuration object \"" <<
+					m_ConfigurationObject.GetTypeInfo()->GetNamespace() << "::" << m_ConfigurationObject.GetTypeInfo()->GetName() <<
+					"\" found" << std::endl;
+
+				//Configure the engine
+				auto pFunction = m_ConfigurationObject.GetTypeInfo()->GetMethodByDecl( "void ConfigureEngine(asIScriptEngine@ pScriptEngine)" );
+
+				if( pFunction )
+					as::Call( m_ConfigurationObject.Get(), m_Context, pFunction, m_Instance->GetScriptEngine() );
+			}
 
 			ASEvent regEvent( ASEventType::API_REGISTERED );
 
@@ -143,5 +216,20 @@ void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
 	catch( const CASEngineException& e )
 	{
 		std::cerr << e.what() << std::endl;
+	}
+}
+
+void CASManager::ClearConfigurationScript()
+{
+	if( m_ConfigurationObject )
+	{
+		m_ConfigurationObject.Reset();
+	}
+
+	if( m_pConfigModule )
+	{
+		m_ModuleManager->RemoveModule( m_pConfigModule );
+		m_pConfigModule->Release();
+		m_pConfigModule = nullptr;
 	}
 }

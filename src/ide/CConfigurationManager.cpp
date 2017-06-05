@@ -199,6 +199,7 @@ void CConfigurationManager::LoadConfigurations( QSettings& settings )
 			auto config = std::make_shared<CConfiguration>( std::move( szName ) );
 
 			config->SetConfigFilename( settings.value( "asconfig" ).toString().toStdString() );
+			config->SetConfigScriptFilename( settings.value( "configscript" ).toString().toStdString() );
 			config->SetIncludeFilename( settings.value( "includefilename" ).toString().toStdString() );
 			config->SetFallbackExtension( settings.value( "fallbackextension" ).toString().toStdString() );
 
@@ -263,6 +264,7 @@ void CConfigurationManager::SaveConfigurations( QSettings& settings )
 
 		settings.setValue( "name", QString( config->GetName().c_str() ) );
 		settings.setValue( "asconfig", QString( config->GetConfigFilename().c_str() ) );
+		settings.setValue( "configscript", QString( config->GetConfigScriptFilename().c_str() ) );
 		settings.setValue( "includefilename", QString( config->GetIncludeFilename().c_str() ) );
 		settings.setValue( "fallbackextension", QString( config->GetFallbackExtension().c_str() ) );
 

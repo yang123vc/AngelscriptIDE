@@ -56,6 +56,16 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="m_pIncludeFilename">
+        <property name="toolTip">
+         <string>Name of the file to include before compiling a script</string>
+        </property>
+        <property name="text">
+         <string>Include filename:</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="2">
        <widget class="QLineEdit" name="m_pConfigurationNameLineEdit">
         <property name="sizePolicy">
@@ -66,17 +76,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="m_pIncludeFilename">
-        <property name="toolTip">
-         <string>Name of the file to include before compiling a script</string>
-        </property>
-        <property name="text">
-         <string>Include filename:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="m_pDefinedWordsLabel">
         <property name="toolTip">
          <string>Preprocessor words defined for a script being compiled</string>
@@ -86,18 +86,18 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="2">
-       <widget class="QLineEdit" name="m_pFallbackExtLineEdit"/>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLineEdit" name="m_pAngelscriptConfigFileLineEdit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>2</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item row="5" column="0">
+       <widget class="QLabel" name="m_pFallbackExtLabel">
+        <property name="toolTip">
+         <string>The fallback extension is used to find included files that have no extension</string>
+        </property>
+        <property name="text">
+         <string>Fallback extension:</string>
         </property>
        </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="m_pFallbackExtLineEdit"/>
       </item>
       <item row="2" column="3">
        <widget class="QPushButton" name="m_pConfigFileSelectButton">
@@ -118,20 +118,44 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QLineEdit" name="m_pIncludeFilenameLineEdit"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="m_pFallbackExtLabel">
-        <property name="toolTip">
-         <string>The fallback extension is used to find included files that have no extension</string>
-        </property>
-        <property name="text">
-         <string>Fallback extension:</string>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="m_pAngelscriptConfigFileLineEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
        </widget>
       </item>
-      <item row="3" column="3">
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="m_pIncludeFilenameLineEdit"/>
+      </item>
+      <item row="7" column="0" rowspan="2" colspan="3">
+       <widget class="QListWidget" name="m_pWordList">
+        <property name="selectionRectVisible">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="3">
+       <widget class="QPushButton" name="m_pAddIncludePathButton">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0">
+       <widget class="QLabel" name="m_pExtensionsLabel">
+        <property name="toolTip">
+         <string>File extensions to consider when opening and saving files</string>
+        </property>
+        <property name="text">
+         <string>Script file extensions to consider:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
        <widget class="QPushButton" name="m_pIncludeFilenameButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -150,31 +174,31 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="3">
-       <widget class="QPushButton" name="m_pAddIncludePathButton">
+      <item row="10" column="0" rowspan="2" colspan="3">
+       <widget class="QListWidget" name="m_pIncludePathsList"/>
+      </item>
+      <item row="11" column="3">
+       <widget class="QPushButton" name="m_pRemoveIncludePathButton">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="3">
+       <widget class="QPushButton" name="m_pRemoveWordButton">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="3">
+       <widget class="QPushButton" name="m_pAddWordButton">
         <property name="text">
          <string>Add</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="0" rowspan="2" colspan="3">
-       <widget class="QListWidget" name="m_pWordList">
-        <property name="selectionRectVisible">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="0">
-       <widget class="QLabel" name="m_pExtensionsLabel">
-        <property name="toolTip">
-         <string>File extensions to consider when opening and saving files</string>
-        </property>
-        <property name="text">
-         <string>Script file extensions to consider:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="m_pIncludePathsLabel">
         <property name="toolTip">
          <string>Include paths to search when handling #include statements.
@@ -185,44 +209,10 @@ Paths starting with '.' are considered to be relative paths.</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="0" rowspan="2" colspan="3">
-       <widget class="QListWidget" name="m_pIncludePathsList"/>
-      </item>
-      <item row="10" column="3">
-       <widget class="QPushButton" name="m_pRemoveIncludePathButton">
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3">
-       <widget class="QPushButton" name="m_pAddWordButton">
-        <property name="text">
-         <string>Add</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="3">
-       <widget class="QPushButton" name="m_pRemoveWordButton">
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="3">
+      <item row="13" column="3">
        <widget class="QPushButton" name="m_pAddExtensionButton">
         <property name="text">
          <string>Add</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="0" rowspan="2" colspan="3">
-       <widget class="QListWidget" name="m_pExtensionsList"/>
-      </item>
-      <item row="13" column="3">
-       <widget class="QPushButton" name="m_pRemoveExtensionButton">
-        <property name="text">
-         <string>Remove</string>
         </property>
        </widget>
       </item>
@@ -242,6 +232,16 @@ Paths starting with '.' are considered to be relative paths.</string>
         </property>
        </widget>
       </item>
+      <item row="13" column="0" rowspan="2" colspan="3">
+       <widget class="QListWidget" name="m_pExtensionsList"/>
+      </item>
+      <item row="14" column="3">
+       <widget class="QPushButton" name="m_pRemoveExtensionButton">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="2" colspan="2">
        <widget class="QComboBox" name="m_pCurrentConfigurationComboBox">
         <property name="sizePolicy">
@@ -249,6 +249,35 @@ Paths starting with '.' are considered to be relative paths.</string>
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Angelscript config script file:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="m_pConfigScript"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="QPushButton" name="m_pConfigScriptSelect">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>...</string>
         </property>
        </widget>
       </item>

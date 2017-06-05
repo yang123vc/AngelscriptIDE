@@ -56,6 +56,10 @@ protected slots:
 
 	void OpenSelectConfigFileDialog();
 
+	void ConfigScriptFileChanged( const QString& szText );
+
+	void OpenSelectConfigScriptFileDialog();
+
 	void IncludeFilenameChanged( const QString& szText );
 
 	void OpenIncludeFilenameFileDialog();
