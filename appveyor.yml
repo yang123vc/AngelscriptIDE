@@ -1,0 +1,56 @@
+# Use a VM with VS 2015
+os: Visual Studio 2015
+
+# Only target Windows 32 bits
+platform: Win32
+
+# Build in both Debug and Release configurations
+configuration:
+  - Debug
+  - Release
+
+# Build with all those possible configurations
+environment:
+  matrix:
+    - BUILD_RULES: -DQT_CMAKE_PREFIX="C:\Qt\5.8\msvc2015" -DOUTPUT_DIR="%APPVEYOR_BUILD_FOLDER%\AngelscriptIDE"
+
+before_build:
+  # Appveyor uses CMake 2.8, we require at least 3.6, so make the update
+  - ps: Write-Host "=== (1/4) Downloading CMake 3.6.2 ZIP for Windows 64 bits ===" -foregroundcolor green
+  - ps: wget https://cmake.org/files/v3.6/cmake-3.6.2-win64-x64.zip -OutFile cmake.zip
+  - ps: Write-Host "=== (2/4) Installing CMake ===" -foregroundcolor green
+  - cmd: 7z x cmake.zip -o"." -y
+  # Create the build directory and the install directory
+  - ps: Write-Host "=== (3/4) Creating build directory ===" -foregroundcolor green
+  - md build
+  - md AngelscriptIDE_Install
+
+build_script:
+  - cd build
+  - ps: Write-Host "===  (4/4) Building ===" -foregroundcolor green
+  - ..\cmake-3.6.2-win64-x64\bin\cmake.exe -DCMAKE_INSTALL_PREFIX=..\AngelscriptIDE_Install %BUILD_RULES% -G"Visual Studio 14 2015" ..
+  - msbuild AngelscriptIDE.sln /t:Rebuild /p:Configuration=%CONFIGURATION% /m /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+after_build:
+  # Zip the install into a file to compress it and make its name unique
+  - 7z a AngelscriptIDE-%CONFIGURATION%.zip %APPVEYOR_BUILD_FOLDER%\AngelscriptIDE
+  
+# If one job fail, mark the build as failed
+matrix:
+  fast_finish: true
+
+# We don't have unit tests
+test: off
+
+artifacts:
+  - path: build\AngelscriptIDE-%CONFIGURATION%.zip
+    name: AngelscriptIDE %CONFIGURATION%
+
+deploy:
+  - provider: GitHub
+    auth_token:
+      secure: vfOUjvsA7vbrYfFOrZh4eAckZ1TZu8izQPbXY8ppDE+sKgvKG5KICFGJkcMvYhxl #Encrypted
+    draft: false
+    prerelease: false
+    on:
+      appveyor_repo_tag: true       # deploy on tag push only
