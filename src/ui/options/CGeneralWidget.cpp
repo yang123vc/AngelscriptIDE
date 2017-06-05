@@ -35,9 +35,9 @@ void CGeneralWidget::ApplyChanges()
 {
 	if( HaveChangesBeenMade() )
 	{
-		const std::string szNewConfig = m_WidgetUI->m_pActiveConfigComboBox->currentText().toStdString();
+		m_App->GetOptions()->SetTabWidth( m_WidgetUI->m_pTabWidthSpinner->value() );
 
-		m_App->GetOptions()->GetConfigurationManager()->SetActiveConfiguration( szNewConfig );
+		m_App->GetOptions()->GetConfigurationManager()->SetActiveConfiguration( m_WidgetUI->m_pActiveConfigComboBox->currentText().toStdString() );
 
 		SetChangesMade( false );
 	}
