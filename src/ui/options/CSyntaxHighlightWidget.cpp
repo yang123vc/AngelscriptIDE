@@ -268,7 +268,7 @@ void CSyntaxHighlightWidget::CurrentPatternChanged( QListWidgetItem* current, QL
 
 void CSyntaxHighlightWidget::PatternEdited( const QString& szPattern )
 {
-	GetCurrentPattern()->m_szPattern = szPattern;
+	GetCurrentPattern()->m_szPattern = szPattern.trimmed();
 
 	SetChangesMade( true );
 }

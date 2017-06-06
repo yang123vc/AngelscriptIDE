@@ -1,3 +1,5 @@
+#include <QRegularExpression>
+
 #include "ide/COptions.h"
 
 #include "CAngelscriptSyntaxHighlighter.h"
@@ -12,21 +14,25 @@ void CAngelscriptSyntaxHighlighter::highlightBlock( const QString& text )
 {
 	for( const auto& pattern : m_Options->GetPatterns() )
 	{
+		//Skip empty patterns
+		if( pattern.m_szPattern.isEmpty() )
+			continue;
+
 		QTextCharFormat format;
 		format.setForeground( pattern.m_FGColor );
 		format.setBackground( pattern.m_BGColor );
 		format.setFontWeight( pattern.m_bBold ? QFont::Bold : QFont::Normal );
 		format.setFontUnderline( pattern.m_bUnderline );
 
-		QRegExp expression( pattern.m_szPattern );
+		QRegularExpression expression( pattern.m_szPattern );
 
-		int iIndex = text.indexOf( expression );
+		auto it = expression.globalMatch( text );
 
-		while( iIndex >= 0 )
+		while( it.hasNext() )
 		{
-			int length = expression.matchedLength();
-			setFormat( iIndex, length, format );
-			iIndex = text.indexOf( expression, iIndex + length );
+			auto match = it.next();
+
+			setFormat( match.capturedStart(), match.capturedLength(), format );
 		}
 	}
 }
