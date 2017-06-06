@@ -7,13 +7,12 @@
 #include <QDir>
 #include <QFileInfo>
 
-#include "AngelscriptUtils/add_on/scriptbuilder.h"
-#include "AngelscriptUtils/add_on/scripthelper.h"
-
-#include "CScript.h"
-#include "CConfiguration.h"
+#include <AngelscriptUtils/add_on/scriptbuilder.h>
+#include <AngelscriptUtils/add_on/scripthelper.h>
 
 #include "CASEngineInstance.h"
+#include "CConfiguration.h"
+#include "CScript.h"
 #include "IncludeCallback.h"
 
 CASEngineInstance::CASEngineInstance()

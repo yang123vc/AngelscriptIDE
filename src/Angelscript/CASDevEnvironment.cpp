@@ -2,20 +2,20 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "angelscript.h"
+#include <angelscript.h>
 
 #include <AngelscriptUtils/CASModule.h>
+#include <AngelscriptUtils/add_on/scriptbuilder.h>
 #include <AngelscriptUtils/wrapper/ASCallable.h>
 
+#include "CASConfigModuleBuilder.h"
+#include "CASDevEnvironment.h"
 #include "CASEngineInstance.h"
 #include "CConfiguration.h"
 #include "CConfigurationManager.h"
 #include "CScript.h"
 #include "IDE_API.h"
 
-#include "CASConfigModuleBuilder.h"
-#include "CASDevEnvironment.h"
-#include "AngelscriptUtils/add_on/scriptbuilder.h"
 #include "ScriptAPI/ASIConfiguration.h"
 
 CASDevEnvironment::CASDevEnvironment( std::shared_ptr<CConfigurationManager> configurationManager )

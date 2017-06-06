@@ -1,7 +1,7 @@
 #include <QSettings>
 
-#include "Angelscript/CConfiguration.h"
-#include "Angelscript/CConfigurationException.h"
+#include "CConfiguration.h"
+#include "CConfigurationException.h"
 #include "CConfigurationManager.h"
 
 CConfigurationManager::CConfigurationManager()

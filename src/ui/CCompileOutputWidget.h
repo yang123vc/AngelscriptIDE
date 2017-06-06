@@ -1,10 +1,12 @@
 #ifndef IDE_UI_CCOMPILEOUTPUTWIDGET_H
 #define IDE_UI_CCOMPILEOUTPUTWIDGET_H
 
+#include <memory>
 #include <string>
 
 #include "COutputWidget.h"
 
+class CScript;
 struct asSMessageInfo;
 
 class CCompileOutputWidget : public COutputWidget

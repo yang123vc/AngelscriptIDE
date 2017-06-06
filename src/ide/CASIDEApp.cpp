@@ -4,9 +4,10 @@
 #include <QCoreApplication.h>
 #include <QSettings.h>
 
- #include "ui/CUI.h"
+#include <angelscript.h>
 
-#include "angelscript.h"
+#include "CASIDEApp.h"
+#include "COptions.h"
 
 #include "Angelscript/CASDevEnvironment.h"
 #include "Angelscript/CScript.h"
@@ -14,12 +15,10 @@
 #include "Angelscript/CConfigurationManager.h"
 #include "ui/CASMainWindow.h"
 
-#include "COptions.h"
-
 //TODO: Windows header is included somewhere - Solokiller
 #undef SendMessage
 
-#include "CASIDEApp.h"
+#include "ui/CUI.h"
 
 CASIDEApp::CASIDEApp( std::shared_ptr<CUI> ui )
 	: m_UI( ui )

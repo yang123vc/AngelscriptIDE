@@ -4,8 +4,8 @@
 #include <QFont>
 #include <QSettings>
 
-#include "Angelscript/CConfigurationManager.h"
 #include "COptions.h"
+#include "Angelscript/CConfigurationManager.h"
 
 COptions::COptions()
 	: m_ConfigurationManager( std::make_shared<CConfigurationManager>() )

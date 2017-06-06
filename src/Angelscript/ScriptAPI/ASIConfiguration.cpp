@@ -2,8 +2,9 @@
 
 #include <angelscript.h>
 
+#include <AngelscriptUtils/add_on/scriptbuilder.h>
+
 #include "ASIConfiguration.h"
-#include "AngelscriptUtils/add_on/scriptbuilder.h"
 
 void RegisterIConfiguration( asIScriptEngine& scriptEngine )
 {

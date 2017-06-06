@@ -1,41 +1,33 @@
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QApplication>
-#include <QWindowStateChangeEvent>
-#include <QAction>
-
 #include <iostream>
 #include <chrono>
 #include <initializer_list>
 
-#include "util/CDispatchingOutStream.h"
-
-#include "Angelscript/CScript.h"
-#include "Angelscript/CConfiguration.h"
-
-#include "ide/CASIDEApp.h"
-#include "ide/COptions.h"
-
-#include "options/COptionsDialog.h"
-
-#include "util/UIUtils.h"
-
-#include "CUI.h"
+#include <QAction>
+#include <QApplication>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QWindowStateChangeEvent>
 
 #include "CAbout.h"
-#include "CScriptCodeTextEdit.h"
-
-#include "CCompileOutputWidget.h"
-#include "CInformationOutputWidget.h"
-
-#include "CFindDialog.h"
-
-#include "ui_CASMainWindow.h"
 #include "CASMainWindow.h"
+#include "CCompileOutputWidget.h"
+#include "CFindDialog.h"
+#include "CInformationOutputWidget.h"
+#include "CScriptCodeTextEdit.h"
+#include "CUI.h"
+#include "ui_CASMainWindow.h"
 
 //TODO: remove Windows dependency - Solokiller
 #undef GetCurrentDirectory
 #undef SetCurrentDirectory
+
+#include "Angelscript/CConfiguration.h"
+#include "Angelscript/CScript.h"
+#include "ide/CASIDEApp.h"
+#include "ide/COptions.h"
+#include "options/COptionsDialog.h"
+#include "util/CDispatchingOutStream.h"
+#include "util/UIUtils.h"
 
 const char* CASMainWindow::OUTPUT_WINDOW_PROPERTY = "OutputWindowType";
 
