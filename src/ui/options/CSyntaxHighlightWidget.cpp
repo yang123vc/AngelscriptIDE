@@ -75,6 +75,8 @@ void CSyntaxHighlightWidget::SetPatternWidgetsEnabled( bool bState )
 
 void CSyntaxHighlightWidget::PopulatePatterns()
 {
+	m_bPopulatingList = true;
+
 	m_WidgetUI->m_pItems->clear();
 
 	for( const auto& pattern : m_Patterns )
@@ -85,6 +87,8 @@ void CSyntaxHighlightWidget::PopulatePatterns()
 
 		item->setFlags( item->flags() | Qt::ItemIsEditable );
 	}
+
+	m_bPopulatingList = false;
 }
 
 COptions::Pattern* CSyntaxHighlightWidget::GetCurrentPattern()
@@ -180,6 +184,9 @@ void CSyntaxHighlightWidget::UseDefaults()
 		}
 	}
 
+	//Repopulate list
+	PopulatePatterns();
+
 	PopulatePatternDataWithCurrent();
 
 	SetChangesMade( true );
@@ -220,9 +227,12 @@ void CSyntaxHighlightWidget::RemovePattern()
 
 void CSyntaxHighlightWidget::PatternChanged( QListWidgetItem* pItem )
 {
-	GetCurrentPattern()->m_szPatternName = pItem->text().trimmed();
+	if( !m_bPopulatingList )
+	{
+		GetCurrentPattern()->m_szPatternName = pItem->text().trimmed();
 
-	SetChangesMade( true );
+		SetChangesMade( true );
+	}
 }
 
 void CSyntaxHighlightWidget::CurrentPatternChanged( QListWidgetItem* current, QListWidgetItem* previous )

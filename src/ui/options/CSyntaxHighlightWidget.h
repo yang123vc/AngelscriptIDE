@@ -80,6 +80,8 @@ private:
 	std::unique_ptr<Ui::CSyntaxHighlightWidget> m_WidgetUI;
 
 	QVector<COptions::Pattern> m_Patterns;
+
+	bool m_bPopulatingList = false;
 };
 
 #endif //IDE_UI_OPTIONS_CSYNTAXHIGHLIGHTWIDGET_H
