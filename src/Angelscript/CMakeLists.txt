@@ -1,10 +1,10 @@
 add_sources(
 	CASConfigModuleBuilder.cpp
 	CASConfigModuleBuilder.h
+	CASDevEnvironment.cpp
+	CASDevEnvironment.h
 	CASEngineInstance.cpp
 	CASEngineInstance.h
-	CASManager.cpp
-	CASManager.h
 	CConfiguration.cpp
 	CConfiguration.h
 	CConfigurationException.h

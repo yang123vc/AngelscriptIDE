@@ -8,7 +8,7 @@
 
 #include "angelscript.h"
 
-#include "Angelscript/CASManager.h"
+#include "Angelscript/CASDevEnvironment.h"
 #include "Angelscript/CScript.h"
 #include "Angelscript/CConfiguration.h"
 #include "Angelscript/CConfigurationManager.h"
@@ -56,7 +56,7 @@ void CASIDEApp::Startup()
 
 	m_Options = std::make_shared<COptions>();
 
-	m_ASManager = std::make_shared<CASManager>( m_Options->GetConfigurationManager() );
+	m_ASDDevEnv = std::make_shared<CASDevEnvironment>( m_Options->GetConfigurationManager() );
 
 	m_Connections.emplace_back( connect( m_Options->GetConfigurationManager().get(), &CConfigurationManager::ConfigurationRemoved, this, &CASIDEApp::OnConfigurationRemoved ) );
 }
@@ -79,7 +79,7 @@ void CASIDEApp::Shutdown()
 
 	m_Connections.clear();
 
-	m_ASManager.reset();
+	m_ASDDevEnv.reset();
 	m_Options.reset();
 
 	CBaseApp::Shutdown();
@@ -97,7 +97,7 @@ void CASIDEApp::SetMainWindow( const std::shared_ptr<CASMainWindow>& window )
 
 bool CASIDEApp::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
-	return m_ASManager->CompileScript( szSectionName, szScriptContents );
+	return m_ASDDevEnv->CompileScript( szSectionName, szScriptContents );
 }
 
 void CASIDEApp::RefreshSyntaxHighlights()

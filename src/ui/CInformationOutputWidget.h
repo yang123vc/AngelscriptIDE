@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-#include "Angelscript/CASManager.h"
+#include "Angelscript/CASDevEnvironment.h"
 #include "COutputWidget.h"
 #include "CUI.h"
 

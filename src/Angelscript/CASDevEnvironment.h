@@ -1,5 +1,5 @@
-#ifndef ANGELSCRIPT_CASMANAGER_H
-#define ANGELSCRIPT_CASMANAGER_H
+#ifndef ANGELSCRIPT_CASDEVENVIRONMENT_H
+#define ANGELSCRIPT_CASDEVENVIRONMENT_H
 
 #include <memory>
 
@@ -25,9 +25,9 @@ enum class ConfigChangeType
 };
 
 /**
-*	Manages the Angelscript engine and handles compilation
+*	Manages the current Angelscript engine, configuration done using scripts and handles compilation
 */
-class CASManager : public QObject
+class CASDevEnvironment : public QObject
 {
 	Q_OBJECT
 
@@ -36,8 +36,8 @@ public:
 	*	Creates an Angelscript context manager
 	*	@throws std::runtime_error If the IDE script engine could not be created
 	*/
-	CASManager( std::shared_ptr<CConfigurationManager> configurationManager );
-	~CASManager();
+	CASDevEnvironment( std::shared_ptr<CConfigurationManager> configurationManager );
+	~CASDevEnvironment();
 
 	std::shared_ptr<CConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
 
@@ -114,8 +114,8 @@ private:
 	CASObjPtr m_ConfigurationObject;
 
 private:
-	CASManager( const CASManager& ) = delete;
-	CASManager& operator=( const CASManager& ) = delete;
+	CASDevEnvironment( const CASDevEnvironment& ) = delete;
+	CASDevEnvironment& operator=( const CASDevEnvironment& ) = delete;
 };
 
-#endif //ANGELSCRIPT_CASMANAGER_H
+#endif //ANGELSCRIPT_CASDEVENVIRONMENT_H

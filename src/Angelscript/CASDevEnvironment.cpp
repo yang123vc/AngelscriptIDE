@@ -14,21 +14,21 @@
 #include "IDE_API.h"
 
 #include "CASConfigModuleBuilder.h"
-#include "CASManager.h"
+#include "CASDevEnvironment.h"
 #include "AngelscriptUtils/add_on/scriptbuilder.h"
 #include "ScriptAPI/ASIConfiguration.h"
 
-CASManager::CASManager( std::shared_ptr<CConfigurationManager> configurationManager )
+CASDevEnvironment::CASDevEnvironment( std::shared_ptr<CConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
 {
-	connect( m_ConfigurationManager.get(), &CConfigurationManager::ActiveConfigurationChanged, this, &CASManager::OnActiveConfigurationChanged );
+	connect( m_ConfigurationManager.get(), &CConfigurationManager::ActiveConfigurationChanged, this, &CASDevEnvironment::OnActiveConfigurationChanged );
 
 	m_pIDEEngine = asCreateScriptEngine( ANGELSCRIPT_VERSION );
 
 	if( !m_pIDEEngine )
 		throw std::runtime_error( "Couldn't create IDE script engine" );
 
-	m_pIDEEngine->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
+	m_pIDEEngine->SetMessageCallback( asMETHOD( CASDevEnvironment, MessageCallback ), this, asCALL_THISCALL );
 
 	RegisterIDE_API( *m_pIDEEngine );
 
@@ -39,7 +39,7 @@ CASManager::CASManager( std::shared_ptr<CConfigurationManager> configurationMana
 	m_ModuleManager->AddDescriptor( "Config", 0xFFFFFFFF );
 }
 
-CASManager::~CASManager()
+CASDevEnvironment::~CASDevEnvironment()
 {
 	ClearConfigurationScript();
 
@@ -58,12 +58,12 @@ CASManager::~CASManager()
 		m_pIDEEngine->ShutDownAndRelease();
 }
 
-void CASManager::MessageCallback( const asSMessageInfo* pMsg )
+void CASDevEnvironment::MessageCallback( const asSMessageInfo* pMsg )
 {
 	CompilerMessage( *pMsg );
 }
 
-bool CASManager::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
+bool CASDevEnvironment::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
 	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ) );
 
@@ -76,7 +76,7 @@ bool CASManager::CompileScript( const std::string& szSectionName, const std::str
 	return bResult;
 }
 
-void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config )
+void CASDevEnvironment::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config )
 {
 	if( m_Instance )
 	{
@@ -90,7 +90,7 @@ void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config 
 	{
 		m_Instance = std::make_unique<CASEngineInstance>();
 
-		m_Instance->SetMessageCallback( asMETHOD( CASManager, MessageCallback ), this, asCALL_THISCALL );
+		m_Instance->SetMessageCallback( asMETHOD( CASDevEnvironment, MessageCallback ), this, asCALL_THISCALL );
 
 		const std::string szVersion = m_Instance->GetVersion();
 
@@ -140,7 +140,7 @@ void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config 
 	}
 }
 
-void CASManager::ClearConfigurationScript()
+void CASDevEnvironment::ClearConfigurationScript()
 {
 	if( m_ConfigurationObject )
 	{
@@ -155,7 +155,7 @@ void CASManager::ClearConfigurationScript()
 	}
 }
 
-void CASManager::OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig )
+void CASDevEnvironment::OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig )
 {
 	ActiveConfigSet( newConfig );
 }

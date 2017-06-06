@@ -1,6 +1,6 @@
 #include "angelscript.h"
 
-#include "Angelscript/CASManager.h"
+#include "Angelscript/CASDevEnvironment.h"
 #include "Angelscript/CScript.h"
 
 #include "ide/CASIDEApp.h"
@@ -13,15 +13,15 @@ CInformationOutputWidget::CInformationOutputWidget( std::shared_ptr<CASIDEApp> a
 	, m_uiErrors( 0 )
 	, m_uiWarnings( 0 )
 {
-	auto manager = m_App->GetAngelscriptManager();
+	auto devEnv = m_App->GetDevEnvironment();
 
-	connect( manager.get(), &CASManager::EngineCreated, this, &CInformationOutputWidget::OnEngineCreated );
-	connect( manager.get(), &CASManager::EngineDestroyed, this, &CInformationOutputWidget::OnEngineDestroyed );
-	connect( manager.get(), &CASManager::APIRegistered, this, &CInformationOutputWidget::OnAPIRegistered );
-	connect( manager.get(), &CASManager::ConfigChanged, this, &CInformationOutputWidget::OnConfigChanged );
-	connect( manager.get(), &CASManager::CompilationStarted, this, &CInformationOutputWidget::OnCompilationStarted );
-	connect( manager.get(), &CASManager::CompilationEnded, this, &CInformationOutputWidget::OnCompilationEnded );
-	connect( manager.get(), &CASManager::CompilerMessage, this, &CInformationOutputWidget::OnCompilerMessage );
+	connect( devEnv.get(), &CASDevEnvironment::EngineCreated, this, &CInformationOutputWidget::OnEngineCreated );
+	connect( devEnv.get(), &CASDevEnvironment::EngineDestroyed, this, &CInformationOutputWidget::OnEngineDestroyed );
+	connect( devEnv.get(), &CASDevEnvironment::APIRegistered, this, &CInformationOutputWidget::OnAPIRegistered );
+	connect( devEnv.get(), &CASDevEnvironment::ConfigChanged, this, &CInformationOutputWidget::OnConfigChanged );
+	connect( devEnv.get(), &CASDevEnvironment::CompilationStarted, this, &CInformationOutputWidget::OnCompilationStarted );
+	connect( devEnv.get(), &CASDevEnvironment::CompilationEnded, this, &CInformationOutputWidget::OnCompilationEnded );
+	connect( devEnv.get(), &CASDevEnvironment::CompilerMessage, this, &CInformationOutputWidget::OnCompilerMessage );
 
 	connect( m_UI.get(), &CUI::UIMessage, this, &CInformationOutputWidget::OnUIMessage );
 }

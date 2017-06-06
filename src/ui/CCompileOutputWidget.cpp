@@ -1,6 +1,6 @@
 #include <angelscript.h>
 
-#include "Angelscript/CASManager.h"
+#include "Angelscript/CASDevEnvironment.h"
 #include "ide/CASIDEApp.h"
 
 #include "CCompileOutputWidget.h"
@@ -9,11 +9,11 @@
 CCompileOutputWidget::CCompileOutputWidget( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* pParent )
 	: COutputWidget( app, "Output", ui, pParent )
 {
-	auto manager = m_App->GetAngelscriptManager();
+	auto devEnv = m_App->GetDevEnvironment();
 
-	connect( manager.get(), &CASManager::EngineCreated, this, &CCompileOutputWidget::OnEngineCreated );
-	connect( manager.get(), &CASManager::CompilationStarted, this, &CCompileOutputWidget::OnCompilationStarted );
-	connect( manager.get(), &CASManager::CompilerMessage, this, &CCompileOutputWidget::OnCompilerMessage );
+	connect( devEnv.get(), &CASDevEnvironment::EngineCreated, this, &CCompileOutputWidget::OnEngineCreated );
+	connect( devEnv.get(), &CASDevEnvironment::CompilationStarted, this, &CCompileOutputWidget::OnCompilationStarted );
+	connect( devEnv.get(), &CASDevEnvironment::CompilerMessage, this, &CCompileOutputWidget::OnCompilerMessage );
 }
 
 CCompileOutputWidget::~CCompileOutputWidget()
