@@ -193,10 +193,11 @@ void CSyntaxHighlightWidget::AddPattern()
 
 	auto item = m_WidgetUI->m_pItems->item( m_WidgetUI->m_pItems->count() - 1 );
 
-	item->setFlags( item->flags() | Qt::ItemIsEditable );
-
 	m_WidgetUI->m_pItems->setCurrentItem( item );
 	m_WidgetUI->m_pItems->editItem( item );
+
+	//This triggers a PatternChanged call, so make sure it's set AFTER it's been made current
+	item->setFlags( item->flags() | Qt::ItemIsEditable );
 
 	SetChangesMade( true );
 }
@@ -209,7 +210,7 @@ void CSyntaxHighlightWidget::RemovePattern()
 	{
 		const auto iRow = m_WidgetUI->m_pItems->row( pItem );
 
-		m_WidgetUI->m_pItems->removeItemWidget( pItem );
+		m_WidgetUI->m_pItems->takeItem( iRow );
 
 		m_Patterns.remove( iRow );
 
