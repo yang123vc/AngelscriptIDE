@@ -7,7 +7,6 @@
 #include <QMainWindow>
 
 #include "util/CDispatchingOutStream.h"
-#include "util/IAppListener.h"
 
 class CScriptCodeTextEdit;
 
@@ -21,7 +20,7 @@ class CUI;
 
 class QAction;
 
-class CASMainWindow : public QMainWindow, public IAppListener
+class CASMainWindow : public QMainWindow
 {
 	Q_OBJECT
 
@@ -39,10 +38,6 @@ private:
 public:
 	explicit CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* parent = nullptr );
 	~CASMainWindow();
-
-	void AppStartedUp() override;
-	void OnBeforeRun() override;
-	void AppShutdown() override;
 
 	void RefreshSyntaxHighlights();
 
@@ -74,6 +69,9 @@ protected:
 	void ClearRecentFilesActions();
 
 public slots:
+
+	void OnAppBeforeRun();
+	void OnAppShutdown();
 
 	//File menu
 	void NewFile();

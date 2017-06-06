@@ -1,7 +1,5 @@
 #include <iostream>
 
-#include "IAppListener.h"
-
 #include "CBaseApp.h"
 
 CBaseApp::CBaseApp()
@@ -10,17 +8,6 @@ CBaseApp::CBaseApp()
 
 CBaseApp::~CBaseApp()
 {
-
-}
-
-void CBaseApp::AddAppListener( IAppListener* pListener )
-{
-	m_AppListeners.AddListener( pListener );
-}
-
-void CBaseApp::RemoveAppListener( IAppListener* pListener )
-{
-	m_AppListeners.RemoveListener( pListener );
 }
 
 void CBaseApp::Startup()
@@ -28,17 +15,17 @@ void CBaseApp::Startup()
 	m_OutStream.reset( new CDispatchingOutStream( std::cout, this ) );
 	m_ErrStream.reset( new CDispatchingOutStream( std::cerr, this ) );
 
-	m_AppListeners.NotifyListeners( &IAppListener::AppStartedUp );
+	AppStartup();
 }
 
 void CBaseApp::OnBeforeRun()
 {
-	m_AppListeners.NotifyListeners( &IAppListener::OnBeforeRun );
+	AppBeforeRun();
 }
 
 void CBaseApp::Shutdown()
 {
-	m_AppListeners.NotifyListeners( &IAppListener::AppShutdown );
+	AppShutdown();
 
 	m_ErrStream.reset();
 	m_OutStream.reset();

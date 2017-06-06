@@ -47,7 +47,8 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 {
 	m_WidgetUI->setupUi( this );
 
-	m_App->AddAppListener( this );
+	connect( m_App.get(), &CBaseApp::AppBeforeRun, this, &CASMainWindow::OnAppBeforeRun );
+	connect( m_App.get(), &CBaseApp::AppShutdown, this, &CASMainWindow::OnAppShutdown );
 
 	//File menu
 	connect( m_WidgetUI->actionNew, SIGNAL( triggered() ), this, SLOT( NewFile() ) );
@@ -105,40 +106,9 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 
 CASMainWindow::~CASMainWindow()
 {
-	m_App->RemoveAppListener( this );
-
 	ClearRecentFilesActions();
 
 	delete m_pNoRecentFilesAction;
-}
-
-void CASMainWindow::AppStartedUp()
-{
-}
-
-void CASMainWindow::OnBeforeRun()
-{
-	//Set window maximized state
-	auto options = m_App->GetOptions();
-
-	if( options->StartMaximized() )
-		setWindowState( windowState() | Qt::WindowMaximized );
-	else
-		setWindowState( windowState() & ~Qt::WindowMaximized );
-
-	const auto& recentFiles = options->GetRecentFiles();
-
-	if( !recentFiles.empty() )
-	{
-		for( auto it = recentFiles.rbegin(), end = recentFiles.rend(); it != end; ++it )
-			AddRecentFile( *it );
-	}
-}
-
-void CASMainWindow::AppShutdown()
-{
-	//This is failsafe to let users save their work in case of unexpected shutdown
-	CloseAllFiles( true );
 }
 
 void CASMainWindow::RefreshSyntaxHighlights()
@@ -410,6 +380,31 @@ void CASMainWindow::ClearRecentFilesActions()
 	}
 
 	m_WidgetUI->menuRecent_Files->addAction( m_pNoRecentFilesAction );
+}
+
+void CASMainWindow::OnAppBeforeRun()
+{
+	//Set window maximized state
+	auto options = m_App->GetOptions();
+
+	if( options->StartMaximized() )
+		setWindowState( windowState() | Qt::WindowMaximized );
+	else
+		setWindowState( windowState() & ~Qt::WindowMaximized );
+
+	const auto& recentFiles = options->GetRecentFiles();
+
+	if( !recentFiles.empty() )
+	{
+		for( auto it = recentFiles.rbegin(), end = recentFiles.rend(); it != end; ++it )
+			AddRecentFile( *it );
+	}
+}
+
+void CASMainWindow::OnAppShutdown()
+{
+	//This is a failsafe to let users save their work in case of unexpected shutdown
+	CloseAllFiles( true );
 }
 
 void CASMainWindow::NewFile()

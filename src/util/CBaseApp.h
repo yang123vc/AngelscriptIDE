@@ -3,16 +3,17 @@
 
 #include <memory>
 
-#include "CDispatchingOutStream.h"
-#include "CListenerManager.h"
+#include <QObject>
 
-class IAppListener;
+#include "CDispatchingOutStream.h"
 
 /**
 *	Base class for apps
 */
-class CBaseApp : public IOutStreamListener
+class CBaseApp : public QObject, public IOutStreamListener
 {
+	Q_OBJECT
+
 public:
 	CBaseApp();
 	~CBaseApp();
@@ -21,9 +22,6 @@ public:
 	*	Writes a string to be displayed
 	*/
 	virtual void WriteString( const char* pszString ) = 0;
-
-	void AddAppListener( IAppListener* pListener );
-	void RemoveAppListener( IAppListener* pListener );
 
 	/**
 	*	Starts up the app
@@ -40,13 +38,17 @@ public:
 	*/
 	virtual void Shutdown();
 
+signals:
+	void AppStartup();
+
+	void AppBeforeRun();
+
+	void AppShutdown();
+
 protected:
 	//Redirect cout & cerr
 	std::unique_ptr<CDispatchingOutStream> m_OutStream;
 	std::unique_ptr<CDispatchingOutStream> m_ErrStream;
-
-private:
-	CListenerManager<IAppListener> m_AppListeners;
 };
 
 #endif //UTIL_CBASEAPP_H

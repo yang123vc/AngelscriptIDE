@@ -14,10 +14,7 @@ class CLauncher final : public QObject
 public:
 	std::shared_ptr<CASIDEApp> m_App;
 
-	void CLauncher::OnQuit()
-	{
-		m_App->Shutdown();
-	}
+	void OnQuit();
 };
 
 #endif //MAIN_H

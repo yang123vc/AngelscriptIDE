@@ -4,9 +4,7 @@ add_sources(
 	CBaseApp.h
 	CProperties.cpp
 	CProperties.h
-	CListenerManager.h
 	StringUtils.cpp
 	StringUtils.h
 	CDispatchingOutStream.h
-	IAppListener.h
 )

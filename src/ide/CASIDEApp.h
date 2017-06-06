@@ -8,7 +8,6 @@
 #include <QObject>
 
 #include "util/CBaseApp.h"
-#include "util/CListenerManager.h"
 
 class CASMainWindow;
 class CASManager;
@@ -19,7 +18,7 @@ class CUI;
 /**
 *	Angelscript IDE app
 */
-class CASIDEApp final : public QObject, public CBaseApp, public std::enable_shared_from_this<CASIDEApp>
+class CASIDEApp final : public CBaseApp, public std::enable_shared_from_this<CASIDEApp>
 {
 	Q_OBJECT
 

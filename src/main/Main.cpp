@@ -6,6 +6,11 @@
 #include "ui/CASMainWindow.h"
 #include "ui/CUI.h"
 
+void CLauncher::OnQuit()
+{
+	m_App->Shutdown();
+}
+
 int main( int argc, char* argv[] )
 {
 	//TODO: catch exception, show message box - Solokiller
