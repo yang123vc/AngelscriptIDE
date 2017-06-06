@@ -1,11 +1,7 @@
 #ifndef ANGELSCRIPT_CSCRIPT_H
 #define ANGELSCRIPT_CSCRIPT_H
 
-#include <vector>
 #include <string>
-#include <memory>
-
-class CConfiguration;
 
 /**
 *	Represents a single script file
@@ -13,10 +9,9 @@ class CConfiguration;
 class CScript
 {
 public:
-	explicit CScript( std::string&& szSectionName, std::shared_ptr<const CConfiguration> config = nullptr );
+	explicit CScript( std::string&& szSectionName );
 
-	CScript( std::string&& szSectionName, std::string&& szContents,
-			 std::shared_ptr<const CConfiguration> config = nullptr );
+	CScript( std::string&& szSectionName, std::string&& szContents );
 
 	~CScript() = default;
 
@@ -30,7 +25,7 @@ public:
 	*	@param szFileName Name of the file to load
 	*	@param szSectionName If not empty, the name of the script section. If empty, the name of the file is used
 	*/
-	static CScript FromFile( const std::string& szFileName, const std::string& szSectionName = "", std::shared_ptr<const CConfiguration> config = nullptr );
+	static CScript FromFile( const std::string& szFileName, const std::string& szSectionName = "" );
 
 	const std::string& GetSectionName() const { return m_szSectionName; }
 
@@ -45,9 +40,6 @@ public:
 	*	Replaces the contents with the given contents
 	*/
 	void SetContents( std::string&& szContents );
-
-	//TODO: remove this, use current active config instead - Solokiller
-	std::shared_ptr<const CConfiguration> GetConfiguration() const { return m_Configuration; }
 
 	/**
 	*	Loads the contents of the given file
@@ -73,8 +65,6 @@ public:
 private:
 	std::string m_szSectionName;
 	std::string m_szContents;
-
-	std::shared_ptr<const CConfiguration> m_Configuration;
 };
 
 #endif //ANGELSCRIPT_CSCRIPT_H

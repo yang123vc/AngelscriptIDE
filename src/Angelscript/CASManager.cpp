@@ -81,14 +81,14 @@ void CASManager::MessageCallback( const asSMessageInfo* pMsg )
 
 bool CASManager::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
-	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ), m_ConfigurationManager->GetActiveConfiguration() );
+	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ) );
 
 	ASEvent startEvent( ASEventType::COMPILATION_STARTED );
 
 	startEvent.compilationStart.pScript = script.get();
 
 	NotifyEventListeners( startEvent );
-	const bool bResult = m_Instance->CompileScript( script );
+	const bool bResult = m_Instance->CompileScript( script, m_ConfigurationManager->GetActiveConfiguration() );
 
 	ASEvent endEvent( ASEventType::COMPILATION_ENDED );
 

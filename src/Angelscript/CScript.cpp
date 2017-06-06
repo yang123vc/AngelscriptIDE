@@ -3,22 +3,20 @@
 
 #include "CScript.h"
 
-CScript::CScript( std::string&& szSectionName, std::shared_ptr<const CConfiguration> config )
+CScript::CScript( std::string&& szSectionName )
 	: m_szSectionName( std::move( szSectionName ) )
-	, m_Configuration( config )
 {
 }
 
-CScript::CScript( std::string&& szSectionName, std::string&& szContents, std::shared_ptr<const CConfiguration> config )
+CScript::CScript( std::string&& szSectionName, std::string&& szContents )
 	: m_szSectionName( std::move( szSectionName ) )
 	, m_szContents( std::move( szContents ) )
-	, m_Configuration( config )
 {
 }
 
-CScript CScript::FromFile( const std::string& szFileName, const std::string& szSectionName, std::shared_ptr<const CConfiguration> config )
+CScript CScript::FromFile( const std::string& szFileName, const std::string& szSectionName )
 {
-	CScript script( std::string( szSectionName.empty() ? szFileName : szSectionName ), config );
+	CScript script( std::string( szSectionName.empty() ? szFileName : szSectionName ) );
 
 	script.LoadFromFile( szFileName );
 

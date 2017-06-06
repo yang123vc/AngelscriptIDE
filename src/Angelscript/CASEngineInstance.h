@@ -6,9 +6,9 @@
 #include <string>
 
 class asIScriptEngine;
-struct asSMessageInfo;
-
+class CConfiguration;
 class CScript;
+struct asSMessageInfo;
 
 /**
 *	Exception thrown if an Angelscript exception has occured
@@ -53,7 +53,7 @@ public:
 	/**
 	*	Compiles a given script
 	*/
-	bool CompileScript( std::shared_ptr<const CScript> script );
+	bool CompileScript( const std::shared_ptr<const CScript>& script, const std::shared_ptr<const CConfiguration>& config );
 
 private:
 	asIScriptEngine* m_pScriptEngine = nullptr;

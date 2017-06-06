@@ -50,9 +50,16 @@ bool CASEngineInstance::LoadAPIFromFile( const std::string& szFilename )
 	return ConfigEngineFromStream( GetScriptEngine(), inStream ) >= 0;
 }
 
-bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
+bool CASEngineInstance::CompileScript( const std::shared_ptr<const CScript>& script, const std::shared_ptr<const CConfiguration>& config )
 {
 	CScriptBuilder builder;
+
+	struct CallbackData_t
+	{
+		const decltype( config )& config;
+	};
+
+	CallbackData_t data{ config };
 
 	builder.SetIncludeCallback(
 	[]( const char* pszInclude, const char* pszFrom, CScriptBuilder* pBuilder, void* pUserParam ) -> int
@@ -64,20 +71,16 @@ bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 			return -1;
 		}
 
-		auto script = *reinterpret_cast<std::shared_ptr<const CScript>*>( pUserParam );
+		const auto& data = *reinterpret_cast<CallbackData_t*>( pUserParam );
 
-		auto config = script->GetConfiguration();
-
-		return FindIncludedFile( *pBuilder, config, pszInclude, pszFrom );
+		return FindIncludedFile( *pBuilder, data.config, pszInclude, pszFrom );
 	}
-	, &script );
+	, &data );
 
-	bool fSuccess = builder.StartNewModule( m_pScriptEngine, "ScriptModule" ) >= 0;
+	bool bSuccess = builder.StartNewModule( m_pScriptEngine, "ScriptModule" ) >= 0;
 
-	if( fSuccess )
+	if( bSuccess )
 	{
-		auto config = script->GetConfiguration();
-
 		if( config )
 		{
 			for( const auto& szWord : config->GetWords() )
@@ -87,29 +90,27 @@ bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 
 			if( !szIncludeFilename.empty() )
 			{
-				bool bSuccess;
-
 				auto szContents = CScript::LoadContentsFromFile( szIncludeFilename, bSuccess );
 
 				if( bSuccess )
-					fSuccess = builder.AddSectionFromMemory( "Include", szContents.c_str() ) >= 0;
+					bSuccess = builder.AddSectionFromMemory( "Include", szContents.c_str() ) >= 0;
 			}
 		}
 	}
 	else
 		std::cerr << "Failed to create module!" << std::endl;
 
-	if( fSuccess )
+	if( bSuccess )
 	{
 		const auto iResult = builder.AddSectionFromMemory( script->GetSectionName().c_str(), script->GetContents().c_str() );
 
-		fSuccess = iResult >= 0;
+		bSuccess = iResult >= 0;
 	}
 	else
 		std::cerr << "Failed to initialize builder!" << std::endl;
 
-	if( fSuccess )
-		fSuccess = builder.BuildModule() >= 0;
+	if( bSuccess )
+		bSuccess = builder.BuildModule() >= 0;
 	else
 		std::cerr << "Failed to add code to builder!" << std::endl;
 
@@ -120,5 +121,5 @@ bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 	//Clean up anything that isn't needed
 	m_pScriptEngine->GarbageCollect();
 
-	return fSuccess;
+	return bSuccess;
 }
