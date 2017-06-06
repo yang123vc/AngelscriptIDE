@@ -3,13 +3,10 @@
 #include "Angelscript/CASManager.h"
 #include "Angelscript/CScript.h"
 
-//TODO: remove Windows dependency - Solokiller
-#undef ERROR
-
 #include "ide/CASIDEApp.h"
 
-#include "ui_COutputWidget.h"
 #include "CInformationOutputWidget.h"
+#include "ui_COutputWidget.h"
 
 CInformationOutputWidget::CInformationOutputWidget( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* pParent )
 	: COutputWidget( app, "Information", ui, pParent )
@@ -26,12 +23,11 @@ CInformationOutputWidget::CInformationOutputWidget( std::shared_ptr<CASIDEApp> a
 	connect( manager.get(), &CASManager::CompilationEnded, this, &CInformationOutputWidget::OnCompilationEnded );
 	connect( manager.get(), &CASManager::CompilerMessage, this, &CInformationOutputWidget::OnCompilerMessage );
 
-	m_UI->AddUIEventListener( this );
+	connect( m_UI.get(), &CUI::UIMessage, this, &CInformationOutputWidget::OnUIMessage );
 }
 
 CInformationOutputWidget::~CInformationOutputWidget()
 {
-	m_UI->RemoveUIEventListener( this );
 }
 
 void CInformationOutputWidget::WriteString( const char* pszString )
@@ -48,21 +44,6 @@ void CInformationOutputWidget::WriteString( const std::string& szString )
 void CInformationOutputWidget::WriteString( const QString& szString )
 {
 	WriteString( szString.toStdString() );
-}
-
-void CInformationOutputWidget::ReceiveUIMessage( const char* pszString, UIMessageType type )
-{
-	QString szMessage;
-
-	switch( type )
-	{
-	default:
-	case UIMessageType::INFO: szMessage = pszString; break;
-	case UIMessageType::WARNING: szMessage = QString( "Warning: %1" ).arg( pszString ); break;
-	case UIMessageType::ERROR: szMessage = QString( "Error: %1" ).arg( pszString ); break;
-	}
-
-	WriteString( szMessage.toStdString().c_str() );
 }
 
 void CInformationOutputWidget::WriteCompileSeparator( char cChar, unsigned int uiWidth )
@@ -96,9 +77,9 @@ void CInformationOutputWidget::OnEngineDestroyed()
 void CInformationOutputWidget::OnAPIRegistered( const std::string& szConfigFilename, bool bSuccess )
 {
 	if( bSuccess )
-		ReceiveUIMessage( ( std::string( "API Configuration \"" ) + szConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
+		OnUIMessage( ( std::string( "API Configuration \"" ) + szConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
 	else
-		ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + szConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
+		OnUIMessage( ( std::string( "Failed to load API configuration \"" ) + szConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
 }
 
 void CInformationOutputWidget::OnConfigChanged( ConfigChangeType changeType, const std::string& szName )
@@ -169,4 +150,19 @@ void CInformationOutputWidget::OnCompilerMessage( const asSMessageInfo& msg )
 		++m_uiErrors;
 	else if( msg.type == asMSGTYPE_WARNING )
 		++m_uiWarnings;
+}
+
+void  CInformationOutputWidget::OnUIMessage( const char* pszString, UIMessageType type )
+{
+	QString szMessage;
+
+	switch( type )
+	{
+	default:
+	case UIMessageType::INFO: szMessage = pszString; break;
+	case UIMessageType::WARNING: szMessage = QString( "Warning: %1" ).arg( pszString ); break;
+	case UIMessageType::ERROR: szMessage = QString( "Error: %1" ).arg( pszString ); break;
+	}
+
+	WriteString( szMessage.toStdString().c_str() );
 }

@@ -4,11 +4,13 @@
 #include <memory>
 #include <string>
 
+#include <QObject>
 #include <QString>
 
-#include "util/CListenerManager.h"
-
 class CASIDEApp;
+
+//TODO: remove Windows dependency - Solokiller
+#undef ERROR
 
 enum class UIMessageType
 {
@@ -17,34 +19,16 @@ enum class UIMessageType
 	ERROR
 };
 
-class IUIEventListener
-{
-public:
-
-	virtual ~IUIEventListener() = 0;
-
-	virtual void ReceiveUIMessage( const char* pszString, UIMessageType type );
-};
-
-inline IUIEventListener::~IUIEventListener()
-{
-}
-
-inline void IUIEventListener::ReceiveUIMessage( const char*, UIMessageType )
-{
-}
-
 /*
  * This class represents the UI itself
 */
-class CUI final
+class CUI final : public QObject
 {
+	Q_OBJECT
+
 public:
 	CUI();
 	~CUI();
-
-	void AddUIEventListener( IUIEventListener* pListener );
-	void RemoveUIEventListener( IUIEventListener* pListener );
 
 	/**
 	*	Sends a message
@@ -54,9 +38,11 @@ public:
 	void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::INFO );
 	void SendMessage( const QString& szString, UIMessageType type = UIMessageType::INFO );
 
+signals:
+	void UIMessage( const char* pszString, UIMessageType type );
+
 private:
 	std::shared_ptr<CASIDEApp> m_App;
-	CListenerManager<IUIEventListener> m_UIListeners;
 
 private:
 	CUI( const CUI& ) = delete;

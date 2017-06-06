@@ -10,8 +10,7 @@
 struct asSMessageInfo;
 
 class CInformationOutputWidget :
-		public COutputWidget,
-		public IUIEventListener
+		public COutputWidget
 {
 protected:
 
@@ -25,8 +24,6 @@ public:
 	void WriteString( const char* pszString );
 	void WriteString( const std::string& szString );
 	void WriteString( const QString& szString );
-
-	void ReceiveUIMessage( const char* pszString, UIMessageType type ) override;
 
 protected:
 
@@ -46,6 +43,8 @@ private slots:
 	void OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
 
 	void OnCompilerMessage( const asSMessageInfo& msg );
+
+	void OnUIMessage( const char* pszString, UIMessageType type );
 
 private:
 	std::chrono::high_resolution_clock::time_point m_CompileStartTime;

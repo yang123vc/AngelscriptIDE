@@ -8,22 +8,12 @@ CUI::~CUI()
 {
 }
 
-void CUI::AddUIEventListener( IUIEventListener* pListener )
-{
-	m_UIListeners.AddListener( pListener );
-}
-
-void CUI::RemoveUIEventListener( IUIEventListener* pListener )
-{
-	m_UIListeners.RemoveListener( pListener );
-}
-
 void CUI::SendMessage( const char* pszString, UIMessageType type )
 {
 	if( !pszString )
 		return;
 
-	m_UIListeners.NotifyListeners( &IUIEventListener::ReceiveUIMessage, pszString, type );
+	UIMessage( pszString, type );
 }
 
 void CUI::SendMessage( const std::string& szString, UIMessageType type )
