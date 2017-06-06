@@ -138,28 +138,31 @@ void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config 
 
 			NotifyEventListeners( configEvent );
 
-			CASConfigModuleBuilder builder( config, m_Context );
-
-			m_pConfigModule = m_ModuleManager->BuildModule( "Config", "Config", builder );
-
-			if( m_pConfigModule )
+			if( !config->GetConfigScriptFilename().empty() )
 			{
-				m_pConfigModule->AddRef();
-			}
+				CASConfigModuleBuilder builder( config, m_Context );
 
-			m_ConfigurationObject = builder.GetConfigurationObject();
+				m_pConfigModule = m_ModuleManager->BuildModule( "Config", "Config", builder );
 
-			if( m_ConfigurationObject )
-			{
-				std::cout << "Configuration object \"" <<
-					m_ConfigurationObject.GetTypeInfo()->GetNamespace() << "::" << m_ConfigurationObject.GetTypeInfo()->GetName() <<
-					"\" found" << std::endl;
+				if( m_pConfigModule )
+				{
+					m_pConfigModule->AddRef();
+				}
 
-				//Configure the engine
-				auto pFunction = m_ConfigurationObject.GetTypeInfo()->GetMethodByDecl( "void ConfigureEngine(asIScriptEngine@ pScriptEngine)" );
+				m_ConfigurationObject = builder.GetConfigurationObject();
 
-				if( pFunction )
-					as::Call( m_ConfigurationObject.Get(), m_Context, pFunction, m_Instance->GetScriptEngine() );
+				if( m_ConfigurationObject )
+				{
+					std::cout << "Configuration object \"" <<
+						m_ConfigurationObject.GetTypeInfo()->GetNamespace() << "::" << m_ConfigurationObject.GetTypeInfo()->GetName() <<
+						"\" found" << std::endl;
+
+					//Configure the engine
+					auto pFunction = m_ConfigurationObject.GetTypeInfo()->GetMethodByDecl( "void ConfigureEngine(asIScriptEngine@ pScriptEngine)" );
+
+					if( pFunction )
+						as::Call( m_ConfigurationObject.Get(), m_Context, pFunction, m_Instance->GetScriptEngine() );
+				}
 			}
 
 			ASEvent regEvent( ASEventType::API_REGISTERED );
