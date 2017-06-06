@@ -1,6 +1,10 @@
 #include "angelscript.h"
 
+#include "Angelscript/CASManager.h"
 #include "Angelscript/CScript.h"
+
+//TODO: remove Windows dependency - Solokiller
+#undef ERROR
 
 #include "ide/CASIDEApp.h"
 
@@ -13,14 +17,13 @@ CInformationOutputWidget::CInformationOutputWidget( std::shared_ptr<CASIDEApp> a
 	, m_uiWarnings( 0 )
 {
 	app->AddASEventListener( this );
-	app->AddCompilerListener( this );
+	connect( m_App->GetAngelscriptManager().get(), &CASManager::CompilerMessage, this, &CInformationOutputWidget::OnCompilerMessage );
 	m_UI->AddUIEventListener( this );
 }
 
 CInformationOutputWidget::~CInformationOutputWidget()
 {
 	m_UI->RemoveUIEventListener( this );
-	m_App->RemoveCompilerListener( this );
 	m_App->RemoveASEventListener( this );
 }
 
@@ -46,8 +49,6 @@ void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 	{
 	case ASEventType::CREATED:
 		{
-			m_App->AddCompilerListener( this );
-
 			WriteString( QString( "Angelscript initialized\nVersion: %1\n" ).arg( event.create.pszVersion->c_str() ) );
 
 			if( !event.create.bHasConfig )
@@ -58,8 +59,6 @@ void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 
 	case ASEventType::DESTROYED:
 		{
-			m_App->RemoveCompilerListener( this );
-
 			WriteString( "Angelscript shut down\n" );
 
 			break;
@@ -143,14 +142,6 @@ void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 	}
 }
 
-void CInformationOutputWidget::CompilerMessage( const asSMessageInfo* pMsg )
-{
-	if( pMsg->type == asMSGTYPE_ERROR )
-		++m_uiErrors;
-	else if( pMsg->type == asMSGTYPE_WARNING )
-		++m_uiWarnings;
-}
-
 void CInformationOutputWidget::ReceiveUIMessage( const char* pszString, UIMessageType type )
 {
 	QString szMessage;
@@ -179,4 +170,12 @@ void CInformationOutputWidget::WriteCompileSeparator( char cChar, unsigned int u
 	szChar[ 0 ] = '\n';
 
 	m_WidgetUi->m_pOutput->insertPlainText( szChar );
+}
+
+void CInformationOutputWidget::OnCompilerMessage( const asSMessageInfo& msg )
+{
+	if( msg.type == asMSGTYPE_ERROR )
+		++m_uiErrors;
+	else if( msg.type == asMSGTYPE_WARNING )
+		++m_uiWarnings;
 }

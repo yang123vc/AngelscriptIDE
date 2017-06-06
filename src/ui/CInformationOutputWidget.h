@@ -3,7 +3,6 @@
 
 #include <chrono>
 
-#include "Angelscript/IASCompilerListener.h"
 #include "Angelscript/IASEventListener.h"
 
 #include "CUI.h"
@@ -15,7 +14,6 @@ struct asSMessageInfo;
 class CInformationOutputWidget :
 		public COutputWidget,
 		public IASEventListener,
-		public IASCompilerListener,
 		public IUIEventListener
 {
 protected:
@@ -33,13 +31,14 @@ public:
 
 	void AngelscriptEventOccured( const ASEvent& event ) override;
 
-	void CompilerMessage( const asSMessageInfo* pMsg ) override;
-
 	void ReceiveUIMessage( const char* pszString, UIMessageType type ) override;
 
 protected:
 
 	void WriteCompileSeparator( char cChar = DEFAULT_COMPILE_SEPARATOR_CHAR, unsigned int uiWidth = DEFAULT_COMPILE_SEPARATOR_WIDTH );
+
+private slots:
+	void OnCompilerMessage( const asSMessageInfo& msg );
 
 private:
 	std::chrono::high_resolution_clock::time_point m_CompileStartTime;

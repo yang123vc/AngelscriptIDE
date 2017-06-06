@@ -107,18 +107,6 @@ void CASIDEApp::RemoveASEventListener( IASEventListener* pListener )
 		m_ASManager->RemoveEventListener( pListener );
 }
 
-void CASIDEApp::AddCompilerListener( IASCompilerListener* pListener )
-{
-	if( m_ASManager )
-		m_ASManager->AddCompilerListener( pListener );
-}
-
-void CASIDEApp::RemoveCompilerListener( IASCompilerListener* pListener )
-{
-	if( m_ASManager )
-		m_ASManager->RemoveCompilerListener( pListener );
-}
-
 bool CASIDEApp::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
 	return m_ASManager->CompileScript( szSectionName, szScriptContents );

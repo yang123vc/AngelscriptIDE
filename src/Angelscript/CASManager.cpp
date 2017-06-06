@@ -9,7 +9,6 @@
 
 #include "CASEngineInstance.h"
 #include "IASEventListener.h"
-#include "IASCompilerListener.h"
 #include "CConfiguration.h"
 #include "CConfigurationManager.h"
 #include "CScript.h"
@@ -75,19 +74,9 @@ void CASManager::NotifyEventListeners( const ASEvent& event )
 	m_EventListeners.NotifyListeners( &IASEventListener::AngelscriptEventOccured, event );
 }
 
-void CASManager::AddCompilerListener( IASCompilerListener* pListener )
-{
-	m_CompilerListeners.AddListener( pListener );
-}
-
-void CASManager::RemoveCompilerListener( IASCompilerListener* pListener )
-{
-	m_CompilerListeners.RemoveListener( pListener );
-}
-
 void CASManager::MessageCallback( const asSMessageInfo* pMsg )
 {
-	m_CompilerListeners.NotifyListeners( &IASCompilerListener::CompilerMessage, pMsg );
+	CompilerMessage( *pMsg );
 }
 
 bool CASManager::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )

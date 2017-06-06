@@ -14,7 +14,6 @@ class CASMainWindow;
 class CASManager;
 class CConfiguration;
 class COptions;
-class IASCompilerListener;
 class IASEventListener;
 class IUI;
 
@@ -50,10 +49,6 @@ public:
 	void AddASEventListener( IASEventListener* pListener );
 
 	void RemoveASEventListener( IASEventListener* pListener );
-
-	void AddCompilerListener( IASCompilerListener* pListener );
-
-	void RemoveCompilerListener( IASCompilerListener* pListener );
 
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 

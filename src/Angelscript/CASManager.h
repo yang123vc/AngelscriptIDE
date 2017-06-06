@@ -17,7 +17,6 @@ class CASEngineInstance;
 class CConfiguration;
 class CConfigurationManager;
 class IASEventListener;
-class IASCompilerListener;
 struct asSMessageInfo;
 struct ASEvent;
 
@@ -42,10 +41,6 @@ public:
 
 	void RemoveEventListener( IASEventListener* pListener );
 
-	void AddCompilerListener( IASCompilerListener* pListener );
-
-	void RemoveCompilerListener( IASCompilerListener* pListener );
-
 	void MessageCallback( const asSMessageInfo* pMsg );
 
 	/**
@@ -61,6 +56,9 @@ private:
 
 	void ClearConfigurationScript();
 
+signals:
+	void CompilerMessage( const asSMessageInfo& msg );
+
 private slots:
 	void OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig );
 
@@ -68,7 +66,6 @@ private:
 	std::unique_ptr<CASEngineInstance>		m_Instance;
 	std::shared_ptr<CConfigurationManager>	m_ConfigurationManager;
 	CListenerManager<IASEventListener>		m_EventListeners;
-	CListenerManager<IASCompilerListener>	m_CompilerListeners;
 
 	//This engine is used for scripts used to configure and control the IDE itself
 	asIScriptEngine*						m_pIDEEngine = nullptr;

@@ -6,8 +6,6 @@
 
 #include <QFileInfo>
 
-#include "IASCompilerListener.h"
-
 #include "AngelscriptUtils/add_on/scriptbuilder.h"
 #include "AngelscriptUtils/add_on/scripthelper.h"
 
