@@ -12,7 +12,6 @@ add_sources(
 	CConfigurationManager.h
 	CScript.cpp
 	CScript.h
-	IASEventListener.h
 	IDE_API.cpp
 	IDE_API.h
 	IncludeCallback.cpp

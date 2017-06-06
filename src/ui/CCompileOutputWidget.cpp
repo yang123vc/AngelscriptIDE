@@ -3,30 +3,31 @@
 #include "Angelscript/CASManager.h"
 #include "ide/CASIDEApp.h"
 
-#include "ui_COutputWidget.h"
 #include "CCompileOutputWidget.h"
+#include "ui_COutputWidget.h"
 
 CCompileOutputWidget::CCompileOutputWidget( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* pParent )
 	: COutputWidget( app, "Output", ui, pParent )
 {
-	connect( m_App->GetAngelscriptManager().get(), &CASManager::CompilerMessage, this, &CCompileOutputWidget::OnCompilerMessage );
-	m_App->AddASEventListener( this );
+	auto manager = m_App->GetAngelscriptManager();
+
+	connect( manager.get(), &CASManager::EngineCreated, this, &CCompileOutputWidget::OnEngineCreated );
+	connect( manager.get(), &CASManager::CompilationStarted, this, &CCompileOutputWidget::OnCompilationStarted );
+	connect( manager.get(), &CASManager::CompilerMessage, this, &CCompileOutputWidget::OnCompilerMessage );
 }
 
 CCompileOutputWidget::~CCompileOutputWidget()
 {
-	m_App->RemoveASEventListener( this );
 }
 
-void CCompileOutputWidget::AngelscriptEventOccured( const ASEvent& event )
+void CCompileOutputWidget::OnEngineCreated( const std::string& szVersion, bool bHasConfig )
 {
-	switch( event.type )
-	{
-	case ASEventType::CREATED: Clear(); break;
-	case ASEventType::COMPILATION_STARTED: Clear(); break;
+	Clear();
+}
 
-	default: break;
-	}
+void CCompileOutputWidget::OnCompilationStarted( const std::shared_ptr<const CScript>& script )
+{
+	Clear();
 }
 
 void CCompileOutputWidget::OnCompilerMessage( const asSMessageInfo& msg )

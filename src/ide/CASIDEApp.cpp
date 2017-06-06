@@ -95,18 +95,6 @@ void CASIDEApp::SetMainWindow( const std::shared_ptr<CASMainWindow>& window )
 	m_MainWindow = window;
 }
 
-void CASIDEApp::AddASEventListener( IASEventListener* pListener )
-{
-	if( m_ASManager )
-		m_ASManager->AddEventListener( pListener );
-}
-
-void CASIDEApp::RemoveASEventListener( IASEventListener* pListener )
-{
-	if( m_ASManager )
-		m_ASManager->RemoveEventListener( pListener );
-}
-
 bool CASIDEApp::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
 {
 	return m_ASManager->CompileScript( szSectionName, szScriptContents );

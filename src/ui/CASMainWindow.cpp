@@ -33,6 +33,10 @@
 #include "ui_CASMainWindow.h"
 #include "CASMainWindow.h"
 
+//TODO: remove Windows dependency - Solokiller
+#undef GetCurrentDirectory
+#undef SetCurrentDirectory
+
 const char* CASMainWindow::OUTPUT_WINDOW_PROPERTY = "OutputWindowType";
 
 CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* parent )

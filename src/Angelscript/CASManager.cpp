@@ -8,7 +8,6 @@
 #include <AngelscriptUtils/wrapper/ASCallable.h>
 
 #include "CASEngineInstance.h"
-#include "IASEventListener.h"
 #include "CConfiguration.h"
 #include "CConfigurationManager.h"
 #include "CScript.h"
@@ -59,21 +58,6 @@ CASManager::~CASManager()
 		m_pIDEEngine->ShutDownAndRelease();
 }
 
-void CASManager::AddEventListener( IASEventListener* pListener )
-{
-	m_EventListeners.AddListener( pListener );
-}
-
-void CASManager::RemoveEventListener( IASEventListener* pListener )
-{
-	m_EventListeners.RemoveListener( pListener );
-}
-
-void CASManager::NotifyEventListeners( const ASEvent& event )
-{
-	m_EventListeners.NotifyListeners( &IASEventListener::AngelscriptEventOccured, event );
-}
-
 void CASManager::MessageCallback( const asSMessageInfo* pMsg )
 {
 	CompilerMessage( *pMsg );
@@ -83,19 +67,11 @@ bool CASManager::CompileScript( const std::string& szSectionName, const std::str
 {
 	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ) );
 
-	ASEvent startEvent( ASEventType::COMPILATION_STARTED );
+	CompilationStarted( script );
 
-	startEvent.compilationStart.pScript = script.get();
-
-	NotifyEventListeners( startEvent );
 	const bool bResult = m_Instance->CompileScript( script, m_ConfigurationManager->GetActiveConfiguration() );
 
-	ASEvent endEvent( ASEventType::COMPILATION_ENDED );
-
-	endEvent.compilationEnd.pScript = script.get();
-	endEvent.compilationEnd.bSuccess = bResult;
-
-	NotifyEventListeners( endEvent );
+	CompilationEnded( script, bResult );
 
 	return bResult;
 }
@@ -104,10 +80,8 @@ void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config 
 {
 	if( m_Instance )
 	{
-		ASEvent destroyEvent( ASEventType::DESTROYED );
-
-		NotifyEventListeners( destroyEvent );
 		m_Instance.reset();
+		EngineDestroyed();
 	}
 
 	ClearConfigurationScript();
@@ -120,23 +94,11 @@ void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config 
 
 		const std::string szVersion = m_Instance->GetVersion();
 
-		{
-			ASEvent event( ASEventType::CREATED );
-
-			event.create.pszVersion = &szVersion;
-			event.create.bHasConfig = config != nullptr;
-
-			NotifyEventListeners( event );
-		}
+		EngineCreated( m_Instance->GetVersion(), config != nullptr );
 
 		if( config )
 		{
-			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
-
-			configEvent.configChange.changeType = ASConfigChangeType::SET;
-			configEvent.configChange.pszName = &config->GetName();
-
-			NotifyEventListeners( configEvent );
+			ConfigChanged( ConfigChangeType::SET, config->GetName() );
 
 			if( !config->GetConfigScriptFilename().empty() )
 			{
@@ -165,22 +127,11 @@ void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config 
 				}
 			}
 
-			ASEvent regEvent( ASEventType::API_REGISTERED );
-
-			regEvent.apiRegistration.pszConfigFilename = &config->GetConfigFilename();
-			regEvent.apiRegistration.bSuccess = m_Instance->LoadAPIFromFile( config->GetConfigFilename() );
-
-			NotifyEventListeners( regEvent );
+			APIRegistered( config->GetConfigFilename(), m_Instance->LoadAPIFromFile( config->GetConfigFilename() ) );
 		}
 		else
 		{
-			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
-
-			configEvent.configChange.changeType = ASConfigChangeType::CLEARED;
-			std::string szName;
-			configEvent.configChange.pszName = &szName;
-
-			NotifyEventListeners( configEvent );
+			ConfigChanged( ConfigChangeType::CLEARED, "" );
 		}
 	}
 	catch( const CASEngineException& e )

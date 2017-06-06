@@ -1,13 +1,13 @@
 #ifndef IDE_UI_CCOMPILEOUTPUTWIDGET_H
 #define IDE_UI_CCOMPILEOUTPUTWIDGET_H
 
-#include "Angelscript/IASEventListener.h"
+#include <string>
 
 #include "COutputWidget.h"
 
 struct asSMessageInfo;
 
-class CCompileOutputWidget : public COutputWidget, public IASEventListener
+class CCompileOutputWidget : public COutputWidget
 {
 	Q_OBJECT
 
@@ -15,9 +15,11 @@ public:
 	CCompileOutputWidget( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CUI> ui, QWidget* pParent = nullptr );
 	~CCompileOutputWidget();
 
-	void AngelscriptEventOccured( const ASEvent& event ) override;
-
 private slots:
+	void OnEngineCreated( const std::string& szVersion, bool bHasConfig );
+
+	void OnCompilationStarted( const std::shared_ptr<const CScript>& script );
+
 	void OnCompilerMessage( const asSMessageInfo& msg );
 };
 

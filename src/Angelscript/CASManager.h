@@ -9,16 +9,20 @@
 #include <AngelscriptUtils/util/CASObjPtr.h>
 #include <AngelscriptUtils/util/CASRefPtr.h>
 
-#include "util/CListenerManager.h"
-
 class asIScriptContext;
 class asIScriptEngine;
 class CASEngineInstance;
 class CConfiguration;
 class CConfigurationManager;
-class IASEventListener;
+class CScript;
 struct asSMessageInfo;
 struct ASEvent;
+
+enum class ConfigChangeType
+{
+	SET = 0,
+	CLEARED
+};
 
 /**
 *	Manages the Angelscript engine and handles compilation
@@ -37,10 +41,6 @@ public:
 
 	std::shared_ptr<CConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
 
-	void AddEventListener( IASEventListener* pListener );
-
-	void RemoveEventListener( IASEventListener* pListener );
-
 	void MessageCallback( const asSMessageInfo* pMsg );
 
 	/**
@@ -48,15 +48,51 @@ public:
 	*/
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
-protected:
-	void NotifyEventListeners( const ASEvent& event );
-
 private:
 	void ActiveConfigSet( const std::shared_ptr<CConfiguration>& config );
 
 	void ClearConfigurationScript();
 
 signals:
+	/**
+	*	An engine has been created
+	*	@param szVersion The Angelscript version as a string
+	*	@param Whether a configuration exists for this instance
+	*/
+	void EngineCreated( const std::string& szVersion, bool bHasConfig );
+
+	/**
+	*	An engine has been destroyed
+	*/
+	void EngineDestroyed();
+
+	/**
+	*	The API for an engine has been registered
+	*	@param szConfigFilename Name of the config file that was loaded
+	*	@param Whether registration succeded
+	*/
+	void APIRegistered( const std::string& szConfigFilename, bool bSuccess );
+
+	/**
+	*	The active configuration was changed to another
+	*	@param changeType Whether the config was set to a new configuration, or set to none
+	*	@param szName Name of the new configuration, if any
+	*/
+	void ConfigChanged( ConfigChangeType changeType, const std::string& szName );
+
+	/**
+	*	Compilation has started
+	*	@param script The script currently being compiled
+	*/
+	void CompilationStarted( const std::shared_ptr<const CScript>& script );
+
+	/**
+	*	Compilation has ended
+	*	@param script The script currently being compiled
+	*	@param bSuccess Whether compilation succeeded or failed
+	*/
+	void CompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
+
 	void CompilerMessage( const asSMessageInfo& msg );
 
 private slots:
@@ -65,7 +101,6 @@ private slots:
 private:
 	std::unique_ptr<CASEngineInstance>		m_Instance;
 	std::shared_ptr<CConfigurationManager>	m_ConfigurationManager;
-	CListenerManager<IASEventListener>		m_EventListeners;
 
 	//This engine is used for scripts used to configure and control the IDE itself
 	asIScriptEngine*						m_pIDEEngine = nullptr;

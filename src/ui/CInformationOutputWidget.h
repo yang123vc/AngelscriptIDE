@@ -3,17 +3,14 @@
 
 #include <chrono>
 
-#include "Angelscript/IASEventListener.h"
-
-#include "CUI.h"
-
+#include "Angelscript/CASManager.h"
 #include "COutputWidget.h"
+#include "CUI.h"
 
 struct asSMessageInfo;
 
 class CInformationOutputWidget :
 		public COutputWidget,
-		public IASEventListener,
 		public IUIEventListener
 {
 protected:
@@ -29,8 +26,6 @@ public:
 	void WriteString( const std::string& szString );
 	void WriteString( const QString& szString );
 
-	void AngelscriptEventOccured( const ASEvent& event ) override;
-
 	void ReceiveUIMessage( const char* pszString, UIMessageType type ) override;
 
 protected:
@@ -38,6 +33,18 @@ protected:
 	void WriteCompileSeparator( char cChar = DEFAULT_COMPILE_SEPARATOR_CHAR, unsigned int uiWidth = DEFAULT_COMPILE_SEPARATOR_WIDTH );
 
 private slots:
+	void OnEngineCreated( const std::string& szVersion, bool bHasConfig );
+
+	void OnEngineDestroyed();
+
+	void OnAPIRegistered( const std::string& szConfigFilename, bool bSuccess );
+
+	void OnConfigChanged( ConfigChangeType changeType, const std::string& szName );
+
+	void OnCompilationStarted( const std::shared_ptr<const CScript>& script );
+
+	void OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
+
 	void OnCompilerMessage( const asSMessageInfo& msg );
 
 private:

@@ -16,15 +16,22 @@ CInformationOutputWidget::CInformationOutputWidget( std::shared_ptr<CASIDEApp> a
 	, m_uiErrors( 0 )
 	, m_uiWarnings( 0 )
 {
-	app->AddASEventListener( this );
-	connect( m_App->GetAngelscriptManager().get(), &CASManager::CompilerMessage, this, &CInformationOutputWidget::OnCompilerMessage );
+	auto manager = m_App->GetAngelscriptManager();
+
+	connect( manager.get(), &CASManager::EngineCreated, this, &CInformationOutputWidget::OnEngineCreated );
+	connect( manager.get(), &CASManager::EngineDestroyed, this, &CInformationOutputWidget::OnEngineDestroyed );
+	connect( manager.get(), &CASManager::APIRegistered, this, &CInformationOutputWidget::OnAPIRegistered );
+	connect( manager.get(), &CASManager::ConfigChanged, this, &CInformationOutputWidget::OnConfigChanged );
+	connect( manager.get(), &CASManager::CompilationStarted, this, &CInformationOutputWidget::OnCompilationStarted );
+	connect( manager.get(), &CASManager::CompilationEnded, this, &CInformationOutputWidget::OnCompilationEnded );
+	connect( manager.get(), &CASManager::CompilerMessage, this, &CInformationOutputWidget::OnCompilerMessage );
+
 	m_UI->AddUIEventListener( this );
 }
 
 CInformationOutputWidget::~CInformationOutputWidget()
 {
 	m_UI->RemoveUIEventListener( this );
-	m_App->RemoveASEventListener( this );
 }
 
 void CInformationOutputWidget::WriteString( const char* pszString )
@@ -41,105 +48,6 @@ void CInformationOutputWidget::WriteString( const std::string& szString )
 void CInformationOutputWidget::WriteString( const QString& szString )
 {
 	WriteString( szString.toStdString() );
-}
-
-void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
-{
-	switch( event.type )
-	{
-	case ASEventType::CREATED:
-		{
-			WriteString( QString( "Angelscript initialized\nVersion: %1\n" ).arg( event.create.pszVersion->c_str() ) );
-
-			if( !event.create.bHasConfig )
-				WriteString( "No active configuration\n" );
-
-			break;
-		}
-
-	case ASEventType::DESTROYED:
-		{
-			WriteString( "Angelscript shut down\n" );
-
-			break;
-		}
-
-	case ASEventType::API_REGISTERED:
-		{
-			if( event.apiRegistration.bSuccess )
-				ReceiveUIMessage( ( std::string( "API Configuration \"" ) + *event.apiRegistration.pszConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
-			else
-				ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + *event.apiRegistration.pszConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
-			break;
-		}
-
-	case ASEventType::COMPILATION_STARTED:
-		{
-			WriteCompileSeparator();
-			WriteString( QString( "Starting compilation of script '%1'\n" ).arg( event.compilationStart.pScript->GetSectionName().c_str() ) );
-
-			m_CompileStartTime = std::chrono::high_resolution_clock::now();
-
-			m_uiErrors = 0;
-			m_uiWarnings = 0;
-			break;
-		}
-
-	case ASEventType::COMPILATION_ENDED:
-		{
-			WriteString( event.compilationEnd.bSuccess ? "Compilation succeeded\n" : "Compilation failed\n" );
-
-			if( !event.compilationEnd.bSuccess )
-				WriteString( QString("%1 errors, %2 warnings\n" ).arg( m_uiErrors ).arg( m_uiWarnings ).toStdString().c_str() );
-
-			auto endTime = std::chrono::high_resolution_clock::now();
-
-			auto time = endTime - m_CompileStartTime;
-
-			auto hours = std::chrono::duration_cast<std::chrono::hours>( time );
-
-			time -= hours;
-
-			auto minutes = std::chrono::duration_cast<std::chrono::minutes>( time );
-
-			time -= minutes;
-
-			auto seconds = std::chrono::duration_cast<std::chrono::seconds>( time );
-
-			time -= seconds;
-
-			auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>( time );
-
-			WriteString(
-				QString( "Compilation time: %1:%2:%3.%4\n" )
-					.arg( hours.count(), 2, 10, QLatin1Char( '0' ) )
-					.arg( minutes.count(), 2, 10, QLatin1Char( '0' ) )
-					.arg( seconds.count(), 2, 10, QLatin1Char( '0' ) )
-					.arg( milliseconds.count(), 3, 10, QLatin1Char( '0' ) )
-					.toStdString().c_str()
-			);
-
-			WriteCompileSeparator();
-			break;
-		}
-
-	case ASEventType::CONFIG_CHANGE:
-		{
-			switch( event.configChange.changeType )
-			{
-			case ASConfigChangeType::SET:
-				{
-					WriteString( std::string( "Configuration \"" ) + *event.configChange.pszName + "\" loaded\n" );
-					break;
-				}
-
-			default: break;
-			}
-			break;
-		}
-
-	default: break;
-	}
 }
 
 void CInformationOutputWidget::ReceiveUIMessage( const char* pszString, UIMessageType type )
@@ -170,6 +78,89 @@ void CInformationOutputWidget::WriteCompileSeparator( char cChar, unsigned int u
 	szChar[ 0 ] = '\n';
 
 	m_WidgetUi->m_pOutput->insertPlainText( szChar );
+}
+
+void CInformationOutputWidget::OnEngineCreated( const std::string& szVersion, bool bHasConfig )
+{
+	WriteString( QString( "Angelscript initialized\nVersion: %1\n" ).arg( szVersion.c_str() ) );
+
+	if( !bHasConfig )
+		WriteString( "No active configuration\n" );
+}
+
+void CInformationOutputWidget::OnEngineDestroyed()
+{
+	WriteString( "Angelscript shut down\n" );
+}
+
+void CInformationOutputWidget::OnAPIRegistered( const std::string& szConfigFilename, bool bSuccess )
+{
+	if( bSuccess )
+		ReceiveUIMessage( ( std::string( "API Configuration \"" ) + szConfigFilename + "\" loaded\n" ).c_str(), UIMessageType::INFO );
+	else
+		ReceiveUIMessage( ( std::string( "Failed to load API configuration \"" ) + szConfigFilename + "\"!\n" ).c_str(), UIMessageType::WARNING );
+}
+
+void CInformationOutputWidget::OnConfigChanged( ConfigChangeType changeType, const std::string& szName )
+{
+	switch( changeType )
+	{
+	case ConfigChangeType::SET:
+		{
+			WriteString( std::string( "Configuration \"" ) + szName + "\" loaded\n" );
+			break;
+		}
+
+	default: break;
+	}
+}
+
+void CInformationOutputWidget::OnCompilationStarted( const std::shared_ptr<const CScript>& script )
+{
+	WriteCompileSeparator();
+	WriteString( QString( "Starting compilation of script '%1'\n" ).arg( script->GetSectionName().c_str() ) );
+
+	m_CompileStartTime = std::chrono::high_resolution_clock::now();
+
+	m_uiErrors = 0;
+	m_uiWarnings = 0;
+}
+
+void CInformationOutputWidget::OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess )
+{
+	WriteString( bSuccess ? "Compilation succeeded\n" : "Compilation failed\n" );
+
+	if( !bSuccess )
+		WriteString( QString( "%1 errors, %2 warnings\n" ).arg( m_uiErrors ).arg( m_uiWarnings ).toStdString().c_str() );
+
+	auto endTime = std::chrono::high_resolution_clock::now();
+
+	auto time = endTime - m_CompileStartTime;
+
+	auto hours = std::chrono::duration_cast<std::chrono::hours>( time );
+
+	time -= hours;
+
+	auto minutes = std::chrono::duration_cast<std::chrono::minutes>( time );
+
+	time -= minutes;
+
+	auto seconds = std::chrono::duration_cast<std::chrono::seconds>( time );
+
+	time -= seconds;
+
+	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>( time );
+
+	WriteString(
+		QString( "Compilation time: %1:%2:%3.%4\n" )
+		.arg( hours.count(), 2, 10, QLatin1Char( '0' ) )
+		.arg( minutes.count(), 2, 10, QLatin1Char( '0' ) )
+		.arg( seconds.count(), 2, 10, QLatin1Char( '0' ) )
+		.arg( milliseconds.count(), 3, 10, QLatin1Char( '0' ) )
+		.toStdString().c_str()
+	);
+
+	WriteCompileSeparator();
 }
 
 void CInformationOutputWidget::OnCompilerMessage( const asSMessageInfo& msg )

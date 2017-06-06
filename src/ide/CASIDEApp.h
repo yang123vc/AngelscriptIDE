@@ -14,7 +14,6 @@ class CASMainWindow;
 class CASManager;
 class CConfiguration;
 class COptions;
-class IASEventListener;
 class IUI;
 
 /**
@@ -46,10 +45,6 @@ public:
 	void SetMainWindow( const std::shared_ptr<CASMainWindow>& window );
 
 	//ASManager passthrough
-	void AddASEventListener( IASEventListener* pListener );
-
-	void RemoveASEventListener( IASEventListener* pListener );
-
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
 	void RefreshSyntaxHighlights();
