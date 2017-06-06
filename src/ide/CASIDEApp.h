@@ -14,7 +14,7 @@ class CASMainWindow;
 class CASManager;
 class CConfiguration;
 class COptions;
-class IUI;
+class CUI;
 
 /**
 *	Angelscript IDE app
@@ -24,7 +24,7 @@ class CASIDEApp final : public QObject, public CBaseApp, public std::enable_shar
 	Q_OBJECT
 
 public:
-	CASIDEApp( std::shared_ptr<IUI> ui );
+	CASIDEApp( std::shared_ptr<CUI> ui );
 	~CASIDEApp();
 
 	//IOutStreamListener
@@ -56,7 +56,7 @@ private slots:
 	void OnConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig );
 
 private:
-	std::shared_ptr<IUI>			m_UI;
+	std::shared_ptr<CUI>			m_UI;
 	std::shared_ptr<CASManager>		m_ASManager;
 	std::shared_ptr<COptions>		m_Options;
 	std::shared_ptr<CASMainWindow>	m_MainWindow;

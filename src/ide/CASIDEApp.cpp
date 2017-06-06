@@ -4,7 +4,7 @@
 #include <QCoreApplication.h>
 #include <QSettings.h>
 
- #include "util/IUI.h"
+ #include "ui/CUI.h"
 
 #include "angelscript.h"
 
@@ -21,7 +21,7 @@
 
 #include "CASIDEApp.h"
 
-CASIDEApp::CASIDEApp( std::shared_ptr<IUI> ui )
+CASIDEApp::CASIDEApp( std::shared_ptr<CUI> ui )
 	: m_UI( ui )
 {
 	//Set up the settings file data so it saves in the right place

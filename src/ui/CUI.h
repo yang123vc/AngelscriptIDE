@@ -7,9 +7,15 @@
 #include <QString>
 
 #include "util/CListenerManager.h"
-#include "util/IUI.h"
 
 class CASIDEApp;
+
+enum class UIMessageType
+{
+	INFO,
+	WARNING,
+	ERROR
+};
 
 class IUIEventListener
 {
@@ -31,7 +37,7 @@ inline void IUIEventListener::ReceiveUIMessage( const char*, UIMessageType )
 /*
  * This class represents the UI itself
 */
-class CUI final : public IUI
+class CUI final
 {
 public:
 	CUI();
@@ -40,12 +46,12 @@ public:
 	void AddUIEventListener( IUIEventListener* pListener );
 	void RemoveUIEventListener( IUIEventListener* pListener );
 
-	/*
-	 * Sends a message
-	 * Listeners can choose to display this string
+	/**
+	*	Sends a message
+	*	Listeners can choose to display this string
 	*/
-	void SendMessage( const char* pszString, UIMessageType type = UIMessageType::INFO ) override;
-	void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::INFO ) override;
+	void SendMessage( const char* pszString, UIMessageType type = UIMessageType::INFO );
+	void SendMessage( const std::string& szString, UIMessageType type = UIMessageType::INFO );
 	void SendMessage( const QString& szString, UIMessageType type = UIMessageType::INFO );
 
 private:

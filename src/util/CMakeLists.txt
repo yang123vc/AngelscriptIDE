@@ -8,6 +8,5 @@ add_sources(
 	StringUtils.cpp
 	StringUtils.h
 	CDispatchingOutStream.h
-	IUI.h
 	IAppListener.h
 )
