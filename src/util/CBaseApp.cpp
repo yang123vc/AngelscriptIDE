@@ -12,8 +12,11 @@ CBaseApp::~CBaseApp()
 
 void CBaseApp::Startup()
 {
-	m_OutStream.reset( new CDispatchingOutStream( std::cout, this ) );
-	m_ErrStream.reset( new CDispatchingOutStream( std::cerr, this ) );
+	m_OutStream = std::make_unique<CDispatchingOutStream>( std::cout );
+	m_ErrStream = std::make_unique<CDispatchingOutStream>( std::cerr );
+
+	connect( m_OutStream.get(), &CDispatchingOutStream::WriteString, this, &CBaseApp::WriteString );
+	connect( m_ErrStream.get(), &CDispatchingOutStream::WriteString, this, &CBaseApp::WriteString );
 
 	AppStartup();
 }

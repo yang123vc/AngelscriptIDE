@@ -10,18 +10,13 @@
 /**
 *	Base class for apps
 */
-class CBaseApp : public QObject, public IOutStreamListener
+class CBaseApp : public QObject
 {
 	Q_OBJECT
 
 public:
 	CBaseApp();
 	~CBaseApp();
-
-	/**
-	*	Writes a string to be displayed
-	*/
-	virtual void WriteString( const char* pszString ) = 0;
 
 	/**
 	*	Starts up the app
@@ -44,6 +39,12 @@ signals:
 	void AppBeforeRun();
 
 	void AppShutdown();
+
+public slots:
+	/**
+	*	Writes a string to be displayed
+	*/
+	virtual void WriteString( const char* pszString ) = 0;
 
 protected:
 	//Redirect cout & cerr

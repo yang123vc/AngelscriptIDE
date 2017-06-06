@@ -1,41 +1,25 @@
-#ifndef UTIL_CDEFERREDOUTSTREAM_H
-#define UTIL_CDEFERREDOUTSTREAM_H
+#ifndef UTIL_CDISPATCHINGOUTSTREAM_H
+#define UTIL_CDISPATCHINGOUTSTREAM_H
+
+#include <QObject>
 
 #include "COutStream.h"
-
-class IOutStreamListener
-{
-public:
-
-	virtual ~IOutStreamListener() = 0;
-
-	virtual void WriteString( const char* pszString ) = 0;
-};
-
-inline IOutStreamListener::~IOutStreamListener()
-{
-}
 
 /**
 *	Dispatches output from a given stream to the given listener
 */
-class CDispatchingOutStream : public COutStream<CDispatchingOutStream>
+class CDispatchingOutStream : public QObject, public COutStream<CDispatchingOutStream>
 {
+	Q_OBJECT
+
 public:
-	CDispatchingOutStream( std::ostream& outStream, IOutStreamListener* pListener )
+	CDispatchingOutStream( std::ostream& outStream )
 		: COutStream( outStream )
-		, m_pListener( pListener )
 	{
 	}
 
-	void WriteString( const char* pszString )
-	{
-		if( m_pListener )
-			m_pListener->WriteString( pszString );
-	}
-
-private:
-	IOutStreamListener* m_pListener;
+signals:
+	void WriteString( const char* pszString );
 };
 
-#endif //UTIL_CDEFERREDOUTSTREAM_H
+#endif //UTIL_CDISPATCHINGOUTSTREAM_H
