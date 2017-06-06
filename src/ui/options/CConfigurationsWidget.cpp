@@ -70,6 +70,10 @@ CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, st
 
 	connect( m_WidgetUI->m_pAddExtensionButton, SIGNAL( clicked() ), this, SLOT( AddExtension() ) );
 	connect( m_WidgetUI->m_pRemoveExtensionButton, SIGNAL( clicked() ), this, SLOT( RemoveExtension() ) );
+
+	connect( m_WidgetUI->m_pWordList, &QListWidget::itemChanged, this, &CConfigurationsWidget::ListChanged );
+	connect( m_WidgetUI->m_pIncludePathsList, &QListWidget::itemChanged, this, &CConfigurationsWidget::ListChanged );
+	connect( m_WidgetUI->m_pExtensionsList, &QListWidget::itemChanged, this, &CConfigurationsWidget::ListChanged );
 }
 
 CConfigurationsWidget::~CConfigurationsWidget()
@@ -388,6 +392,11 @@ void CConfigurationsWidget::RemoveExtension()
 
 		delete m_WidgetUI->m_pExtensionsList->takeItem( index.row() );
 	}
+}
+
+void CConfigurationsWidget::ListChanged( QListWidgetItem* pitem )
+{
+	SetChangesMade( true );
 }
 
 void CConfigurationsWidget::OnConfigurationAdded( const std::shared_ptr<CConfiguration>& config )

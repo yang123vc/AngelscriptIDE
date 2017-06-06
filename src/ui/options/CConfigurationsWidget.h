@@ -14,6 +14,7 @@ class CASIDEApp;
 class CConfiguration;
 class CUI;
 class QListWidget;
+class QListWidgetItem;
 
 class CConfigurationsWidget : public CBaseOptionsWidget
 {
@@ -73,6 +74,8 @@ protected slots:
 	void AddExtension();
 
 	void RemoveExtension();
+
+	void ListChanged( QListWidgetItem* pItem );
 
 	void OnConfigurationAdded( const std::shared_ptr<CConfiguration>& config );
 	void OnConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig );
