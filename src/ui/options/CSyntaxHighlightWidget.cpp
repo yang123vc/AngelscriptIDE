@@ -196,7 +196,33 @@ void CSyntaxHighlightWidget::AddPattern()
 {
 	m_Patterns.push_back( COptions::Pattern() );
 
-	m_WidgetUI->m_pItems->addItem( "New pattern" );
+	const char szDefault[] = "New pattern";
+
+	//Generate a default name
+	QString szName( szDefault );
+
+	unsigned int uiDuplicate = 1;
+
+	int iIndex = 0;
+
+	while( iIndex < m_Patterns.size() )
+	{
+		if( szName == m_Patterns[ iIndex ].m_szPatternName )
+		{
+			szName = QString( "%1 (%2)" ).arg( szDefault ).arg( uiDuplicate );
+
+			++uiDuplicate;
+			
+			//Check again
+			iIndex = 0;
+		}
+		else
+		{
+			++iIndex;
+		}
+	}
+
+	m_WidgetUI->m_pItems->addItem( szName );
 
 	auto item = m_WidgetUI->m_pItems->item( m_WidgetUI->m_pItems->count() - 1 );
 
