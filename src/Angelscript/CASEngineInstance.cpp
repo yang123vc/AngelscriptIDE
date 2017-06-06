@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <fstream>
 
+#include <QDir>
 #include <QFileInfo>
 
 #include "AngelscriptUtils/add_on/scriptbuilder.h"
@@ -73,25 +74,37 @@ bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 			return -1;
 		}
 
-		std::string szPath;
+		const QString szInclude( pszInclude );
 
-		const QString szBasePath = QFileInfo( pszFrom ).canonicalPath();
+		auto tryLoad = [ & ]( const QDir& dir ) -> bool
+		{
+			QFileInfo includedFile( dir.filePath( szInclude ) );
+
+			if( includedFile.completeSuffix().isEmpty() )
+				includedFile = dir.filePath( szInclude + config->GetFallbackExtension().c_str() );
+
+			if( !includedFile.exists() )
+				return false;
+
+			return pBuilder->AddSectionFromFile( includedFile.absoluteFilePath().toStdString().c_str() ) >= 0;
+		};
+
+		//First try a relative path
+		if( tryLoad( QDir( QFileInfo( pszFrom ).path() ) ) )
+			return 1;
+
+		std::string szPath;
 
 		for( const auto& path : config->GetIncludePaths() )
 		{
-			//If it starts with a '.', it's a relative path
-			szPath = path.find( '.' ) == 0 ? QFileInfo( QString( "%1/%2" ).arg( szBasePath, path.c_str() ) ).path().toStdString() : path;
-
-			std::string szCompletePath = szPath + '/' + pszInclude;
-
-			QFileInfo includedFile( pszInclude );
-
-			if( includedFile.completeSuffix().isEmpty() )
-				szCompletePath += config->GetFallbackExtension();
-
-			if( pBuilder->AddSectionFromFile( ( szCompletePath ).c_str() ) >= 0 )
+			if( tryLoad( QDir( path.c_str() ) ) )
 				return 1;
 		}
+
+		QString szMessage = QString( "Couldn't find file \"%1\", included from \"%2\"" ).arg( pszInclude, pszFrom );
+
+		pBuilder->GetModule()->GetEngine()->WriteMessage(
+			pszFrom, -1, -1, asMSGTYPE_ERROR, szMessage.toStdString().c_str() );
 
 		return -1;
 	}
@@ -125,7 +138,11 @@ bool CASEngineInstance::CompileScript( std::shared_ptr<const CScript> script )
 		std::cerr << "Failed to create module!" << std::endl;
 
 	if( fSuccess )
-		fSuccess = builder.AddSectionFromMemory( script->GetSectionName().c_str(), script->GetContents().c_str() ) >= 0;
+	{
+		const auto iResult = builder.AddSectionFromMemory( script->GetSectionName().c_str(), script->GetContents().c_str() );
+
+		fSuccess = iResult >= 0;
+	}
 	else
 		std::cerr << "Failed to initialize builder!" << std::endl;
 
