@@ -13,8 +13,8 @@
 class asIScriptContext;
 class asIScriptEngine;
 class CASEngineInstance;
-class IConfigurationManager;
 class CConfiguration;
+class CConfigurationManager;
 class IASEventListener;
 class IASCompilerListener;
 struct asSMessageInfo;
@@ -30,10 +30,10 @@ public:
 	*	Creates an Angelscript context manager
 	*	@throws std::runtime_error If the IDE script engine could not be created
 	*/
-	CASManager( std::shared_ptr<IConfigurationManager> configurationManager );
+	CASManager( std::shared_ptr<CConfigurationManager> configurationManager );
 	~CASManager();
 
-	std::shared_ptr<IConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
+	std::shared_ptr<CConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
 
 	void AddEventListener( IASEventListener* pListener );
 
@@ -62,7 +62,7 @@ private:
 
 private:
 	std::unique_ptr<CASEngineInstance>		m_Instance;
-	std::shared_ptr<IConfigurationManager>	m_ConfigurationManager;
+	std::shared_ptr<CConfigurationManager>	m_ConfigurationManager;
 	CListenerManager<IASEventListener>		m_EventListeners;
 	CListenerManager<IASCompilerListener>	m_CompilerListeners;
 

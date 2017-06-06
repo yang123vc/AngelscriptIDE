@@ -5,8 +5,6 @@
 #include "Angelscript/IConfigurationEventListener.h"
 #include "CConfigurationManager.h"
 
-#include "CASIDEApp.h"
-
 CConfigurationManager::CConfigurationManager()
 {
 }

@@ -10,8 +10,8 @@
 #include "CASEngineInstance.h"
 #include "IASEventListener.h"
 #include "IASCompilerListener.h"
-#include "IConfigurationManager.h"
 #include "CConfiguration.h"
+#include "CConfigurationManager.h"
 #include "CScript.h"
 #include "IDE_API.h"
 
@@ -20,7 +20,7 @@
 #include "AngelscriptUtils/add_on/scriptbuilder.h"
 #include "ScriptAPI/ASIConfiguration.h"
 
-CASManager::CASManager( std::shared_ptr<IConfigurationManager> configurationManager )
+CASManager::CASManager( std::shared_ptr<CConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
 {
 	m_ConfigurationManager->AddConfigurationEventListener( this );

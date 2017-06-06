@@ -4,7 +4,7 @@
 #include <QFont>
 #include <QSettings>
 
-#include "CConfigurationManager.h"
+#include "Angelscript/CConfigurationManager.h"
 #include "COptions.h"
 
 COptions::COptions()

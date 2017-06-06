@@ -4,7 +4,7 @@
 
 #include "Angelscript/CConfiguration.h"
 #include "Angelscript/CConfigurationException.h"
-#include "Angelscript/IConfigurationManager.h"
+#include "Angelscript/CConfigurationManager.h"
 
 #include "ide/CASIDEApp.h"
 #include "ide/COptions.h"

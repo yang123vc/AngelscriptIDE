@@ -5,15 +5,16 @@ add_sources(
 	CASEngineInstance.h
 	CASManager.cpp
 	CASManager.h
-	CScript.cpp
-	CScript.h
 	CConfiguration.cpp
 	CConfiguration.h
 	CConfigurationException.h
-	IConfigurationManager.h
-	IConfigurationEventListener.h
-	IASEventListener.h
+	CConfigurationManager.cpp
+	CConfigurationManager.h
+	CScript.cpp
+	CScript.h
 	IASCompilerListener.h
+	IASEventListener.h
+	IConfigurationEventListener.h
 	IDE_API.cpp
 	IDE_API.h
 )

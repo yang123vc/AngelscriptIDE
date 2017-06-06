@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QVector>
 
-class IConfigurationManager;
+class CConfigurationManager;
 class QSettings;
 
 /**
@@ -59,7 +59,7 @@ public:
 	const std::string& GetCurrentDirectory() const { return m_szCurrentDir; }
 	void SetCurrentDirectory( const std::string& szCurrentDir ) { m_szCurrentDir = szCurrentDir; }
 
-	const std::shared_ptr<IConfigurationManager>& GetConfigurationManager() { return m_ConfigurationManager; }
+	const std::shared_ptr<CConfigurationManager>& GetConfigurationManager() { return m_ConfigurationManager; }
 
 	const RecentFiles_t& GetRecentFiles() const { return m_RecentFiles; }
 
@@ -94,7 +94,7 @@ private:
 
 	std::string m_szCurrentDir;				//The directory to start in for open and save operations
 
-	std::shared_ptr<IConfigurationManager> m_ConfigurationManager;
+	std::shared_ptr<CConfigurationManager> m_ConfigurationManager;
 
 	RecentFiles_t m_RecentFiles;
 

@@ -3,6 +3,4 @@ add_sources(
 	CASIDEApp.h
 	COptions.cpp
 	COptions.h
-	CConfigurationManager.cpp
-	CConfigurationManager.h
 )

@@ -12,9 +12,9 @@
 #include "Angelscript/CScript.h"
 #include "Angelscript/IConfigurationEventListener.h"
 #include "Angelscript/CConfiguration.h"
+#include "Angelscript/CConfigurationManager.h"
 #include "ui/CASMainWindow.h"
 
-#include "CConfigurationManager.h"
 #include "COptions.h"
 
 //TODO: Windows header is included somewhere - Solokiller
