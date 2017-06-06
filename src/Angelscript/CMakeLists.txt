@@ -15,6 +15,8 @@ add_sources(
 	IASEventListener.h
 	IDE_API.cpp
 	IDE_API.h
+	IncludeCallback.cpp
+	IncludeCallback.h
 )
 
 add_subdirectory( ScriptAPI )
