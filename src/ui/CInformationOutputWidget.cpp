@@ -116,7 +116,7 @@ void CInformationOutputWidget::AngelscriptEventOccured( const ASEvent& event )
 					.arg( hours.count(), 2, 10, QLatin1Char( '0' ) )
 					.arg( minutes.count(), 2, 10, QLatin1Char( '0' ) )
 					.arg( seconds.count(), 2, 10, QLatin1Char( '0' ) )
-					.arg( milliseconds.count() )
+					.arg( milliseconds.count(), 3, 10, QLatin1Char( '0' ) )
 					.toStdString().c_str()
 			);
 
