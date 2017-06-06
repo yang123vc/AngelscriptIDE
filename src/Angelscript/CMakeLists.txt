@@ -14,7 +14,6 @@ add_sources(
 	CScript.h
 	IASCompilerListener.h
 	IASEventListener.h
-	IConfigurationEventListener.h
 	IDE_API.cpp
 	IDE_API.h
 )

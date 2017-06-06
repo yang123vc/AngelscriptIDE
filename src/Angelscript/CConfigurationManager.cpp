@@ -1,22 +1,11 @@
-#include <QSettings.h>
+#include <QSettings>
 
 #include "Angelscript/CConfiguration.h"
 #include "Angelscript/CConfigurationException.h"
-#include "Angelscript/IConfigurationEventListener.h"
 #include "CConfigurationManager.h"
 
 CConfigurationManager::CConfigurationManager()
 {
-}
-
-void CConfigurationManager::AddConfigurationEventListener( IConfigurationEventListener* pListener )
-{
-	m_ConfigurationListeners.AddListener( pListener );
-}
-
-void CConfigurationManager::RemoveConfigurationEventListener( IConfigurationEventListener* pListener )
-{
-	m_ConfigurationListeners.RemoveListener( pListener );
 }
 
 size_t CConfigurationManager::GetConfigurationCount() const
@@ -74,11 +63,7 @@ bool CConfigurationManager::AddConfiguration( const std::shared_ptr<CConfigurati
 
 	m_Configurations.emplace_back( config );
 
-	ConfigEvent addEvent( ConfigEventType::ADD );
-
-	addEvent.add.pszName = &config->GetName();
-
-	NotifyListeners( addEvent );
+	ConfigurationAdded( config );
 
 	return true;
 }
@@ -105,12 +90,7 @@ void CConfigurationManager::RemoveConfiguration( const std::shared_ptr<CConfigur
 
 	m_Configurations.erase( m_Configurations.begin() + uiIndex );
 
-	ConfigEvent removeEvent( ConfigEventType::REMOVE );
-
-	removeEvent.remove.pszName = &config->GetName();
-	removeEvent.remove.bIsActiveConfig = bIsActiveConfig;
-
-	NotifyListeners( removeEvent );
+	ConfigurationRemoved( config, bIsActiveConfig );
 }
 
 std::shared_ptr<const CConfiguration> CConfigurationManager::GetActiveConfiguration() const
@@ -136,12 +116,7 @@ void CConfigurationManager::SetActiveConfiguration( const std::shared_ptr<const 
 		m_uiActiveConfiguration = INVALID_INDEX;
 	}
 
-	ConfigEvent changeEvent( ConfigEventType::CHANGE );
-
-	changeEvent.change.pOldConfig = oldConfig.get();
-	changeEvent.change.pNewConfig = config.get();
-
-	NotifyListeners( changeEvent );
+	ActiveConfigurationChanged( oldConfig, GetActiveConfiguration() );
 }
 
 void CConfigurationManager::SetActiveConfiguration( const std::string& szName )
@@ -167,13 +142,7 @@ bool CConfigurationManager::RenameConfiguration( const std::shared_ptr<CConfigur
 
 	config->SetName( szNewName );
 
-	ConfigEvent renameEvent( ConfigEventType::RENAME );
-
-	renameEvent.rename.pszOldName = &szOldName;
-	renameEvent.rename.pszNewName = &szNewName;
-	renameEvent.rename.bIsActiveConfig = config == GetActiveConfiguration();
-
-	NotifyListeners( renameEvent );
+	ConfigurationRenamed( config, szOldName );
 
 	return true;
 }
@@ -313,9 +282,4 @@ void CConfigurationManager::SaveConfigurations( QSettings& settings )
 	settings.setValue( "activeconfiguration", QString( activeConfig ? activeConfig->GetName().c_str() : "" ) );
 
 	settings.endGroup();
-}
-
-void CConfigurationManager::NotifyListeners( const ConfigEvent& event )
-{
-	m_ConfigurationListeners.NotifyListeners( &IConfigurationEventListener::ConfigEventOccurred, event );
 }

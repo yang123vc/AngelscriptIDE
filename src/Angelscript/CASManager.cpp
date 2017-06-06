@@ -23,7 +23,8 @@
 CASManager::CASManager( std::shared_ptr<CConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
 {
-	m_ConfigurationManager->AddConfigurationEventListener( this );
+	connect( m_ConfigurationManager.get(), &CConfigurationManager::ActiveConfigurationChanged, this, &CASManager::OnActiveConfigurationChanged );
+
 	m_pIDEEngine = asCreateScriptEngine( ANGELSCRIPT_VERSION );
 
 	if( !m_pIDEEngine )
@@ -42,7 +43,6 @@ CASManager::CASManager( std::shared_ptr<CConfigurationManager> configurationMana
 
 CASManager::~CASManager()
 {
-	m_ConfigurationManager->RemoveConfigurationEventListener( this );
 	ClearConfigurationScript();
 
 	if( m_ModuleManager )
@@ -111,19 +111,7 @@ bool CASManager::CompileScript( const std::string& szSectionName, const std::str
 	return bResult;
 }
 
-void CASManager::ConfigEventOccurred( const ConfigEvent& event )
-{
-	switch( event.type )
-	{
-	case ConfigEventType::CHANGE:
-		{
-			ActiveConfigSet( event.change.pNewConfig );
-			break;
-		}
-	}
-}
-
-void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
+void CASManager::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config )
 {
 	if( m_Instance )
 	{
@@ -147,40 +135,30 @@ void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
 			ASEvent event( ASEventType::CREATED );
 
 			event.create.pszVersion = &szVersion;
-			event.create.bHasConfig = pConfig != nullptr;
+			event.create.bHasConfig = config != nullptr;
 
 			NotifyEventListeners( event );
 		}
 
-		if( pConfig )
+		if( config )
 		{
 			ASEvent configEvent( ASEventType::CONFIG_CHANGE );
 
 			configEvent.configChange.changeType = ASConfigChangeType::SET;
-			configEvent.configChange.pszName = &pConfig->GetName();
+			configEvent.configChange.pszName = &config->GetName();
 
 			NotifyEventListeners( configEvent );
 
-			//TODO: need to pass the smart pointer directly, needs redesign to Qt signals - Solokiller
-			auto config = m_ConfigurationManager->Find( pConfig->GetName() );
+			CASConfigModuleBuilder builder( config, m_Context );
 
-			if( config )
+			m_pConfigModule = m_ModuleManager->BuildModule( "Config", "Config", builder );
+
+			if( m_pConfigModule )
 			{
-				CASConfigModuleBuilder builder( config, m_Context );
-
-				m_pConfigModule = m_ModuleManager->BuildModule( "Config", "Config", builder );
-
-				if( m_pConfigModule )
-				{
-					m_pConfigModule->AddRef();
-				}
-
-				m_ConfigurationObject = builder.GetConfigurationObject();
+				m_pConfigModule->AddRef();
 			}
-			else
-			{
-				std::cerr << "Couldn't find config" << "\"" << config->GetName() << "\"" << std::endl;
-			}
+
+			m_ConfigurationObject = builder.GetConfigurationObject();
 
 			if( m_ConfigurationObject )
 			{
@@ -197,8 +175,8 @@ void CASManager::ActiveConfigSet( const CConfiguration* pConfig )
 
 			ASEvent regEvent( ASEventType::API_REGISTERED );
 
-			regEvent.apiRegistration.pszConfigFilename = &pConfig->GetConfigFilename();
-			regEvent.apiRegistration.bSuccess = m_Instance->LoadAPIFromFile( pConfig->GetConfigFilename() );
+			regEvent.apiRegistration.pszConfigFilename = &config->GetConfigFilename();
+			regEvent.apiRegistration.bSuccess = m_Instance->LoadAPIFromFile( config->GetConfigFilename() );
 
 			NotifyEventListeners( regEvent );
 		}
@@ -232,4 +210,9 @@ void CASManager::ClearConfigurationScript()
 		m_pConfigModule->Release();
 		m_pConfigModule = nullptr;
 	}
+}
+
+void CASManager::OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig )
+{
+	ActiveConfigSet( newConfig );
 }

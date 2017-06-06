@@ -10,7 +10,6 @@
 
 #include "Angelscript/CASManager.h"
 #include "Angelscript/CScript.h"
-#include "Angelscript/IConfigurationEventListener.h"
 #include "Angelscript/CConfiguration.h"
 #include "Angelscript/CConfigurationManager.h"
 #include "ui/CASMainWindow.h"
@@ -59,7 +58,7 @@ void CASIDEApp::Startup()
 
 	m_ASManager = std::make_shared<CASManager>( m_Options->GetConfigurationManager() );
 
-	m_Options->GetConfigurationManager()->AddConfigurationEventListener( this );
+	m_Connections.emplace_back( connect( m_Options->GetConfigurationManager().get(), &CConfigurationManager::ConfigurationRemoved, this, &CASIDEApp::OnConfigurationRemoved ) );
 }
 
 void CASIDEApp::OnBeforeRun()
@@ -74,7 +73,11 @@ void CASIDEApp::Shutdown()
 {
 	SaveSettings();
 
-	m_Options->GetConfigurationManager()->RemoveConfigurationEventListener( this );
+	//Disconnect everything now so no dangling pointers are left
+	for( const auto& connection : m_Connections )
+		disconnect( connection );
+
+	m_Connections.clear();
 
 	m_ASManager.reset();
 	m_Options.reset();
@@ -143,19 +146,10 @@ void CASIDEApp::SaveSettings()
 	m_Options->SaveOptions( settings );
 }
 
-void CASIDEApp::ConfigEventOccurred( const ConfigEvent& event )
+void CASIDEApp::OnConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig )
 {
-	switch( event.type )
+	if( bIsActiveConfig )
 	{
-	case ConfigEventType::REMOVE:
-		{
-			if( event.remove.bIsActiveConfig )
-			{
-				WriteString( "Active configuration removed\n" );
-			}
-			break;
-		}
-
-	default: break;
+		WriteString( "Active configuration removed\n" );
 	}
 }

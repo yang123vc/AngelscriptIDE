@@ -25,7 +25,9 @@ CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, st
 
 	auto configManager = app->GetOptions()->GetConfigurationManager();
 
-	configManager->AddConfigurationEventListener( this );
+	connect( configManager.get(), &CConfigurationManager::ConfigurationAdded, this, &CConfigurationsWidget::OnConfigurationAdded );
+	connect( configManager.get(), &CConfigurationManager::ConfigurationRemoved, this, &CConfigurationsWidget::OnConfigurationRemoved);
+	connect( configManager.get(), &CConfigurationManager::ConfigurationRenamed, this, &CConfigurationsWidget::OnConfigurationRenamed );
 
 	const auto uiCount = configManager->GetConfigurationCount();
 
@@ -72,7 +74,6 @@ CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, st
 
 CConfigurationsWidget::~CConfigurationsWidget()
 {
-	m_App->GetOptions()->GetConfigurationManager()->RemoveConfigurationEventListener( this );
 }
 
 bool CConfigurationsWidget::CanSave( QString& szReason )
@@ -94,57 +95,6 @@ void CConfigurationsWidget::ApplyChanges()
 	{
 		SetChangesMade( false );
 		SaveCurrentConfiguration();
-	}
-}
-
-void CConfigurationsWidget::ConfigEventOccurred( const ConfigEvent& event )
-{
-	switch( event.type )
-	{
-	case ConfigEventType::ADD:
-		{
-			if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() == 0 )
-				SetFieldsEnabled( true );
-
-			const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
-
-			m_WidgetUI->m_pCurrentConfigurationComboBox->addItem( event.add.pszName->c_str() );
-
-			m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex != -1 ? iIndex : 0 );
-			break;
-		}
-
-	case ConfigEventType::REMOVE:
-		{
-			const int iCurrentIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
-
-			const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( event.remove.pszName->c_str() );
-
-			if( iIndex != -1 )
-				m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
-
-			if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() > 0 )
-				m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iCurrentIndex < iIndex ? iCurrentIndex : iCurrentIndex - 1 );
-			else
-				SetFieldsEnabled( false );
-			break;
-		}
-
-	case ConfigEventType::RENAME:
-		{
-			const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( event.rename.pszOldName->c_str() );
-
-			if( iIndex != -1 )
-			{
-				m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
-				m_WidgetUI->m_pCurrentConfigurationComboBox->insertItem( iIndex, event.rename.pszNewName->c_str() );
-				m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex );
-			}
-
-			break;
-		}
-
-	default: break;
 	}
 }
 
@@ -437,5 +387,44 @@ void CConfigurationsWidget::RemoveExtension()
 		SetChangesMade( true );
 
 		delete m_WidgetUI->m_pExtensionsList->takeItem( index.row() );
+	}
+}
+
+void CConfigurationsWidget::OnConfigurationAdded( const std::shared_ptr<CConfiguration>& config )
+{
+	if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() == 0 )
+		SetFieldsEnabled( true );
+
+	const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
+
+	m_WidgetUI->m_pCurrentConfigurationComboBox->addItem( config->GetName().c_str() );
+
+	m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex != -1 ? iIndex : 0 );
+}
+
+void CConfigurationsWidget::OnConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig )
+{
+	const int iCurrentIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->currentIndex();
+
+	const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( config->GetName().c_str() );
+
+	if( iIndex != -1 )
+		m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
+
+	if( m_WidgetUI->m_pCurrentConfigurationComboBox->count() > 0 )
+		m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iCurrentIndex < iIndex ? iCurrentIndex : iCurrentIndex - 1 );
+	else
+		SetFieldsEnabled( false );
+}
+
+void CConfigurationsWidget::OnConfigurationRenamed( const std::shared_ptr<CConfiguration>& config, const std::string& szOldName )
+{
+	const int iIndex = m_WidgetUI->m_pCurrentConfigurationComboBox->findText( szOldName.c_str() );
+
+	if( iIndex != -1 )
+	{
+		m_WidgetUI->m_pCurrentConfigurationComboBox->removeItem( iIndex );
+		m_WidgetUI->m_pCurrentConfigurationComboBox->insertItem( iIndex, config->GetName().c_str() );
+		m_WidgetUI->m_pCurrentConfigurationComboBox->setCurrentIndex( iIndex );
 	}
 }

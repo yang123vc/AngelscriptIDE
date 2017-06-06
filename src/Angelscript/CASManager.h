@@ -3,11 +3,12 @@
 
 #include <memory>
 
+#include <QObject>
+
 #include <AngelscriptUtils/CASModuleManager.h>
 #include <AngelscriptUtils/util/CASObjPtr.h>
 #include <AngelscriptUtils/util/CASRefPtr.h>
 
-#include "IConfigurationEventListener.h"
 #include "util/CListenerManager.h"
 
 class asIScriptContext;
@@ -23,8 +24,10 @@ struct ASEvent;
 /**
 *	Manages the Angelscript engine and handles compilation
 */
-class CASManager : public IConfigurationEventListener
+class CASManager : public QObject
 {
+	Q_OBJECT
+
 public:
 	/**
 	*	Creates an Angelscript context manager
@@ -50,15 +53,16 @@ public:
 	*/
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
-	void ConfigEventOccurred( const ConfigEvent& event ) override;
-
 protected:
 	void NotifyEventListeners( const ASEvent& event );
 
 private:
-	void ActiveConfigSet( const CConfiguration* pConfig );
+	void ActiveConfigSet( const std::shared_ptr<CConfiguration>& config );
 
 	void ClearConfigurationScript();
+
+private slots:
+	void OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig );
 
 private:
 	std::unique_ptr<CASEngineInstance>		m_Instance;

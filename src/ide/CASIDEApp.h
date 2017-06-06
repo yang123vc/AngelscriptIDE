@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
+#include <QObject>
+
 #include "util/CBaseApp.h"
 #include "util/CListenerManager.h"
-
-#include "Angelscript/IConfigurationEventListener.h"
 
 class CASMainWindow;
 class CASManager;
@@ -21,8 +21,10 @@ class IUI;
 /**
 *	Angelscript IDE app
 */
-class CASIDEApp final : public CBaseApp, public std::enable_shared_from_this<CASIDEApp>, public IConfigurationEventListener
+class CASIDEApp final : public QObject, public CBaseApp, public std::enable_shared_from_this<CASIDEApp>
 {
+	Q_OBJECT
+
 public:
 	CASIDEApp( std::shared_ptr<IUI> ui );
 	~CASIDEApp();
@@ -60,14 +62,16 @@ public:
 	void LoadSettings();
 	void SaveSettings();
 
-	//IConfigurationEventListener
-	void ConfigEventOccurred( const ConfigEvent& event ) override;
+private slots:
+	void OnConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig );
 
 private:
 	std::shared_ptr<IUI>			m_UI;
 	std::shared_ptr<CASManager>		m_ASManager;
 	std::shared_ptr<COptions>		m_Options;
 	std::shared_ptr<CASMainWindow>	m_MainWindow;
+
+	std::vector<QMetaObject::Connection> m_Connections;
 };
 
 #endif //IDE_CASIDEAPP_H

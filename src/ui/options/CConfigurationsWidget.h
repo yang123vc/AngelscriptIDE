@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include "Angelscript/IConfigurationEventListener.h"
-
 #include "CBaseOptionsWidget.h"
 
 namespace Ui
@@ -17,7 +15,7 @@ class CConfiguration;
 class CUI;
 class QListWidget;
 
-class CConfigurationsWidget : public CBaseOptionsWidget, public IConfigurationEventListener
+class CConfigurationsWidget : public CBaseOptionsWidget
 {
 	Q_OBJECT
 
@@ -28,8 +26,6 @@ public:
 	bool CanSave( QString& szReason ) override;
 
 	void ApplyChanges() override;
-
-	void ConfigEventOccurred( const ConfigEvent& event ) override;
 
 protected:
 
@@ -77,6 +73,10 @@ protected slots:
 	void AddExtension();
 
 	void RemoveExtension();
+
+	void OnConfigurationAdded( const std::shared_ptr<CConfiguration>& config );
+	void OnConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig );
+	void OnConfigurationRenamed( const std::shared_ptr<CConfiguration>& config, const std::string& szOldName );
 
 private:
 	std::unique_ptr<Ui::CConfigurationsWidget> m_WidgetUI;

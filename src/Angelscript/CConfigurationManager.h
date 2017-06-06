@@ -4,29 +4,26 @@
 #include <memory>
 #include <vector>
 
-#include "util/CListenerManager.h"
+#include <QObject>
 
 class CASIDEApp;
 class CConfiguration;
 struct ConfigEvent;
-class IConfigurationEventListener;
 class QSettings;
 
 /**
 *	The configuration manager
 */
-class CConfigurationManager : public std::enable_shared_from_this<CConfigurationManager>
+class CConfigurationManager : public QObject, public std::enable_shared_from_this<CConfigurationManager>
 {
+	Q_OBJECT
+
 public:
 	static const size_t INVALID_INDEX = static_cast<size_t>( -1 );
 
 public:
 	CConfigurationManager();
 	~CConfigurationManager() = default;
-
-	void AddConfigurationEventListener( IConfigurationEventListener* pListener );
-
-	void RemoveConfigurationEventListener( IConfigurationEventListener* pListener );
 
 	size_t GetConfigurationCount() const;
 
@@ -53,12 +50,13 @@ public:
 	void LoadConfigurations( QSettings& settings );
 	void SaveConfigurations( QSettings& settings );
 
-protected:
-	void NotifyListeners( const ConfigEvent& event );
+signals:
+	void ConfigurationAdded( const std::shared_ptr<CConfiguration>& config );
+	void ConfigurationRemoved( const std::shared_ptr<CConfiguration>& config, bool bIsActiveConfig );
+	void ConfigurationRenamed( const std::shared_ptr<CConfiguration>& config, const std::string& szOldName );
+	void ActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig );
 
 private:
-	CListenerManager<IConfigurationEventListener> m_ConfigurationListeners;
-
 	std::vector<std::shared_ptr<CConfiguration>> m_Configurations;
 
 	size_t m_uiActiveConfiguration = INVALID_INDEX;
