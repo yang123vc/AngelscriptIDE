@@ -8,6 +8,7 @@
 #include <AngelscriptUtils/add_on/scriptbuilder.h>
 #include <AngelscriptUtils/wrapper/ASCallable.h>
 
+#include "CASCompilerThread.h"
 #include "CASConfigModuleBuilder.h"
 #include "CASDevEnvironment.h"
 #include "CASEngineInstance.h"
@@ -17,6 +18,16 @@
 #include "IDE_API.h"
 
 #include "ScriptAPI/ASIConfiguration.h"
+
+//Needed for queued connections; these types are passed around
+Q_DECLARE_METATYPE( std::shared_ptr<const CScript> );
+Q_DECLARE_METATYPE( CASEngineInstance::CMessageInfo );
+
+void RegisterQtMetaTypes()
+{
+	qRegisterMetaType<std::shared_ptr<const CScript>>();
+	qRegisterMetaType<CASEngineInstance::CMessageInfo>();
+}
 
 CASDevEnvironment::CASDevEnvironment( std::shared_ptr<CConfigurationManager> configurationManager )
 	: m_ConfigurationManager( configurationManager )
@@ -37,6 +48,8 @@ CASDevEnvironment::CASDevEnvironment( std::shared_ptr<CConfigurationManager> con
 	m_ModuleManager = std::make_unique<CASModuleManager>( *m_pIDEEngine );
 
 	m_ModuleManager->AddDescriptor( "Config", 0xFFFFFFFF );
+
+	RegisterQtMetaTypes();
 }
 
 CASDevEnvironment::~CASDevEnvironment()
@@ -58,22 +71,32 @@ CASDevEnvironment::~CASDevEnvironment()
 		m_pIDEEngine->ShutDownAndRelease();
 }
 
+bool CASDevEnvironment::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
+{
+	//No concurrent compilations
+	//TODO: queue it up? - Solokiller
+	if( m_CompilerThread )
+		return false;
+
+	m_CompilerThread = std::make_shared<CASCompilerThread>( m_Instance, m_ConfigurationManager->GetActiveConfiguration(), std::string( szSectionName ), std::string( szScriptContents ) );
+
+	connect( m_CompilerThread.get(), &CASCompilerThread::CompilationStart, this, &CASDevEnvironment::OnCompilationStarted, Qt::QueuedConnection );
+	connect( m_CompilerThread.get(), &CASCompilerThread::CompilationEnd, this, &CASDevEnvironment::OnCompilationEnded, Qt::QueuedConnection );
+
+	m_CompilerThread->Run();
+
+	return true;
+}
+
+bool CASDevEnvironment::IsCompiling() const
+{
+	//We're compiling if the thread exists
+	return m_CompilerThread != nullptr;
+}
+
 void CASDevEnvironment::MessageCallback( const asSMessageInfo* pMsg )
 {
 	CompilerMessage( *pMsg );
-}
-
-bool CASDevEnvironment::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
-{
-	auto script = std::make_shared<const CScript>( std::string( szSectionName ), std::string( szScriptContents ) );
-
-	CompilationStarted( script );
-
-	const bool bResult = m_Instance->CompileScript( script, m_ConfigurationManager->GetActiveConfiguration() );
-
-	CompilationEnded( script, bResult );
-
-	return bResult;
 }
 
 void CASDevEnvironment::ActiveConfigSet( const std::shared_ptr<CConfiguration>& config )
@@ -90,7 +113,8 @@ void CASDevEnvironment::ActiveConfigSet( const std::shared_ptr<CConfiguration>& 
 	{
 		m_Instance = std::make_unique<CASEngineInstance>();
 
-		m_Instance->SetMessageCallback( asMETHOD( CASDevEnvironment, MessageCallback ), this, asCALL_THISCALL );
+		//Use a queued connection so messages are handled in a threadsafe manner
+		connect( m_Instance.get(), &CASEngineInstance::EngineMessage, this, &CASDevEnvironment::OnEngineMessage, Qt::QueuedConnection );
 
 		const std::string szVersion = m_Instance->GetVersion();
 
@@ -153,6 +177,39 @@ void CASDevEnvironment::ClearConfigurationScript()
 		m_pConfigModule->Release();
 		m_pConfigModule = nullptr;
 	}
+}
+
+void CASDevEnvironment::OnEngineMessage( const CASEngineInstance::CMessageInfo& msg )
+{
+	//Turn it back into a regular message so we can send it to listeners
+	asSMessageInfo message;
+
+	auto szSection = msg.section.toLocal8Bit();
+
+	message.section = msg.bHasSection ? szSection.constData() : nullptr;
+
+	message.row = msg.row;
+	message.col = msg.col;
+
+	message.type = msg.type;
+
+	auto szMessage = msg.message.toLocal8Bit();
+
+	message.message = msg.bHasMessage ? szMessage.constData() : nullptr;
+
+	CompilerMessage( message );
+}
+
+void CASDevEnvironment::OnCompilationStarted( const std::shared_ptr<const CScript>& script )
+{
+	CompilationStarted( script );
+}
+
+void CASDevEnvironment::OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess )
+{
+	CompilationEnded( script, bSuccess );
+
+	m_CompilerThread.reset();
 }
 
 void CASDevEnvironment::OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig )

@@ -1,4 +1,6 @@
 add_sources(
+	CASCompilerThread.cpp
+	CASCompilerThread.h
 	CASConfigModuleBuilder.cpp
 	CASConfigModuleBuilder.h
 	CASDevEnvironment.cpp

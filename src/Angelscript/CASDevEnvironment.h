@@ -9,9 +9,11 @@
 #include <AngelscriptUtils/util/CASObjPtr.h>
 #include <AngelscriptUtils/util/CASRefPtr.h>
 
+#include "CASEngineInstance.h"
+
 class asIScriptContext;
 class asIScriptEngine;
-class CASEngineInstance;
+class CASCompilerThread;
 class CConfiguration;
 class CConfigurationManager;
 class CScript;
@@ -41,14 +43,19 @@ public:
 
 	std::shared_ptr<CConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
 
-	void MessageCallback( const asSMessageInfo* pMsg );
-
 	/**
 	*	Compiles a script
 	*/
 	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
 
+	/**
+	*	@return Whether a script is currently being compiled
+	*/
+	bool IsCompiling() const;
+
 private:
+	void MessageCallback( const asSMessageInfo* pMsg );
+
 	void ActiveConfigSet( const std::shared_ptr<CConfiguration>& config );
 
 	void ClearConfigurationScript();
@@ -96,10 +103,16 @@ signals:
 	void CompilerMessage( const asSMessageInfo& msg );
 
 private slots:
+	void OnEngineMessage( const CASEngineInstance::CMessageInfo& msg );
+
+	void OnCompilationStarted( const std::shared_ptr<const CScript>& script );
+
+	void OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
+
 	void OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig );
 
 private:
-	std::unique_ptr<CASEngineInstance>		m_Instance;
+	std::shared_ptr<CASEngineInstance>		m_Instance;
 	std::shared_ptr<CConfigurationManager>	m_ConfigurationManager;
 
 	//This engine is used for scripts used to configure and control the IDE itself
@@ -112,6 +125,8 @@ private:
 	CASModule* m_pConfigModule = nullptr;
 
 	CASObjPtr m_ConfigurationObject;
+
+	std::shared_ptr<CASCompilerThread> m_CompilerThread;
 
 private:
 	CASDevEnvironment( const CASDevEnvironment& ) = delete;

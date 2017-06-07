@@ -5,10 +5,14 @@
 #include <stdexcept>
 #include <string>
 
+#include <QObject>
+#include <QString>
+
+#include <angelscript.h>
+
 class asIScriptEngine;
 class CConfiguration;
 class CScript;
-struct asSMessageInfo;
 
 /**
 *	Exception thrown if an Angelscript exception has occured
@@ -22,8 +26,28 @@ public:
 /**
 *	Manages an Angelscript engine
 */
-class CASEngineInstance
+class CASEngineInstance final : public QObject
 {
+	Q_OBJECT
+
+public:
+	/**
+	*	Message used for threaded callbacks
+	*/
+	struct CMessageInfo
+	{
+		QString section;
+		bool bHasSection;
+
+		int         row;
+		int         col;
+
+		asEMsgType  type;
+
+		QString message;
+		bool bHasMessage;
+	};
+
 public:
 
 	/**
@@ -41,11 +65,6 @@ public:
 	const char* GetVersion() const;
 
 	/**
-	*	Sets the message callback to use for this engine
-	*/
-	void SetMessageCallback( const asSFuncPtr& callback, void* pObj, asDWORD callConv );
-
-	/**
 	*	Loads an API saved with WriteConfigToFile or WriteConfigToStream
 	*/
 	bool LoadAPIFromFile( const std::string& szFilename );
@@ -54,6 +73,14 @@ public:
 	*	Compiles a given script
 	*/
 	bool CompileScript( const std::shared_ptr<const CScript>& script, const std::shared_ptr<const CConfiguration>& config );
+
+	void Error( const char* pszSection, int row, int col, const char* pszFormat, ... );
+
+signals:
+	void EngineMessage( const CMessageInfo& msg );
+
+private:
+	void MessageCallback( asSMessageInfo* pMsg );
 
 private:
 	asIScriptEngine* m_pScriptEngine = nullptr;
