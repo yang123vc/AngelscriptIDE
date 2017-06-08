@@ -249,7 +249,7 @@ void CASMainWindow::AddFile( CScriptCodeTextEdit* pCodeEdit )
 {
 	const int iIndex = m_WidgetUI->m_pFiles->addTab( pCodeEdit, pCodeEdit->GetFilename() );
 
-	connect( pCodeEdit, SIGNAL( NameChanged( std::string ) ), this, SLOT( ScriptNameChanged( std::string ) ) );
+	connect( pCodeEdit, &CScriptCodeTextEdit::NameChanged, this, &CASMainWindow::ScriptNameChanged );
 
 	m_WidgetUI->m_pFiles->setCurrentIndex( iIndex );
 }
@@ -648,14 +648,14 @@ void CASMainWindow::CloseFile( int iIndex )
 	}
 }
 
-void CASMainWindow::ScriptNameChanged( const std::string& szName )
+void CASMainWindow::ScriptNameChanged( const QString& szName )
 {
 	CScriptCodeTextEdit* pSender = static_cast<CScriptCodeTextEdit*>( sender() );
 
 	int iIndex = m_WidgetUI->m_pFiles->indexOf( pSender );
 
 	if( iIndex != -1 )
-		m_WidgetUI->m_pFiles->setTabText( iIndex, szName.c_str() );
+		m_WidgetUI->m_pFiles->setTabText( iIndex, szName );
 }
 
 void CASMainWindow::TabChanged( int iIndex )

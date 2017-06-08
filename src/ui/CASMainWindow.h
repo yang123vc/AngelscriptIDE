@@ -126,7 +126,7 @@ public slots:
 	//Callbacks
 	void CloseFile( int iIndex );
 
-	void ScriptNameChanged( const std::string& szName );
+	void ScriptNameChanged( const QString& szName );
 
 	void TabChanged( int iIndex );
 
