@@ -53,6 +53,10 @@ public:
 public:
 
 	CScriptCodeTextEdit( const QString& szTitle, std::shared_ptr<CASIDEApp> app, QWidget* pParent = nullptr );
+
+	/**
+	*	@throws std::runtime_error If the file couldn't be loaded
+	*/
 	CScriptCodeTextEdit( const QString& szFilename, const IsFilenameTag_t& isFilename, std::shared_ptr<CASIDEApp> app, QWidget* pParent = nullptr );
 	virtual ~CScriptCodeTextEdit();
 

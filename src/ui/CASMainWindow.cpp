@@ -1,11 +1,13 @@
+#include <initializer_list>
 #include <iostream>
 #include <chrono>
-#include <initializer_list>
+#include <stdexcept>
 
 #include <QAction>
 #include <QApplication>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QWindowStateChangeEvent>
 
 #include "CAbout.h"
@@ -275,7 +277,20 @@ void CASMainWindow::OpenFile( const QString& szFilename )
 	//Use the absolute path
 	QFileInfo file( szFilename );
 
-	AddFile( new CScriptCodeTextEdit( file.absoluteFilePath(), CScriptCodeTextEdit::IsFilename, m_App ) );
+	if( !file.exists() )
+	{
+		QMessageBox::critical( this, "File not found", QString( "The file \"%1\" doesn't exist." ).arg( file.absoluteFilePath() ) );
+		return;
+	}
+
+	try
+	{
+		AddFile( new CScriptCodeTextEdit( file.absoluteFilePath(), CScriptCodeTextEdit::IsFilename, m_App ) );
+	}
+	catch( const std::runtime_error& e )
+	{
+		QMessageBox::critical( this, "File load failure", QString( "Failed to load file \"%1\".\nThe error given was: \"%2\"" ).arg( file.absoluteFilePath(), e.what() ) );
+	}
 }
 
 

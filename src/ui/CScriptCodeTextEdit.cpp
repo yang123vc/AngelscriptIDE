@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -38,8 +40,14 @@ CScriptCodeTextEdit::CScriptCodeTextEdit( const QString& szFilename, const IsFil
 
 	m_bIsNewFile = false;
 
-	//TODO: report file load failures - Solokiller
-	auto szContents = m_App->GetDevEnvironment()->LoadScript( szFilename );
+	bool bSuccess;
+
+	auto szContents = m_App->GetDevEnvironment()->LoadScript( szFilename, &bSuccess );
+
+	if( !bSuccess )
+	{
+		throw std::runtime_error( "Couldn't load script file contents" );
+	}
 
 	appendPlainText( szContents );
 
