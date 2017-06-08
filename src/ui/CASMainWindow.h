@@ -68,7 +68,7 @@ protected:
 
 	void ClearRecentFilesActions();
 
-public slots:
+private slots:
 
 	void OnAppBeforeRun();
 	void OnAppShutdown();
@@ -109,6 +109,8 @@ public slots:
 
 	//Script menu
 	void CompileScript();
+
+	void OnCompilationEnded( const QString& szScriptFilename, bool bSuccess );
 
 	//View menu
 	void MenuAddOutputWindow();

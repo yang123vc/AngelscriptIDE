@@ -88,6 +88,8 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 
 	m_WidgetUI->menuRecent_Files->addAction( m_pNoRecentFilesAction );
 
+	connect( m_App->GetDevEnvironment().get(), &CASDevEnvironment::CompilationEnded, this, &CASMainWindow::OnCompilationEnded );
+
 	//Open output windows
 	AddOutputWindow( OutputWindow::OUTPUT );
 	AddOutputWindow( OutputWindow::INFORMATION );
@@ -599,8 +601,18 @@ void CASMainWindow::CompileScript()
 		else
 			pCodeEdit->Save();
 
-		m_App->CompileScript( QString( pCodeEdit->GetFilename() ) );
+		if( m_App->CompileScript( QString( pCodeEdit->GetFilename() ) ) )
+		{
+			//Disable until compilation ended
+			m_WidgetUI->actionCompile->setEnabled( false );
+		}
 	}
+}
+
+void CASMainWindow::OnCompilationEnded( const QString& szScriptFilename, bool bSuccess )
+{
+	//Enable again
+	m_WidgetUI->actionCompile->setEnabled( true );
 }
 
 void CASMainWindow::MenuAddOutputWindow()
