@@ -10,9 +10,9 @@ CCodeTextEdit::CCodeTextEdit( QWidget* pParent )
 {
 	m_pLineNumberArea = new CLineNumberArea( this );
 
-	connect( this, SIGNAL( blockCountChanged( int ) ), this, SLOT( updateLineNumberAreaWidth( int ) ) );
-	connect( this, SIGNAL( updateRequest( QRect,int ) ), this, SLOT( updateLineNumberArea( QRect,int ) ) );
-	connect( this, SIGNAL( cursorPositionChanged() ), this, SLOT( highlightCurrentLine() ) );
+	connect( this, &CCodeTextEdit::blockCountChanged, this, &CCodeTextEdit::updateLineNumberAreaWidth );
+	connect( this, &CCodeTextEdit::updateRequest, this, &CCodeTextEdit::updateLineNumberArea );
+	connect( this, &CCodeTextEdit::cursorPositionChanged, this, &CCodeTextEdit::highlightCurrentLine );
 
 	updateLineNumberAreaWidth( 0 );
 	highlightCurrentLine();

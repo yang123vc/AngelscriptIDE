@@ -24,5 +24,5 @@ void CBaseOptionsWidget::SetChangesMade( bool bState )
 
 void CBaseOptionsWidget::ConnectToParent()
 {
-	connect( this, SIGNAL( ChangesMade( bool ) ), m_pParent, SLOT( ChangesMade( bool ) ) );
+	connect( this, &CBaseOptionsWidget::ChangesMade, m_pParent, &COptionsDialog::ChangesMade );
 }

@@ -12,8 +12,8 @@ CFindDialog::CFindDialog( QWidget* pParent )
 {
 	m_WidgetUI->setupUi( this );
 
-	connect( m_WidgetUI->m_pFindNextButton, SIGNAL( clicked() ), this, SLOT( FindNext() ) );
-	connect( m_WidgetUI->m_pCloseButton, SIGNAL( clicked() ), this, SLOT( Close() ) );
+	connect( m_WidgetUI->m_pFindNextButton, &QPushButton::clicked, this, &CFindDialog::FindNext );
+	connect( m_WidgetUI->m_pCloseButton, &QPushButton::clicked, this, &CFindDialog::Close );
 
 	m_WidgetUI->m_pSearchForward->setProperty( SEARCH_DIRECTION_PROPERTY, static_cast<int>( SearchDirection::FORWARD ) );
 	m_WidgetUI->m_pSearchBackward->setProperty( SEARCH_DIRECTION_PROPERTY, static_cast<int>( SearchDirection::BACKWARD ) );

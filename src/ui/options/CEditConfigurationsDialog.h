@@ -23,7 +23,7 @@ public:
 
 protected slots:
 
-	void AddConfiguraton();
+	void AddConfiguration();
 
 	void RemoveConfiguration();
 

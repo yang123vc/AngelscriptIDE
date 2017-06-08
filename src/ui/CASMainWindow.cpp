@@ -40,45 +40,45 @@ CASMainWindow::CASMainWindow( std::shared_ptr<CASIDEApp> app, std::shared_ptr<CU
 	connect( m_App.get(), &CBaseApp::AppShutdown, this, &CASMainWindow::OnAppShutdown );
 
 	//File menu
-	connect( m_WidgetUI->actionNew, SIGNAL( triggered() ), this, SLOT( NewFile() ) );
-	connect( m_WidgetUI->actionOpen, SIGNAL( triggered() ), this, SLOT( OpenFile() ) );
-	connect( m_WidgetUI->actionSave, SIGNAL( triggered() ), this, SLOT( Save() ) );
-	connect( m_WidgetUI->actionSave_As, SIGNAL( triggered() ), this, SLOT( SaveAs() ) );
-	connect( m_WidgetUI->actionClose, SIGNAL( triggered() ), this, SLOT( CloseFile() ) );
-	connect( m_WidgetUI->actionClose_All, SIGNAL( triggered() ), this, SLOT( CloseAllFiles() ) );
-	connect( m_WidgetUI->actionExit, SIGNAL( triggered() ), this, SLOT( OnExit() ) );
+	connect( m_WidgetUI->actionNew, &QAction::triggered, this, &CASMainWindow::NewFile );
+	connect( m_WidgetUI->actionOpen, &QAction::triggered, this, &CASMainWindow::MenuOpenFile );
+	connect( m_WidgetUI->actionSave, &QAction::triggered, this, &CASMainWindow::Save );
+	connect( m_WidgetUI->actionSave_As, &QAction::triggered, this, &CASMainWindow::SaveAs );
+	connect( m_WidgetUI->actionClose, &QAction::triggered, this, &CASMainWindow::MenuCloseFile );
+	connect( m_WidgetUI->actionClose_All, &QAction::triggered, this, &CASMainWindow::MenuCloseAllFiles );
+	connect( m_WidgetUI->actionExit, &QAction::triggered, this, &CASMainWindow::OnExit );
 
 	//Edit menu
-	connect( m_WidgetUI->actionUndo, SIGNAL( triggered() ), this, SLOT( Undo() ) );
-	connect( m_WidgetUI->actionRedo, SIGNAL( triggered() ), this, SLOT( Redo() ) );
+	connect( m_WidgetUI->actionUndo, &QAction::triggered, this, &CASMainWindow::Undo );
+	connect( m_WidgetUI->actionRedo, &QAction::triggered, this, &CASMainWindow::Redo );
 
-	connect( m_WidgetUI->actionCut, SIGNAL( triggered() ), this, SLOT( Cut() ) );
-	connect( m_WidgetUI->actionCopy, SIGNAL( triggered() ), this, SLOT( Copy() ) );
-	connect( m_WidgetUI->actionPaste, SIGNAL( triggered() ), this, SLOT( Paste() ) );
+	connect( m_WidgetUI->actionCut, &QAction::triggered, this, &CASMainWindow::Cut );
+	connect( m_WidgetUI->actionCopy, &QAction::triggered, this, &CASMainWindow::Copy );
+	connect( m_WidgetUI->actionPaste, &QAction::triggered, this, &CASMainWindow::Paste );
 
-	connect( m_WidgetUI->actionSelect_All, SIGNAL( triggered() ), this, SLOT( SelectAll() ) );
+	connect( m_WidgetUI->actionSelect_All, &QAction::triggered, this, &CASMainWindow::SelectAll );
 
-	connect( m_WidgetUI->actionFind, SIGNAL( triggered() ), this, SLOT( OpenFindDialog() ) );
+	connect( m_WidgetUI->actionFind, &QAction::triggered, this, &CASMainWindow::OpenFindDialog );
 
 	//Script menu
-	connect( m_WidgetUI->actionCompile, SIGNAL( triggered() ), this, SLOT( CompileScript() ) );
+	connect( m_WidgetUI->actionCompile, &QAction::triggered, this, &CASMainWindow::CompileScript );
 
 	//View menu
-	connect( m_WidgetUI->actionOutput, SIGNAL( triggered() ), this, SLOT( AddOutputWindow() ) );
-	connect( m_WidgetUI->actionInformation, SIGNAL( triggered() ), this, SLOT( AddInformationWindow() ) );
+	connect( m_WidgetUI->actionOutput, &QAction::triggered, this, &CASMainWindow::MenuAddOutputWindow );
+	connect( m_WidgetUI->actionInformation, &QAction::triggered, this, &CASMainWindow::AddInformationWindow );
 
 	//Tools menu
-	connect( m_WidgetUI->actionClear_Recent_Files_List, SIGNAL( triggered() ), this, SLOT( ClearRecentFiles() ) );
-	connect( m_WidgetUI->actionOptions, SIGNAL( triggered() ), this, SLOT( ShowOptions() ) );
+	connect( m_WidgetUI->actionClear_Recent_Files_List, &QAction::triggered, this, &CASMainWindow::ClearRecentFiles );
+	connect( m_WidgetUI->actionOptions, &QAction::triggered, this, &CASMainWindow::ShowOptions );
 
 	//Help menu
-	connect( m_WidgetUI->actionAbout, SIGNAL( triggered() ), this, SLOT( ShowAbout() ) );
+	connect( m_WidgetUI->actionAbout, &QAction::triggered, this, &CASMainWindow::ShowAbout );
 
 	//Set up responses to ui events
-	connect( m_WidgetUI->m_pFiles, SIGNAL( tabCloseRequested( int ) ), this, SLOT( CloseFile( int ) ) );
-	connect( m_WidgetUI->m_pFiles, SIGNAL( currentChanged( int ) ), this, SLOT( TabChanged( int ) ) );
+	connect( m_WidgetUI->m_pFiles, &QTabWidget::tabCloseRequested, this, &CASMainWindow::TabCloseFile );
+	connect( m_WidgetUI->m_pFiles, &QTabWidget::currentChanged, this, &CASMainWindow::TabChanged );
 
-	connect( m_WidgetUI->m_pOutputWindows, SIGNAL( tabCloseRequested( int ) ), this, SLOT( CloseOutputWindow( int ) ) );
+	connect( m_WidgetUI->m_pOutputWindows, &QTabWidget::tabCloseRequested, this, &CASMainWindow::CloseOutputWindow );
 
 	//Disable buttons that require an open script
 	SetDependentActionsState( false );
@@ -332,7 +332,7 @@ void CASMainWindow::AddRecentFile( const std::string& szFilename )
 
 	QAction* pAction = new QAction( szFilename.c_str(), nullptr );
 
-	connect( pAction, SIGNAL( triggered() ), this, SLOT( OpenRecentFile() ) );
+	connect( pAction, &QAction::triggered, this, &CASMainWindow::OpenRecentFile );
 
 	if( actions.size() == 1 && actions[ 0 ] == m_pNoRecentFilesAction )
 	{
@@ -415,7 +415,7 @@ void CASMainWindow::NewFile()
 	AddFile( new CScriptCodeTextEdit( "New File", m_App ) );
 }
 
-void CASMainWindow::OpenFile()
+void CASMainWindow::MenuOpenFile()
 {
 	auto options = m_App->GetOptions();
 
@@ -468,7 +468,7 @@ void CASMainWindow::SaveAs()
 	}
 }
 
-void CASMainWindow::CloseFile()
+void CASMainWindow::MenuCloseFile()
 {
 	CloseFile( GetActiveScript() );
 }
@@ -487,7 +487,7 @@ bool CASMainWindow::CloseAllFiles( bool fForceCloseAllOpenFiles, bool fContinueA
 	return fResult;
 }
 
-bool CASMainWindow::CloseAllFiles()
+bool CASMainWindow::MenuCloseAllFiles()
 {
 	return CloseAllFiles( false, true );
 }
@@ -556,7 +556,7 @@ void CASMainWindow::OpenFindDialog()
 {
 	CFindDialog find( this );
 
-	connect( &find, SIGNAL( Find( QString ) ), this, SLOT( Find( QString ) ) );
+	connect( &find, &CFindDialog::Find, this, &CASMainWindow::Find );
 
 	find.exec();
 }
@@ -603,7 +603,7 @@ void CASMainWindow::CompileScript()
 	}
 }
 
-void CASMainWindow::AddOutputWindow()
+void CASMainWindow::MenuAddOutputWindow()
 {
 	AddOutputWindow( OutputWindow::OUTPUT );
 }
@@ -634,7 +634,7 @@ void CASMainWindow::ShowAbout()
 	about.exec();
 }
 
-void CASMainWindow::CloseFile( int iIndex )
+void CASMainWindow::TabCloseFile( int iIndex )
 {
 	CScriptCodeTextEdit* pWidget = static_cast<CScriptCodeTextEdit*>( m_WidgetUI->m_pFiles->widget( iIndex ) );
 

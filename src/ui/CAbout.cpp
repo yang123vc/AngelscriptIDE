@@ -7,7 +7,7 @@ CAbout::CAbout(QWidget* pParent)
 {
 	ui->setupUi( this );
 
-	connect( ui->OkButton, SIGNAL( clicked() ), this, SLOT( Close() ) );
+	connect( ui->OkButton, &QPushButton::clicked, this, &CAbout::Close );
 }
 
 CAbout::~CAbout()

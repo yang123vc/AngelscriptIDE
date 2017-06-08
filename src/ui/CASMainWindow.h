@@ -76,17 +76,17 @@ public slots:
 	//File menu
 	void NewFile();
 
-	void OpenFile();
+	void MenuOpenFile();
 
 	void Save();
 
 	void SaveAs();
 
-	void CloseFile();
+	void MenuCloseFile();
 
 	bool CloseAllFiles( bool fForceCloseAllOpenFiles, bool fContinueAfterCancel = false );
 
-	bool CloseAllFiles();
+	bool MenuCloseAllFiles();
 
 	void OpenRecentFile();
 
@@ -111,7 +111,7 @@ public slots:
 	void CompileScript();
 
 	//View menu
-	void AddOutputWindow();
+	void MenuAddOutputWindow();
 
 	void AddInformationWindow();
 
@@ -124,7 +124,7 @@ public slots:
 	void ShowAbout();
 
 	//Callbacks
-	void CloseFile( int iIndex );
+	void TabCloseFile( int iIndex );
 
 	void ScriptNameChanged( const QString& szName );
 

@@ -24,8 +24,8 @@ CScriptCodeTextEdit::CScriptCodeTextEdit( const QString& szTitle, std::shared_pt
 
 	m_SyntaxHighlighter = std::make_unique<CAngelscriptSyntaxHighlighter>( document(), m_App->GetOptions() );
 
-	connect( this, SIGNAL( textChanged() ), this, SLOT( ContentChanged() ) );
-	connect( this, SIGNAL( undoAvailable( bool ) ), this, SLOT( UndoStateChanged( bool ) ) );
+	connect( this, &CScriptCodeTextEdit::textChanged, this, &CScriptCodeTextEdit::ContentChanged );
+	connect( this, &CScriptCodeTextEdit::undoAvailable, this, &CScriptCodeTextEdit::UndoStateChanged );
 
 	connect( m_App->GetOptions().get(), &COptions::OptionsLoaded, this, &CScriptCodeTextEdit::OnOptionsChanged );
 	connect( m_App->GetOptions().get(), &COptions::OptionsSaved, this, &CScriptCodeTextEdit::OnOptionsChanged );

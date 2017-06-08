@@ -12,7 +12,7 @@ COutputWidget::COutputWidget( std::shared_ptr<CASIDEApp> app, const QString szNa
 {
 	m_WidgetUi->setupUi( this );
 
-	connect( m_WidgetUi->m_pClearButton, SIGNAL( clicked() ), this, SLOT( Clear() ) );
+	connect( m_WidgetUi->m_pClearButton, &QPushButton::clicked, this, &COutputWidget::Clear );
 }
 
 COutputWidget::~COutputWidget()

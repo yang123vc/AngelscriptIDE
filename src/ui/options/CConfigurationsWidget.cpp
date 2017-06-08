@@ -46,30 +46,30 @@ CConfigurationsWidget::CConfigurationsWidget( std::shared_ptr<CASIDEApp> app, st
 			SetCurrentConfiguration( 0 );
 	}
 
-	connect( m_WidgetUI->m_pManageConfigs, SIGNAL( clicked() ), this, SLOT( OpenEditConfigs() ) );
+	connect( m_WidgetUI->m_pManageConfigs, &QPushButton::clicked, this, &CConfigurationsWidget::OpenEditConfigs );
 
 	connect( m_WidgetUI->m_pCurrentConfigurationComboBox, SIGNAL( currentIndexChanged( int ) ), this, SLOT( ConfigurationSelected( int ) ) );
-	connect( m_WidgetUI->m_pConfigurationNameLineEdit, SIGNAL( textChanged( QString ) ), this, SLOT( NameChanged( QString ) ) );
+	connect( m_WidgetUI->m_pConfigurationNameLineEdit, &QLineEdit::textChanged, this, &CConfigurationsWidget::NameChanged );
 
-	connect( m_WidgetUI->m_pAngelscriptConfigFileLineEdit, SIGNAL( textChanged( QString ) ), this, SLOT( ConfigFileChanged( QString ) ) );
-	connect( m_WidgetUI->m_pConfigFileSelectButton, SIGNAL( clicked() ), this, SLOT( OpenSelectConfigFileDialog() ) );
+	connect( m_WidgetUI->m_pAngelscriptConfigFileLineEdit, &QLineEdit::textChanged, this, &CConfigurationsWidget::ConfigFileChanged );
+	connect( m_WidgetUI->m_pConfigFileSelectButton, &QPushButton::clicked, this, &CConfigurationsWidget::OpenSelectConfigFileDialog );
 
 	connect( m_WidgetUI->m_pConfigScript, &QLineEdit::textChanged, this, &CConfigurationsWidget::ConfigScriptFileChanged );
 	connect( m_WidgetUI->m_pConfigScriptSelect, &QPushButton::clicked, this, &CConfigurationsWidget::OpenSelectConfigScriptFileDialog );
 
-	connect( m_WidgetUI->m_pIncludeFilenameLineEdit, SIGNAL( textChanged( QString ) ), this, SLOT( IncludeFilenameChanged( QString ) ) );
-	connect( m_WidgetUI->m_pIncludeFilenameButton, SIGNAL( clicked() ), this, SLOT( OpenIncludeFilenameFileDialog() ) );
+	connect( m_WidgetUI->m_pIncludeFilenameLineEdit, &QLineEdit::textChanged, this, &CConfigurationsWidget::IncludeFilenameChanged );
+	connect( m_WidgetUI->m_pIncludeFilenameButton, &QPushButton::clicked, this, &CConfigurationsWidget::OpenIncludeFilenameFileDialog );
 
-	connect( m_WidgetUI->m_pFallbackExtLineEdit, SIGNAL( textChanged( QString ) ), this, SLOT( FallbackExtensionsChanged( QString ) ) );
+	connect( m_WidgetUI->m_pFallbackExtLineEdit, &QLineEdit::textChanged, this, &CConfigurationsWidget::FallbackExtensionsChanged );
 
-	connect( m_WidgetUI->m_pAddWordButton, SIGNAL( clicked() ), this, SLOT( AddWord() ) );
-	connect( m_WidgetUI->m_pRemoveWordButton, SIGNAL( clicked() ), this, SLOT( RemoveWord() ) );
+	connect( m_WidgetUI->m_pAddWordButton, &QPushButton::clicked, this, &CConfigurationsWidget::AddWord );
+	connect( m_WidgetUI->m_pRemoveWordButton, &QPushButton::clicked, this, &CConfigurationsWidget::RemoveWord );
 
-	connect( m_WidgetUI->m_pAddIncludePathButton, SIGNAL( clicked() ), this, SLOT( AddIncludePath() ) );
-	connect( m_WidgetUI->m_pRemoveIncludePathButton, SIGNAL( clicked() ), this, SLOT( RemoveIncludePath() ) );
+	connect( m_WidgetUI->m_pAddIncludePathButton, &QPushButton::clicked, this, &CConfigurationsWidget::AddIncludePath );
+	connect( m_WidgetUI->m_pRemoveIncludePathButton, &QPushButton::clicked, this, &CConfigurationsWidget::RemoveIncludePath );
 
-	connect( m_WidgetUI->m_pAddExtensionButton, SIGNAL( clicked() ), this, SLOT( AddExtension() ) );
-	connect( m_WidgetUI->m_pRemoveExtensionButton, SIGNAL( clicked() ), this, SLOT( RemoveExtension() ) );
+	connect( m_WidgetUI->m_pAddExtensionButton, &QPushButton::clicked, this, &CConfigurationsWidget::AddExtension );
+	connect( m_WidgetUI->m_pRemoveExtensionButton, &QPushButton::clicked, this, &CConfigurationsWidget::RemoveExtension );
 
 	connect( m_WidgetUI->m_pWordList, &QListWidget::itemChanged, this, &CConfigurationsWidget::ListChanged );
 	connect( m_WidgetUI->m_pIncludePathsList, &QListWidget::itemChanged, this, &CConfigurationsWidget::ListChanged );

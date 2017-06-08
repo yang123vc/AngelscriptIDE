@@ -31,16 +31,16 @@ CEditConfigurationsDialog::CEditConfigurationsDialog( std::shared_ptr<CASIDEApp>
 		m_WidgetUI->m_pList->addItem( configManager->GetConfiguration( uiIndex )->GetName().c_str() );
 	}
 
-	connect( m_WidgetUI->m_pAdd, SIGNAL( clicked() ), this, SLOT( AddConfiguraton() ) );
-	connect( m_WidgetUI->m_pRemove, SIGNAL( clicked() ), this, SLOT( RemoveConfiguration() ) );
-	connect( m_WidgetUI->m_pOk, SIGNAL( clicked() ), this, SLOT( Ok() ) );
+	connect( m_WidgetUI->m_pAdd, &QPushButton::clicked, this, &CEditConfigurationsDialog::AddConfiguration );
+	connect( m_WidgetUI->m_pRemove, &QPushButton::clicked, this, &CEditConfigurationsDialog::RemoveConfiguration );
+	connect( m_WidgetUI->m_pOk, &QPushButton::clicked, this, &CEditConfigurationsDialog::Ok );
 }
 
 CEditConfigurationsDialog::~CEditConfigurationsDialog()
 {
 }
 
-void CEditConfigurationsDialog::AddConfiguraton()
+void CEditConfigurationsDialog::AddConfiguration()
 {
 	bool bOk = true;
 

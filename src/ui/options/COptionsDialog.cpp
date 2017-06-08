@@ -33,9 +33,9 @@ COptionsDialog::COptionsDialog( std::shared_ptr<CASIDEApp> app, std::shared_ptr<
 	m_WidgetUI->m_pTabs->addTab( pConfig, tr( "Configurations" ) );
 	m_WidgetUI->m_pTabs->addTab( pSyntax, tr( "Syntax Highlighting" ) );
 
-	connect( m_WidgetUI->m_pOk,			SIGNAL( clicked() ), this, SLOT( Ok() ) );
-	connect( m_WidgetUI->m_pCancel,		SIGNAL( clicked() ), this, SLOT( Cancel() ) );
-	connect( m_WidgetUI->m_pApply,		SIGNAL( clicked() ), this, SLOT( Apply() ) );
+	connect( m_WidgetUI->m_pOk,			&QPushButton::clicked, this, &COptionsDialog::Ok );
+	connect( m_WidgetUI->m_pCancel,		&QPushButton::clicked, this, &COptionsDialog::Cancel );
+	connect( m_WidgetUI->m_pApply,		&QPushButton::clicked, this, &COptionsDialog::Apply );
 
 	m_WidgetUI->m_pApply->setEnabled( false );
 
