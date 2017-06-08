@@ -2,6 +2,9 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <QFile>
+#include <QTextStream>
+
 #include <angelscript.h>
 
 #include <AngelscriptUtils/CASModule.h>
@@ -14,18 +17,15 @@
 #include "CASEngineInstance.h"
 #include "CConfiguration.h"
 #include "CConfigurationManager.h"
-#include "CScript.h"
 #include "IDE_API.h"
 
 #include "ScriptAPI/ASIConfiguration.h"
 
 //Needed for queued connections; these types are passed around
-Q_DECLARE_METATYPE( std::shared_ptr<const CScript> );
 Q_DECLARE_METATYPE( CASEngineInstance::CMessageInfo );
 
 void RegisterQtMetaTypes()
 {
-	qRegisterMetaType<std::shared_ptr<const CScript>>();
 	qRegisterMetaType<CASEngineInstance::CMessageInfo>();
 }
 
@@ -71,14 +71,55 @@ CASDevEnvironment::~CASDevEnvironment()
 		m_pIDEEngine->ShutDownAndRelease();
 }
 
-bool CASDevEnvironment::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
+QString CASDevEnvironment::LoadScript( const QString& szScriptFilename, bool* pbSuccess )
+{
+	QFile file( szScriptFilename );
+
+	if( !file.open( QFile::ReadOnly | QFile::Text ) )
+	{
+		if( pbSuccess )
+			*pbSuccess = false;
+
+		return{};
+	}
+
+	//Read in the whole file
+	QTextStream stream( &file );
+
+	QString szContents = stream.readAll();
+
+	//Newlines are normalized by QFile (QFile::Text)
+
+	if( pbSuccess )
+		*pbSuccess = true;
+
+	return szContents;
+}
+
+bool CASDevEnvironment::SaveScript( const QString& szScriptFilename, const QString& szContents )
+{
+	QFile file( szScriptFilename );
+
+	if( !file.open( QFile::WriteOnly | QFile::Text | QFile::Truncate ) )
+	{
+		return false;
+	}
+
+	QTextStream stream( &file );
+
+	stream << szContents;
+
+	return true;
+}
+
+bool CASDevEnvironment::CompileScript( QString&& szScriptFilename )
 {
 	//No concurrent compilations
 	//TODO: queue it up? - Solokiller
 	if( m_CompilerThread )
 		return false;
 
-	m_CompilerThread = std::make_shared<CASCompilerThread>( m_Instance, m_ConfigurationManager->GetActiveConfiguration(), std::string( szSectionName ), std::string( szScriptContents ) );
+	m_CompilerThread = std::make_shared<CASCompilerThread>( m_Instance, m_ConfigurationManager->GetActiveConfiguration(), std::move( szScriptFilename ) );
 
 	connect( m_CompilerThread.get(), &CASCompilerThread::CompilationStart, this, &CASDevEnvironment::OnCompilationStarted, Qt::QueuedConnection );
 	connect( m_CompilerThread.get(), &CASCompilerThread::CompilationEnd, this, &CASDevEnvironment::OnCompilationEnded, Qt::QueuedConnection );
@@ -200,14 +241,14 @@ void CASDevEnvironment::OnEngineMessage( const CASEngineInstance::CMessageInfo& 
 	CompilerMessage( message );
 }
 
-void CASDevEnvironment::OnCompilationStarted( const std::shared_ptr<const CScript>& script )
+void CASDevEnvironment::OnCompilationStarted( const QString& szScriptFilename )
 {
-	CompilationStarted( script );
+	CompilationStarted( szScriptFilename );
 }
 
-void CASDevEnvironment::OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess )
+void CASDevEnvironment::OnCompilationEnded( const QString& szScriptFilename, bool bSuccess )
 {
-	CompilationEnded( script, bSuccess );
+	CompilationEnded( szScriptFilename, bSuccess );
 
 	m_CompilerThread.reset();
 }

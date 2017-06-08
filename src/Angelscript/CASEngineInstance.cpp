@@ -13,7 +13,6 @@
 
 #include "CASEngineInstance.h"
 #include "CConfiguration.h"
-#include "CScript.h"
 #include "IncludeCallback.h"
 
 CASEngineInstance::CASEngineInstance()
@@ -47,7 +46,7 @@ bool CASEngineInstance::LoadAPIFromFile( const std::string& szFilename )
 	return ConfigEngineFromStream( GetScriptEngine(), inStream ) >= 0;
 }
 
-bool CASEngineInstance::CompileScript( const std::shared_ptr<const CScript>& script, const std::shared_ptr<const CConfiguration>& config )
+bool CASEngineInstance::CompileScript( const std::string& szScriptFilename, const std::shared_ptr<const CConfiguration>& config )
 {
 	CScriptBuilder builder;
 
@@ -88,10 +87,7 @@ bool CASEngineInstance::CompileScript( const std::shared_ptr<const CScript>& scr
 
 			if( !szIncludeFilename.empty() )
 			{
-				auto szContents = CScript::LoadContentsFromFile( szIncludeFilename, bSuccess );
-
-				if( bSuccess )
-					bSuccess = builder.AddSectionFromMemory( "Include", szContents.c_str() ) >= 0;
+				bSuccess = builder.AddSectionFromFile( szIncludeFilename.c_str() ) >= 0;
 			}
 		}
 	}
@@ -100,7 +96,7 @@ bool CASEngineInstance::CompileScript( const std::shared_ptr<const CScript>& scr
 
 	if( bSuccess )
 	{
-		const auto iResult = builder.AddSectionFromMemory( script->GetSectionName().c_str(), script->GetContents().c_str() );
+		const auto iResult = builder.AddSectionFromFile( szScriptFilename.c_str() );
 
 		bSuccess = iResult >= 0;
 	}

@@ -64,7 +64,7 @@ protected:
 
 	void AddRecentFile( const std::string& szFilename );
 
-	void AddRecentFileToOptions( const std::string& szFilename );
+	void AddRecentFileToOptions( const QString& szFilename );
 
 	void ClearRecentFilesActions();
 

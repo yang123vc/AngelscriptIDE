@@ -12,8 +12,6 @@ add_sources(
 	CConfigurationException.h
 	CConfigurationManager.cpp
 	CConfigurationManager.h
-	CScript.cpp
-	CScript.h
 	IDE_API.cpp
 	IDE_API.h
 	IncludeCallback.cpp

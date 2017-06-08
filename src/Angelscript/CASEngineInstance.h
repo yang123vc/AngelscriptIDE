@@ -12,7 +12,6 @@
 
 class asIScriptEngine;
 class CConfiguration;
-class CScript;
 
 /**
 *	Exception thrown if an Angelscript exception has occured
@@ -72,7 +71,7 @@ public:
 	/**
 	*	Compiles a given script
 	*/
-	bool CompileScript( const std::shared_ptr<const CScript>& script, const std::shared_ptr<const CConfiguration>& config );
+	bool CompileScript( const std::string& szScriptFilename, const std::shared_ptr<const CConfiguration>& config );
 
 	void Error( const char* pszSection, int row, int col, const char* pszFormat, ... );
 

@@ -1,7 +1,6 @@
 #include "angelscript.h"
 
 #include "Angelscript/CASDevEnvironment.h"
-#include "Angelscript/CScript.h"
 
 #include "ide/CASIDEApp.h"
 
@@ -96,10 +95,10 @@ void CInformationOutputWidget::OnConfigChanged( ConfigChangeType changeType, con
 	}
 }
 
-void CInformationOutputWidget::OnCompilationStarted( const std::shared_ptr<const CScript>& script )
+void CInformationOutputWidget::OnCompilationStarted( const QString& szScriptFilename )
 {
 	WriteCompileSeparator();
-	WriteString( QString( "Starting compilation of script '%1'\n" ).arg( script->GetSectionName().c_str() ) );
+	WriteString( QString( "Starting compilation of script '%1'\n" ).arg( szScriptFilename ) );
 
 	m_CompileStartTime = std::chrono::high_resolution_clock::now();
 
@@ -107,7 +106,7 @@ void CInformationOutputWidget::OnCompilationStarted( const std::shared_ptr<const
 	m_uiWarnings = 0;
 }
 
-void CInformationOutputWidget::OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess )
+void CInformationOutputWidget::OnCompilationEnded( const QString& szScriptFilename, bool bSuccess )
 {
 	WriteString( bSuccess ? "Compilation succeeded\n" : "Compilation failed\n" );
 

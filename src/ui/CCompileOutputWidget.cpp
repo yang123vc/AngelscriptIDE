@@ -25,7 +25,7 @@ void CCompileOutputWidget::OnEngineCreated( const std::string& szVersion, bool b
 	Clear();
 }
 
-void CCompileOutputWidget::OnCompilationStarted( const std::shared_ptr<const CScript>& script )
+void CCompileOutputWidget::OnCompilationStarted( const QString& szScriptFilename )
 {
 	Clear();
 }

@@ -10,7 +10,6 @@
 #include "COptions.h"
 
 #include "Angelscript/CASDevEnvironment.h"
-#include "Angelscript/CScript.h"
 #include "Angelscript/CConfiguration.h"
 #include "Angelscript/CConfigurationManager.h"
 #include "ui/CASMainWindow.h"
@@ -94,9 +93,9 @@ void CASIDEApp::SetMainWindow( const std::shared_ptr<CASMainWindow>& window )
 	m_MainWindow = window;
 }
 
-bool CASIDEApp::CompileScript( const std::string& szSectionName, const std::string& szScriptContents )
+bool CASIDEApp::CompileScript( QString&& szScriptFilename )
 {
-	return m_ASDDevEnv->CompileScript( szSectionName, szScriptContents );
+	return m_ASDDevEnv->CompileScript( std::move( szScriptFilename ) );
 }
 
 void CASIDEApp::RefreshSyntaxHighlights()

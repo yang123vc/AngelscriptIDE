@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QString>
 
 #include "util/CBaseApp.h"
 
@@ -44,7 +45,7 @@ public:
 	void SetMainWindow( const std::shared_ptr<CASMainWindow>& window );
 
 	//ASManager passthrough
-	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
+	bool CompileScript( QString&& szScriptFilename );
 
 	void RefreshSyntaxHighlights();
 

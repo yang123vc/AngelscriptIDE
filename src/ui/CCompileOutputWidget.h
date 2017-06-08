@@ -6,7 +6,6 @@
 
 #include "COutputWidget.h"
 
-class CScript;
 struct asSMessageInfo;
 
 class CCompileOutputWidget : public COutputWidget
@@ -20,7 +19,7 @@ public:
 private slots:
 	void OnEngineCreated( const std::string& szVersion, bool bHasConfig );
 
-	void OnCompilationStarted( const std::shared_ptr<const CScript>& script );
+	void OnCompilationStarted( const QString& szScriptFilename );
 
 	void OnCompilerMessage( const asSMessageInfo& msg );
 };

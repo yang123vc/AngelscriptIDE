@@ -22,7 +22,6 @@
 #undef SetCurrentDirectory
 
 #include "Angelscript/CConfiguration.h"
-#include "Angelscript/CScript.h"
 #include "ide/CASIDEApp.h"
 #include "ide/COptions.h"
 #include "options/COptionsDialog.h"
@@ -233,10 +232,10 @@ CScriptCodeTextEdit* CASMainWindow::FindOpenFile( const QString& szFilename, int
 	{
 		pEdit = static_cast<CScriptCodeTextEdit*>( pTabs->widget( iIndex ) );
 
-		if( !pEdit->HasFile() )
+		if( pEdit->IsNewFile() )
 			continue;
 
-		if( QFileInfo( pEdit->GetName().c_str() ).absoluteFilePath() == szAbsFilename )
+		if( QFileInfo( pEdit->GetFilename() ).absoluteFilePath() == szAbsFilename )
 		{
 			if( pIndex )
 				*pIndex = iIndex;
@@ -250,7 +249,7 @@ CScriptCodeTextEdit* CASMainWindow::FindOpenFile( const QString& szFilename, int
 
 void CASMainWindow::AddFile( CScriptCodeTextEdit* pCodeEdit )
 {
-	const int iIndex = m_WidgetUI->m_pFiles->addTab( pCodeEdit, pCodeEdit->GetName().c_str() );
+	const int iIndex = m_WidgetUI->m_pFiles->addTab( pCodeEdit, pCodeEdit->GetFilename() );
 
 	connect( pCodeEdit, SIGNAL( NameChanged( std::string ) ), this, SLOT( ScriptNameChanged( std::string ) ) );
 
@@ -262,7 +261,7 @@ void CASMainWindow::OpenFile( const QString& szFilename )
 	if( szFilename.isEmpty() )
 		return;
 
-	AddRecentFileToOptions( szFilename.toStdString() );
+	AddRecentFileToOptions( szFilename );
 
 	int iIndex;
 
@@ -273,9 +272,10 @@ void CASMainWindow::OpenFile( const QString& szFilename )
 		return;
 	}
 
+	//Use the absolute path
 	QFileInfo file( szFilename );
 
-	AddFile( new CScriptCodeTextEdit( file.fileName().toStdString(), szFilename.toStdString(), m_App ) );
+	AddFile( new CScriptCodeTextEdit( file.absoluteFilePath(), CScriptCodeTextEdit::IsFilename, m_App ) );
 }
 
 
@@ -347,9 +347,9 @@ void CASMainWindow::AddRecentFile( const std::string& szFilename )
 	}
 }
 
-void CASMainWindow::AddRecentFileToOptions( const std::string& szFilename )
+void CASMainWindow::AddRecentFileToOptions( const QString& szFilename )
 {
-	QFileInfo file( szFilename.c_str() );
+	QFileInfo file( szFilename );
 
 	const std::string szAbsolutePath = file.absoluteFilePath().toStdString();
 
@@ -434,12 +434,9 @@ void CASMainWindow::Save()
 
 	if( pCodeEdit )
 	{
-		const bool fHadFile = pCodeEdit->HasFile();
-
 		if( pCodeEdit->Save( CScriptCodeTextEdit::SaveMode::ALWAYS, CScriptCodeTextEdit::PromptMode::NEVER ) == CScriptCodeTextEdit::SaveResult::SAVED )
 		{
-			if( !fHadFile )
-				AddRecentFileToOptions( pCodeEdit->GetName() );
+			AddRecentFileToOptions( pCodeEdit->GetFilename() );
 		}
 	}
 }
@@ -455,7 +452,7 @@ void CASMainWindow::SaveAs()
 					CScriptCodeTextEdit::PromptMode::NEVER,
 					CScriptCodeTextEdit::FileSelectMode::ALWAYS ) == CScriptCodeTextEdit::SaveResult::SAVED )
 		{
-			AddRecentFileToOptions( pCodeEdit->GetName() );
+			AddRecentFileToOptions( pCodeEdit->GetFilename() );
 		}
 	}
 }
@@ -582,9 +579,7 @@ void CASMainWindow::CompileScript()
 
 	if( pCodeEdit )
 	{
-		auto script = pCodeEdit->GetScriptFile();
-
-		if( !script )
+		if( pCodeEdit->IsNewFile() )
 		{
 			//User didn't want to save file or save failed; cancel compilation
 			if( pCodeEdit->Save( CScriptCodeTextEdit::SaveMode::ALWAYS ) != CScriptCodeTextEdit::SaveResult::SAVED )
@@ -593,12 +588,7 @@ void CASMainWindow::CompileScript()
 		else
 			pCodeEdit->Save();
 
-		script = pCodeEdit->GetScriptFile();
-
-		//TODO: can pass the script directly? - Solokiller
-		m_App->CompileScript(
-					pCodeEdit->GetName(),
-					pCodeEdit->toPlainText().toStdString() );
+		m_App->CompileScript( QString( pCodeEdit->GetFilename() ) );
 	}
 }
 

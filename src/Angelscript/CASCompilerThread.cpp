@@ -2,18 +2,16 @@
 
 #include "CASCompilerThread.h"
 #include "CASEngineInstance.h"
-#include "CScript.h"
 
 CASCompilerThread::CASCompilerThread( const std::shared_ptr<CASEngineInstance>& instance, const std::shared_ptr<const CConfiguration>& config,
-									  std::string&& szSectionName, std::string&& szContents )
+									  QString&& szScriptFilename )
 	: m_Instance( instance )
 	, m_Config( config )
 {
 	assert( instance );
 	assert( config );
 
-	m_Parameters.m_szSectionName = std::move( szSectionName );
-	m_Parameters.m_szContents = std::move( szContents );
+	m_Parameters.m_szScriptFilename = std::move( szScriptFilename );
 }
 
 void CASCompilerThread::Run()
@@ -30,11 +28,9 @@ void CASCompilerThread::ThreadProc( const std::shared_ptr<CASCompilerThread>& co
 
 void CASCompilerThread::CompileScript()
 {
-	auto script = std::make_shared<const CScript>( std::move( m_Parameters.m_szSectionName ), std::move( m_Parameters.m_szContents ) );
+	CompilationStart( m_Parameters.m_szScriptFilename );
 
-	CompilationStart( script );
+	const bool bResult = m_Instance->CompileScript( m_Parameters.m_szScriptFilename.toStdString(), m_Config );
 
-	const bool bResult = m_Instance->CompileScript( script, m_Config );
-
-	CompilationEnd( script, bResult );
+	CompilationEnd( m_Parameters.m_szScriptFilename, bResult );
 }

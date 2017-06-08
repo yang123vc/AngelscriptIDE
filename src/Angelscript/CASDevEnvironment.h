@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <QObject>
+#include <QString>
 
 #include <AngelscriptUtils/CASModuleManager.h>
 #include <AngelscriptUtils/util/CASObjPtr.h>
@@ -16,7 +17,6 @@ class asIScriptEngine;
 class CASCompilerThread;
 class CConfiguration;
 class CConfigurationManager;
-class CScript;
 struct asSMessageInfo;
 struct ASEvent;
 
@@ -44,9 +44,25 @@ public:
 	std::shared_ptr<CConfigurationManager> GetConfigurationManager() { return m_ConfigurationManager; }
 
 	/**
+	*	Loads a script
+	*	@param szScriptFilename Name of the file to load
+	*	@param[ out ] pbSuccess Optional. If not null, will contain whether the file was successfully opened
+	*	@return Contents of the script
+	*/
+	QString LoadScript( const QString& szScriptFilename, bool* pbSuccess = nullptr );
+
+	/**
+	*	Saves a script
+	*	@param szScriptFilename Name of the file to save to. The contents of the file, if present, are discarded
+	*	@param szContents Contents to save
+	*	@return Whether the script was successfully saved
+	*/
+	bool SaveScript( const QString& szScriptFilename, const QString& szContents );
+
+	/**
 	*	Compiles a script
 	*/
-	bool CompileScript( const std::string& szSectionName, const std::string& szScriptContents );
+	bool CompileScript( QString&& szScriptFilename );
 
 	/**
 	*	@return Whether a script is currently being compiled
@@ -89,25 +105,25 @@ signals:
 
 	/**
 	*	Compilation has started
-	*	@param script The script currently being compiled
+	*	@param szScriptFilename The name of the script currently being compiled
 	*/
-	void CompilationStarted( const std::shared_ptr<const CScript>& script );
+	void CompilationStarted( const QString& szScriptFilename );
 
 	/**
 	*	Compilation has ended
-	*	@param script The script currently being compiled
+	*	@param szScriptFilename The name of the script currently being compiled
 	*	@param bSuccess Whether compilation succeeded or failed
 	*/
-	void CompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
+	void CompilationEnded( const QString& szScriptFilename, bool bSuccess );
 
 	void CompilerMessage( const asSMessageInfo& msg );
 
 private slots:
 	void OnEngineMessage( const CASEngineInstance::CMessageInfo& msg );
 
-	void OnCompilationStarted( const std::shared_ptr<const CScript>& script );
+	void OnCompilationStarted( const QString& szScriptFilename );
 
-	void OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
+	void OnCompilationEnded( const QString& szScriptFilename, bool bSuccess );
 
 	void OnActiveConfigurationChanged( const std::shared_ptr<CConfiguration>& oldConfig, const std::shared_ptr<CConfiguration>& newConfig );
 

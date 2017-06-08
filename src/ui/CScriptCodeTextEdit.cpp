@@ -3,8 +3,8 @@
 #include <QMessageBox>
 #include <QSyntaxHighlighter>
 
-#include "Angelscript/CScript.h"
 #include "Angelscript/CConfiguration.h"
+#include "Angelscript/CASDevEnvironment.h"
 
 #include "ide/CASIDEApp.h"
 #include "ide/COptions.h"
@@ -14,9 +14,8 @@
 #include "CAngelscriptSyntaxHighlighter.h"
 #include "CScriptCodeTextEdit.h"
 
-CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, std::shared_ptr<CASIDEApp> app,  QWidget* pParent )
+CScriptCodeTextEdit::CScriptCodeTextEdit( const QString& szTitle, std::shared_ptr<CASIDEApp> app, QWidget* pParent )
 	: CCodeTextEdit( pParent )
-	, m_szName( szName )
 	, m_App( app )
 {
 	setTabStopWidth( m_App->GetOptions()->GetTabWidth() );
@@ -28,17 +27,21 @@ CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, std::shared
 
 	connect( m_App->GetOptions().get(), &COptions::OptionsLoaded, this, &CScriptCodeTextEdit::OnOptionsChanged );
 	connect( m_App->GetOptions().get(), &COptions::OptionsSaved, this, &CScriptCodeTextEdit::OnOptionsChanged );
+
+	NameChanged( m_szFilename );
 }
 
-CScriptCodeTextEdit::CScriptCodeTextEdit( const std::string& szName, const std::string& szFilename, std::shared_ptr<CASIDEApp> app,  QWidget* pParent )
-	: CScriptCodeTextEdit( szName, app, pParent )
+CScriptCodeTextEdit::CScriptCodeTextEdit( const QString& szFilename, const IsFilenameTag_t& isFilename, std::shared_ptr<CASIDEApp> app,  QWidget* pParent )
+	: CScriptCodeTextEdit( szFilename, app, pParent )
 {
-	m_pScriptFile = std::make_shared<CScript>( CScript::FromFile( szFilename ) );
+	m_szFilename = szFilename;
 
-	const auto& szBuffer = m_pScriptFile->GetContents();
+	m_bIsNewFile = false;
 
-	if( !szBuffer.empty() )
-		this->appendPlainText( szBuffer.c_str() );
+	//TODO: report file load failures - Solokiller
+	auto szContents = m_App->GetDevEnvironment()->LoadScript( szFilename );
+
+	appendPlainText( szContents );
 
 	SetUnsavedChangesMade( false );
 }
@@ -57,11 +60,11 @@ void CScriptCodeTextEdit::SetUnsavedChangesMade( bool fState )
 	document()->setModified( fState );
 
 	if( fState )
-		NameChanged( m_szName + '*' );
+		NameChanged( m_szFilename + '*' );
 	else
 	{
 		document()->clearUndoRedoStacks();
-		NameChanged( m_szName );
+		NameChanged( m_szFilename );
 	}
 }
 
@@ -72,7 +75,7 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( SaveMode saveMode, Pr
 	if(
 			( saveMode == SaveMode::ALWAYS ) ||
 			UnsavedChangedMade() ||
-			( !m_pScriptFile && !this->document()->isEmpty() ) )
+			( IsNewFile() && !this->document()->isEmpty() ) )
 	{
 		int iRet = QMessageBox::Save;
 
@@ -91,34 +94,32 @@ CScriptCodeTextEdit::SaveResult CScriptCodeTextEdit::Save( SaveMode saveMode, Pr
 		{
 		case QMessageBox::Save:
 			{
-				if( ( fileSelect != FileSelectMode::NEVER ) && ( !m_pScriptFile || ( fileSelect == FileSelectMode::ALWAYS ) ) )
+				if( ( fileSelect != FileSelectMode::NEVER ) && ( IsNewFile() || ( fileSelect == FileSelectMode::ALWAYS ) ) )
 				{
 					OpenSaveDialog();
 				}
 
-				if( m_pScriptFile )
+				auto szPath = QDir( m_App->GetOptions()->GetCurrentDirectory().c_str() ).filePath( m_szFilename ).toStdString();
+
+				const bool bResult = m_App->GetDevEnvironment()->SaveScript( m_szFilename, toPlainText() );
+
+				if( bResult )
 				{
-					m_pScriptFile->SetContents( this->toPlainText().toStdString() );
+					SetUnsavedChangesMade( false );
+					result = SaveResult::SAVED;
 
-					auto szPath = QDir( m_App->GetOptions()->GetCurrentDirectory().c_str() ).filePath( m_szName.c_str() ).toStdString();
+					if( m_bIsNewFile )
+						m_bIsNewFile = false;
+				}
+				else
+				{
+					QMessageBox errorBox;
 
-					const bool bResult = m_pScriptFile->SaveToFile( szPath );
+					errorBox.setText( "An error occured." );
+					errorBox.setInformativeText( "An error occured while trying to save the file." );
+					errorBox.exec();
 
-					if( bResult )
-					{
-						SetUnsavedChangesMade( false );
-						result = SaveResult::SAVED;
-					}
-					else
-					{
-						QMessageBox errorBox;
-
-						errorBox.setText( "An error occured." );
-						errorBox.setInformativeText( "An error occured while trying to save the file." );
-						errorBox.exec();
-
-						result = SaveResult::CANCELED;
-					}
+					result = SaveResult::CANCELED;
 				}
 
 				break;
@@ -150,24 +151,21 @@ bool CScriptCodeTextEdit::OpenSaveDialog()
 
 	QString szExtensions = config ? ui::FormatExtensions( config->GetExtensions() ) : ui::ANY_EXTENSION;
 
-	std::string szFilename = QFileDialog::getSaveFileName(
+	QString szFilename = QFileDialog::getSaveFileName(
 				this, tr( "Save script" ), szDir,
-				QString( tr( "Angelscript script files" ) + "(%1)" ).arg( szExtensions ) ).toStdString();
+				QString( tr( "Angelscript script files" ) + "(%1)" ).arg( szExtensions ) );
 
-	bool fResult = !szFilename.empty();
+	bool fResult = !szFilename.isEmpty();
 
 	if( fResult )
 	{
-		if( !m_pScriptFile )
-			m_pScriptFile = std::make_shared<CScript>( std::string( szFilename ) );
-
-		QFileInfo file( szFilename.c_str() );
+		QFileInfo file( szFilename );
 
 		options->SetCurrentDirectory( file.absolutePath().toStdString() );
 
-		m_szName = file.fileName().toStdString();
+		m_szFilename = file.absoluteFilePath();
 
-		NameChanged( m_szName );
+		NameChanged( m_szFilename );
 	}
 
 	return fResult;
@@ -175,7 +173,7 @@ bool CScriptCodeTextEdit::OpenSaveDialog()
 
 void CScriptCodeTextEdit::ContentChanged()
 {
-	NameChanged( m_szName + '*' );
+	NameChanged( m_szFilename + '*' );
 }
 
 void CScriptCodeTextEdit::UndoStateChanged( bool fState )

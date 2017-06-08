@@ -4,9 +4,9 @@
 #include <memory>
 #include <string>
 
-#include "CCodeTextEdit.h"
+#include <QString>
 
-class CScript;
+#include "CCodeTextEdit.h"
 
 class CASIDEApp;
 class CAngelscriptSyntaxHighlighter;
@@ -43,17 +43,25 @@ public:
 		CANCELED
 	};
 
+	//Tag used to differentiate between new files and opened files
+	struct IsFilenameTag_t
+	{
+	};
+
+	static constexpr IsFilenameTag_t IsFilename = {};
+
 public:
 
-	CScriptCodeTextEdit( const std::string& szFilename, std::shared_ptr<CASIDEApp> app, QWidget* pParent = nullptr );
-	CScriptCodeTextEdit( const std::string& szName, const std::string& szFilename, std::shared_ptr<CASIDEApp> app, QWidget* pParent = nullptr );
+	CScriptCodeTextEdit( const QString& szTitle, std::shared_ptr<CASIDEApp> app, QWidget* pParent = nullptr );
+	CScriptCodeTextEdit( const QString& szFilename, const IsFilenameTag_t& isFilename, std::shared_ptr<CASIDEApp> app, QWidget* pParent = nullptr );
 	virtual ~CScriptCodeTextEdit();
 
-	const std::string& GetName() const { return m_szName; }
+	const QString& GetFilename() const { return m_szFilename; }
 
-	std::shared_ptr<CScript> GetScriptFile() const { return m_pScriptFile; }
-
-	bool HasFile() const { return m_pScriptFile != nullptr; }
+	/**
+	*	@return Whether this is a new file, i.e. if the file has not been saved at least once
+	*/
+	bool IsNewFile() const { return m_bIsNewFile; }
 
 	bool UnsavedChangedMade() const;
 
@@ -69,7 +77,7 @@ protected:
 
 signals:
 
-	void NameChanged( const std::string& szName );
+	void NameChanged( const QString& szName );
 
 protected slots:
 
@@ -80,8 +88,8 @@ protected slots:
 	void OnOptionsChanged();
 
 private:
-	std::string m_szName;
-	std::shared_ptr<CScript> m_pScriptFile;
+	QString m_szFilename;
+	bool m_bIsNewFile = true;
 	std::shared_ptr<CASIDEApp> m_App;
 
 	std::unique_ptr<CAngelscriptSyntaxHighlighter> m_SyntaxHighlighter;

@@ -38,9 +38,9 @@ private slots:
 
 	void OnConfigChanged( ConfigChangeType changeType, const std::string& szName );
 
-	void OnCompilationStarted( const std::shared_ptr<const CScript>& script );
+	void OnCompilationStarted( const QString& szScriptFilename );
 
-	void OnCompilationEnded( const std::shared_ptr<const CScript>& script, bool bSuccess );
+	void OnCompilationEnded( const QString& szScriptFilename, bool bSuccess );
 
 	void OnCompilerMessage( const asSMessageInfo& msg );
 
