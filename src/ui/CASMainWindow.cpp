@@ -19,10 +19,6 @@
 #include "CUI.h"
 #include "ui_CASMainWindow.h"
 
-//TODO: remove Windows dependency - Solokiller
-#undef GetCurrentDirectory
-#undef SetCurrentDirectory
-
 #include "Angelscript/CConfiguration.h"
 #include "ide/CASIDEApp.h"
 #include "ide/COptions.h"

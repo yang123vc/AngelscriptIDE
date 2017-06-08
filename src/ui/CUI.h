@@ -9,9 +9,6 @@
 
 class CASIDEApp;
 
-//TODO: remove Windows dependency - Solokiller
-#undef ERROR
-
 enum class UIMessageType
 {
 	INFO,

@@ -14,9 +14,6 @@
 #include "Angelscript/CConfigurationManager.h"
 #include "ui/CASMainWindow.h"
 
-//TODO: Windows header is included somewhere - Solokiller
-#undef SendMessage
-
 #include "ui/CUI.h"
 
 CASIDEApp::CASIDEApp( std::shared_ptr<CUI> ui )
